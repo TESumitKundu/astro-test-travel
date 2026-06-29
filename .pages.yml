@@ -38,48 +38,33 @@ content:
       - name: bestMonths
         label: Best Months
         type: select
-        list: true
         required: true
         options:
-          - label: January
-            value: January
-          - label: February
-            value: February
-          - label: March
-            value: March
-          - label: April
-            value: April
-          - label: May
-            value: May
-          - label: June
-            value: June
-          - label: July
-            value: July
-          - label: August
-            value: August
-          - label: September
-            value: September
-          - label: October
-            value: October
-          - label: November
-            value: November
-          - label: December
-            value: December
+          multiple: true
+          values:
+            - January
+            - February
+            - March
+            - April
+            - May
+            - June
+            - July
+            - August
+            - September
+            - October
+            - November
+            - December
       - name: season
         label: Season
         type: select
         required: true
         options:
-          - label: Spring
-            value: Spring
-          - label: Summer
-            value: Summer
-          - label: Monsoon
-            value: Monsoon
-          - label: Autumn
-            value: Autumn
-          - label: Winter
-            value: Winter
+          values:
+            - Spring
+            - Summer
+            - Monsoon
+            - Autumn
+            - Winter
       - name: coverImage
         label: Cover Image
         type: image
