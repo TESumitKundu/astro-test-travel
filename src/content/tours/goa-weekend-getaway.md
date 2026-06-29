@@ -1,7 +1,7 @@
 ---
-title: "Goa Weekend Getaway"
-slug: "goa-weekend-getaway"
-place: "Goa"
+title: Goa Weekend Getaway
+slug: goa-weekend-getaway
+place: Goa
 duration:
   days: 3
   nights: 2
@@ -12,10 +12,9 @@ costInr: 9500
 minHeadCount: 2
 featured: true
 draft: false
-seoTitle: "Goa Weekend Tour"
-seoDescription: "A short Goa beach getaway with beaches, cafes, and leisure time."
+seoTitle: Goa Weekend Tour
+seoDescription: A short Goa beach getaway with beaches, cafes, and leisure time.
 ---
-
 ## Day 1: Arrival and Beach Evening
 
 Arrive in Goa, check in, and spend the evening around North Goa beaches.
