@@ -59,6 +59,7 @@ content:
         type: select
         required: true
         options:
+          multiple: true
           values:
             - Spring
             - Summer
