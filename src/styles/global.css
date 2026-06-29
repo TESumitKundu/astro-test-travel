@@ -117,6 +117,7 @@ img {
 }
 
 .prose {
+  width: 100%;
   max-width: 760px;
   margin-inline: auto;
   font-size: 1.06rem;
