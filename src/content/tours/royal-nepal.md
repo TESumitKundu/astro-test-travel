@@ -21,5 +21,5 @@ featured: false
 draft: false
 seoTitle: Royal Nepal
 ---
-Day 1:   
+Day 1:  
 Day 2:
