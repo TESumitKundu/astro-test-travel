@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 48" role="img" aria-labelledby="title">
+  <title id="title">Astro Git CMS Blog</title>
+  <rect width="48" height="48" rx="10" fill="#111827"/>
+  <path d="M24 9 37 39h-8l-2-6H16l-2 6H6L19 9h5Zm.8 18-3.2-9.3L18.3 27h6.5Z" fill="#f9fafb"/>
+  <text x="62" y="31" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#111827">Astro Git CMS</text>
+</svg>

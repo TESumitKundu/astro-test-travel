@@ -1,0 +1,95 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import TourSection from '../components/TourSection.astro';
+import {
+  getCurrentMonthName,
+  getCurrentMonthTours,
+  getLongDurationTours,
+  getShortDurationTours
+} from '../lib/tours';
+import site from '../../config/site.json';
+import { withBase } from '../lib/paths';
+
+const currentMonth = getCurrentMonthName();
+const currentMonthTours = await getCurrentMonthTours(6);
+const shortTours = await getShortDurationTours(8);
+const longTours = await getLongDurationTours(8);
+---
+
+<BaseLayout title={site.siteName} description={site.siteDescription}>
+  <section class="hero travel-hero">
+    <div class="container hero-grid">
+      <div>
+        <p class="eyebrow">Curated India tour packages</p>
+        <h1>{site.siteName}</h1>
+        <p>{site.siteDescription} Find seasonal trips, short breaks, and longer journeys managed from simple Git-based content.</p>
+        <a class="button" href={withBase('/tours/')}>Explore tours</a>
+      </div>
+      <div class="hero-panel" aria-label="Travel planning highlights">
+        <strong>Plan by season, duration, and budget</strong>
+        <ul>
+          <li>Month-wise tour recommendations update on rebuild.</li>
+          <li>Short and long duration tours are grouped automatically.</li>
+          <li>Every tour is editable from Pages CMS.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <TourSection title={`Best Tours for ${currentMonth}`} tours={currentMonthTours} viewAllLink={`/tours/?month=${currentMonth}`} />
+      <TourSection title="Short Duration Tours" tours={shortTours} viewAllLink="/tours/?duration=short" carousel />
+      <TourSection title="Long Duration Tours" tours={longTours} viewAllLink="/tours/?duration=long" carousel />
+    </div>
+  </section>
+
+  <section class="section section-alt about-preview">
+    <div class="container split">
+      <div>
+        <h2>Travel content that stays easy to update</h2>
+        <p>Add a tour, upload a cover image, edit the itinerary, and commit it through the CMS. GitHub Actions can rebuild the static site whenever content changes.</p>
+      </div>
+      <a class="button" href={withBase('/about/')}>About us</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .eyebrow {
+    margin: 0 0 14px;
+    color: var(--green);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .split {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 32px;
+  }
+
+  .about-preview h2 {
+    max-width: 760px;
+    margin: 0 0 14px;
+    font-size: clamp(1.9rem, 4vw, 3rem);
+    line-height: 1.1;
+    letter-spacing: 0;
+  }
+
+  .about-preview p {
+    max-width: 720px;
+    margin: 0;
+    color: var(--muted);
+    font-size: 1.08rem;
+  }
+
+  @media (max-width: 760px) {
+    .split {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+  }
+</style>

@@ -1,0 +1,208 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import TourCard from '../../components/TourCard.astro';
+import { getAllMonths, getAllPlaces, getAllSeasons, getAllTours } from '../../lib/tours';
+
+const tours = await getAllTours();
+const places = await getAllPlaces();
+const seasons = await getAllSeasons();
+const months = getAllMonths();
+---
+
+<BaseLayout title="Tours" description="Browse India tour packages by place, duration, month, and season.">
+  <section class="page-head">
+    <div class="container">
+      <h1>Tour List</h1>
+      <p>Browse every available tour package and filter by place, duration, best month, or season.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <form class="filters" data-tour-filters>
+        <label>
+          <span>Place</span>
+          <select name="place">
+            <option value="">All places</option>
+            {places.map((place) => <option value={place}>{place}</option>)}
+          </select>
+        </label>
+        <label>
+          <span>Duration</span>
+          <select name="duration">
+            <option value="">All durations</option>
+            <option value="short">Short: 4 days or less</option>
+            <option value="long">Long: 5 days or more</option>
+          </select>
+        </label>
+        <label>
+          <span>Month</span>
+          <select name="month">
+            <option value="">All months</option>
+            {months.map((month) => <option value={month}>{month}</option>)}
+          </select>
+        </label>
+        <label>
+          <span>Season</span>
+          <select name="season">
+            <option value="">All seasons</option>
+            {seasons.map((season) => <option value={season}>{season}</option>)}
+          </select>
+        </label>
+        <button type="reset">Reset</button>
+      </form>
+
+      <p class="result-count" data-result-count>{tours.length} tours found</p>
+
+      <div class="tour-grid" data-tour-grid>
+        {tours.map((tour) => <TourCard tour={tour} />)}
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const form = document.querySelector('[data-tour-filters]');
+    const cards = [...document.querySelectorAll('[data-tour-grid] .tour-card')];
+    const count = document.querySelector('[data-result-count]');
+    const params = new URLSearchParams(window.location.search);
+
+    if (form instanceof HTMLFormElement) {
+      for (const [key, value] of params.entries()) {
+        const field = form.elements.namedItem(key);
+        if (field instanceof HTMLSelectElement) {
+          field.value = value;
+        }
+      }
+
+      const applyFilters = () => {
+        const data = new FormData(form);
+        const place = String(data.get('place') ?? '');
+        const duration = String(data.get('duration') ?? '');
+        const month = String(data.get('month') ?? '');
+        const season = String(data.get('season') ?? '');
+        let visible = 0;
+
+        cards.forEach((card) => {
+          const months = (card.getAttribute('data-months') ?? '').split(',');
+          const matches =
+            (!place || card.getAttribute('data-place') === place) &&
+            (!duration || card.getAttribute('data-duration') === duration) &&
+            (!month || months.includes(month)) &&
+            (!season || card.getAttribute('data-season') === season);
+
+          card.toggleAttribute('hidden', !matches);
+          if (matches) visible += 1;
+        });
+
+        if (count) {
+          count.textContent = `${visible} ${visible === 1 ? 'tour' : 'tours'} found`;
+        }
+
+        const nextParams = new URLSearchParams();
+        for (const [key, value] of data.entries()) {
+          if (value) nextParams.set(key, String(value));
+        }
+        const query = nextParams.toString();
+        history.replaceState(null, '', query ? `?${query}` : window.location.pathname);
+      };
+
+      form.addEventListener('change', applyFilters);
+      form.addEventListener('reset', () => setTimeout(applyFilters));
+      applyFilters();
+    }
+  </script>
+</BaseLayout>
+
+<style>
+  .page-head {
+    padding: 70px 0 42px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--line);
+  }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(2.4rem, 6vw, 4.6rem);
+    line-height: 1;
+    letter-spacing: 0;
+  }
+
+  .page-head p {
+    max-width: 660px;
+    margin: 16px 0 0;
+    color: var(--muted);
+    font-size: 1.12rem;
+  }
+
+  .filters {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
+    gap: 14px;
+    align-items: end;
+    padding: 18px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #fff;
+  }
+
+  label {
+    display: grid;
+    gap: 6px;
+    color: var(--muted);
+    font-weight: 800;
+    font-size: 0.9rem;
+  }
+
+  select,
+  button {
+    min-height: 42px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--ink);
+    font: inherit;
+  }
+
+  select {
+    padding: 0 10px;
+  }
+
+  button {
+    padding: 0 16px;
+    cursor: pointer;
+    font-weight: 800;
+  }
+
+  .result-count {
+    margin: 24px 0 16px;
+    color: var(--muted);
+    font-weight: 800;
+  }
+
+  .tour-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 22px;
+  }
+
+  .tour-grid :global(.tour-card[hidden]) {
+    display: none;
+  }
+
+  @media (max-width: 940px) {
+    .filters {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .tour-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 620px) {
+    .filters,
+    .tour-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

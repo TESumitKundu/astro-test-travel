@@ -1,0 +1,137 @@
+media:
+  input: public/uploads
+  output: /uploads
+
+content:
+  - name: tours
+    label: Tours
+    type: collection
+    path: src/content/tours
+    filename: "{fields.slug}.md"
+    format: yaml-frontmatter
+    fields:
+      - name: title
+        label: Title
+        type: string
+        required: true
+      - name: slug
+        label: Slug
+        type: string
+        required: true
+      - name: place
+        label: Place
+        type: string
+        required: true
+      - name: durationDays
+        label: Duration Days
+        type: number
+        required: true
+      - name: durationLabel
+        label: Duration Label
+        type: string
+        required: true
+      - name: bestMonths
+        label: Best Months
+        type: string
+        list: true
+        required: true
+      - name: season
+        label: Season
+        type: string
+        required: true
+      - name: coverImage
+        label: Cover Image
+        type: image
+        required: true
+      - name: costInr
+        label: Cost in INR
+        type: number
+        required: true
+      - name: minHeadCount
+        label: Minimum Head Count
+        type: number
+        required: true
+      - name: featured
+        label: Featured
+        type: boolean
+        default: false
+      - name: draft
+        label: Draft
+        type: boolean
+        default: false
+      - name: seoTitle
+        label: SEO Title
+        type: string
+        required: false
+      - name: seoDescription
+        label: SEO Description
+        type: text
+        required: false
+      - name: body
+        label: Day-wise Itinerary
+        type: rich-text
+
+  - name: pages
+    label: Pages
+    type: collection
+    path: src/content/pages
+    filename: "{fields.slug}.md"
+    format: yaml-frontmatter
+    fields:
+      - name: title
+        label: Title
+        type: string
+        required: true
+      - name: slug
+        label: Slug
+        type: string
+        required: true
+      - name: seoTitle
+        label: SEO Title
+        type: string
+        required: false
+      - name: seoDescription
+        label: SEO Description
+        type: text
+        required: false
+      - name: body
+        label: Content
+        type: rich-text
+
+  - name: siteSettings
+    label: Site Settings
+    type: file
+    path: config/site.json
+    format: json
+    fields:
+      - name: siteName
+        label: Site Name
+        type: string
+      - name: siteDescription
+        label: Site Description
+        type: text
+      - name: logo
+        label: Logo
+        type: image
+      - name: email
+        label: Email
+        type: string
+      - name: phone
+        label: Phone
+        type: string
+      - name: socialLinks
+        label: Social Links
+        type: object
+        fields:
+          - name: facebook
+            label: Facebook
+            type: string
+          - name: twitter
+            label: Twitter
+            type: string
+          - name: linkedin
+            label: LinkedIn
+            type: string
+          - name: github
+            label: GitHub
+            type: string

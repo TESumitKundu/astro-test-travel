@@ -1,0 +1,183 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import type { Tour } from '../lib/tours';
+import { formatInr } from '../lib/tours';
+import { withBase } from '../lib/paths';
+
+interface Props {
+  tour: Tour;
+}
+
+const { tour } = Astro.props;
+const { Content } = await tour.render();
+const title = tour.data.seoTitle ?? tour.data.title;
+const description =
+  tour.data.seoDescription ??
+  `${tour.data.durationLabel} ${tour.data.place} tour from ${formatInr(tour.data.costInr)}.`;
+---
+
+<BaseLayout title={title} description={description} image={tour.data.coverImage}>
+  <article>
+    <header class="tour-hero">
+      <div class="container tour-hero-grid">
+        <div>
+          <a class="back-link" href={withBase('/tours/')}>Back to tours</a>
+          <p class="eyebrow">{tour.data.place} • {tour.data.season}</p>
+          <h1>{tour.data.title}</h1>
+          <div class="facts">
+            <span>{tour.data.durationLabel}</span>
+            <span>{formatInr(tour.data.costInr)}</span>
+            <span>Minimum {tour.data.minHeadCount} heads</span>
+          </div>
+        </div>
+        <img src={withBase(tour.data.coverImage)} alt="" />
+      </div>
+    </header>
+
+    <section class="section">
+      <div class="container detail-grid">
+        <aside class="summary">
+          <h2>Tour Summary</h2>
+          <dl>
+            <div>
+              <dt>Place</dt>
+              <dd>{tour.data.place}</dd>
+            </div>
+            <div>
+              <dt>Duration</dt>
+              <dd>{tour.data.durationLabel}</dd>
+            </div>
+            <div>
+              <dt>Best months</dt>
+              <dd>{tour.data.bestMonths.join(', ')}</dd>
+            </div>
+            <div>
+              <dt>Cost</dt>
+              <dd>{formatInr(tour.data.costInr)} per person</dd>
+            </div>
+            <div>
+              <dt>Group size</dt>
+              <dd>Minimum {tour.data.minHeadCount} heads</dd>
+            </div>
+          </dl>
+          <a class="button" href={withBase('/about/')}>Enquire now</a>
+        </aside>
+        <div class="prose itinerary">
+          <Content />
+        </div>
+      </div>
+    </section>
+    <slot name="related" />
+  </article>
+</BaseLayout>
+
+<style>
+  .tour-hero {
+    padding: 58px 0;
+    background: var(--surface);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .tour-hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(320px, 0.78fr);
+    gap: 42px;
+    align-items: center;
+  }
+
+  .back-link {
+    color: var(--accent);
+    font-weight: 800;
+    text-decoration: none;
+  }
+
+  .eyebrow {
+    margin: 28px 0 12px;
+    color: var(--green);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  h1 {
+    max-width: 860px;
+    margin: 0;
+    font-size: clamp(2.3rem, 6vw, 4.4rem);
+    line-height: 1.02;
+    letter-spacing: 0;
+  }
+
+  .facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 24px;
+  }
+
+  .facts span {
+    padding: 7px 12px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: #fff;
+    color: var(--muted);
+    font-weight: 700;
+  }
+
+  .tour-hero img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+  }
+
+  .detail-grid {
+    display: grid;
+    grid-template-columns: 320px minmax(0, 1fr);
+    gap: 44px;
+    align-items: start;
+  }
+
+  .summary {
+    position: sticky;
+    top: 92px;
+    padding: 22px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #fff;
+  }
+
+  .summary h2 {
+    margin: 0 0 18px;
+    font-size: 1.2rem;
+  }
+
+  dl {
+    display: grid;
+    gap: 14px;
+    margin: 0 0 22px;
+  }
+
+  dt {
+    color: var(--muted);
+    font-size: 0.86rem;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  dd {
+    margin: 2px 0 0;
+    font-weight: 700;
+  }
+
+  @media (max-width: 860px) {
+    .tour-hero-grid,
+    .detail-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .summary {
+      position: static;
+    }
+  }
+</style>

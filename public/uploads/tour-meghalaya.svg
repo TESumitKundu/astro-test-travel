@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750">
+  <rect width="1200" height="750" fill="#f0fdf4"/>
+  <path d="M0 555c160-120 300-120 430-20s260 95 420-20 250-100 350-25v260H0z" fill="#15803d"/>
+  <path d="M0 610c280-70 480-20 680 10s340-40 520-28v158H0z" fill="#166534"/>
+  <path d="M220 260c100-80 225-80 330 0 95-65 230-48 295 40" fill="none" stroke="#94a3b8" stroke-width="34" stroke-linecap="round"/>
+  <path d="M360 340v145M520 330v150M700 360v130" stroke="#38bdf8" stroke-width="16" stroke-linecap="round"/>
+  <text x="70" y="112" font-family="Arial, sans-serif" font-size="58" font-weight="700" fill="#14532d">Meghalaya Trails</text>
+</svg>

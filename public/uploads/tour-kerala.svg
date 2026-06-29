@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750">
+  <rect width="1200" height="750" fill="#e0f2fe"/>
+  <rect y="470" width="1200" height="280" fill="#0f766e"/>
+  <path d="M0 515c180-80 300 50 470-20s300-70 730 10v245H0z" fill="#115e59"/>
+  <circle cx="945" cy="150" r="72" fill="#fbbf24"/>
+  <path d="M180 430c70-90 150-90 230 0" fill="none" stroke="#134e4a" stroke-width="28" stroke-linecap="round"/>
+  <path d="M210 430h170l-30 80H240z" fill="#78350f"/>
+  <text x="70" y="112" font-family="Arial, sans-serif" font-size="58" font-weight="700" fill="#0f172a">Kerala Backwaters</text>
+</svg>

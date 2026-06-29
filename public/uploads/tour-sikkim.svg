@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750">
+  <rect width="1200" height="750" fill="#eff6ff"/>
+  <path d="M0 610 280 260l190 230 210-300 520 420v140H0z" fill="#bfdbfe"/>
+  <path d="M0 660 360 360l180 210 220-270 440 360v90H0z" fill="#1d4ed8"/>
+  <path d="m280 260 55 66-110 14zm400-70 85 68-150 25z" fill="#fff"/>
+  <text x="70" y="112" font-family="Arial, sans-serif" font-size="58" font-weight="700" fill="#172554">Sikkim Mountains</text>
+</svg>

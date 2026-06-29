@@ -1,0 +1,117 @@
+---
+import type { Tour } from '../lib/tours';
+import { formatInr } from '../lib/tours';
+import { withBase } from '../lib/paths';
+
+interface Props {
+  tour: Tour;
+  compact?: boolean;
+}
+
+const { tour, compact = false } = Astro.props;
+---
+
+<article
+  class:list={['tour-card', { compact }]}
+  data-place={tour.data.place}
+  data-season={tour.data.season}
+  data-duration={tour.data.durationDays <= 4 ? 'short' : 'long'}
+  data-months={tour.data.bestMonths.join(',')}
+>
+  <a class="image-link" href={withBase(`/tours/${tour.slug}/`)} aria-label={tour.data.title}>
+    <img src={withBase(tour.data.coverImage)} alt="" loading="lazy" />
+  </a>
+  <div class="card-body">
+    <div class="meta">
+      <span>{tour.data.place}</span>
+      <span>{tour.data.durationLabel}</span>
+    </div>
+    <h3><a href={withBase(`/tours/${tour.slug}/`)}>{tour.data.title}</a></h3>
+    {!compact && (
+      <p>
+        Best in {tour.data.bestMonths.slice(0, 3).join(', ')}
+        {tour.data.bestMonths.length > 3 ? '...' : ''}
+      </p>
+    )}
+    <div class="price-row">
+      <strong>{formatInr(tour.data.costInr)}</strong>
+      <span>min {tour.data.minHeadCount} heads</span>
+    </div>
+    <a class="read-more" href={withBase(`/tours/${tour.slug}/`)}>View tour</a>
+  </div>
+</article>
+
+<style>
+  .tour-card {
+    display: grid;
+    overflow: hidden;
+    min-height: 100%;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #fff;
+  }
+
+  .image-link img {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .card-body {
+    display: grid;
+    gap: 12px;
+    padding: 20px;
+  }
+
+  .meta,
+  .price-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    color: var(--muted);
+    font-size: 0.92rem;
+  }
+
+  .meta span:first-child {
+    color: var(--green);
+    font-weight: 800;
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 1.28rem;
+    line-height: 1.25;
+  }
+
+  h3 a,
+  .read-more {
+    text-decoration: none;
+  }
+
+  h3 a:hover,
+  .read-more:hover {
+    color: var(--accent);
+  }
+
+  p {
+    margin: 0;
+    color: var(--muted);
+  }
+
+  strong {
+    color: var(--ink);
+    font-size: 1.15rem;
+  }
+
+  .read-more {
+    color: var(--accent);
+    font-weight: 800;
+  }
+
+  .compact .card-body {
+    padding: 16px;
+  }
+</style>

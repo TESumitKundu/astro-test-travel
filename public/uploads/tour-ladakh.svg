@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750">
+  <rect width="1200" height="750" fill="#f8fafc"/>
+  <path d="M0 630 220 320l180 210 230-330 210 270 160-190 200 250v220H0z" fill="#cbd5e1"/>
+  <path d="M0 690 320 430l160 170 230-260 180 190 140-130 170 190v160H0z" fill="#64748b"/>
+  <path d="m220 320 70 82-135 20zm410-120 86 110-170 28z" fill="#fff"/>
+  <text x="70" y="112" font-family="Arial, sans-serif" font-size="58" font-weight="700" fill="#0f172a">Ladakh Expedition</text>
+</svg>

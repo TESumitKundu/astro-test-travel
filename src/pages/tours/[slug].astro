@@ -1,0 +1,56 @@
+---
+import TourCard from '../../components/TourCard.astro';
+import TourLayout from '../../layouts/TourLayout.astro';
+import { getAllTours, getRelatedTours } from '../../lib/tours';
+
+export async function getStaticPaths() {
+  const tours = await getAllTours();
+
+  return tours.map((tour) => ({
+    params: { slug: tour.slug },
+    props: { tour }
+  }));
+}
+
+const { tour } = Astro.props;
+const relatedTours = await getRelatedTours(tour, 3);
+---
+
+<TourLayout tour={tour}>
+  {relatedTours.length > 0 && (
+    <section slot="related" class="section section-alt">
+      <div class="container">
+        <h2>Related Tours</h2>
+        <div class="related-grid">
+          {relatedTours.map((item) => <TourCard tour={item} />)}
+        </div>
+      </div>
+    </section>
+  )}
+</TourLayout>
+
+<style>
+  h2 {
+    margin: 0 0 24px;
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    letter-spacing: 0;
+  }
+
+  .related-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 22px;
+  }
+
+  @media (max-width: 900px) {
+    .related-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 620px) {
+    .related-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
