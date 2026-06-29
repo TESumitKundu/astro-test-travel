@@ -6,7 +6,7 @@ duration:
   days: 6
   nights: 5
 bestMonths: ["June"]
-season: "Monsoon"
+season: ["Monsoon"]
 coverImage: "/uploads/tour-meghalaya.svg"
 costInr: 23500
 minHeadCount: 4

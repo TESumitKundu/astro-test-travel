@@ -6,7 +6,7 @@ duration:
   days: 5
   nights: 4
 bestMonths: ["November", "December", "January", "February"]
-season: "Winter"
+season: ["Winter"]
 coverImage: "/uploads/tour-kerala.svg"
 costInr: 18500
 minHeadCount: 4

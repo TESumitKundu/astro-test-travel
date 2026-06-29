@@ -25,7 +25,7 @@ const tours = defineCollection({
         'December'
       ])
     ),
-    season: z.enum(['Spring', 'Summer', 'Monsoon', 'Autumn', 'Winter']),
+    season: z.array(z.enum(['Spring', 'Summer', 'Monsoon', 'Autumn', 'Winter'])),
     coverImage: z.string(),
     costInr: z.number().int().positive(),
     minHeadCount: z.number().int().positive(),

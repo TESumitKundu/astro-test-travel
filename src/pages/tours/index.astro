@@ -84,11 +84,12 @@ const months = getAllMonths();
 
         cards.forEach((card) => {
           const months = (card.getAttribute('data-months') ?? '').split(',');
+          const seasons = (card.getAttribute('data-seasons') ?? '').split(',');
           const matches =
             (!place || card.getAttribute('data-place') === place) &&
             (!duration || card.getAttribute('data-duration') === duration) &&
             (!month || months.includes(month)) &&
-            (!season || card.getAttribute('data-season') === season);
+            (!season || seasons.includes(season));
 
           card.toggleAttribute('hidden', !matches);
           if (matches) visible += 1;

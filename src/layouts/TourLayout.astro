@@ -1,8 +1,8 @@
 ---
-import BaseLayout from './BaseLayout.astro';
-import type { Tour } from '../lib/tours';
-import { formatDuration, formatInr } from '../lib/tours';
-import { withBase } from '../lib/paths';
+import BaseLayout from "./BaseLayout.astro";
+import type { Tour } from "../lib/tours";
+import { formatDuration, formatInr } from "../lib/tours";
+import { withBase } from "../lib/paths";
 
 interface Props {
   tour: Tour;
@@ -16,13 +16,17 @@ const description =
   `${formatDuration(tour.data.duration)} ${tour.data.place} tour from ${formatInr(tour.data.costInr)}.`;
 ---
 
-<BaseLayout title={title} description={description} image={tour.data.coverImage}>
+<BaseLayout
+  title={title}
+  description={description}
+  image={tour.data.coverImage}
+>
   <article>
     <header class="tour-hero">
       <div class="container tour-hero-grid">
         <div>
-          <a class="back-link" href={withBase('/tours/')}>Back to tours</a>
-          <p class="eyebrow">{tour.data.place} • {tour.data.season}</p>
+          <a class="back-link" href={withBase("/tours/")}>Back to tours</a>
+          <p class="eyebrow">{tour.data.place} | {tour.data.season.join(', ')}</p>
           <h1>{tour.data.title}</h1>
           <div class="facts">
             <span>{formatDuration(tour.data.duration)}</span>
@@ -49,7 +53,11 @@ const description =
             </div>
             <div>
               <dt>Best months</dt>
-              <dd>{tour.data.bestMonths.join(', ')}</dd>
+              <dd>{tour.data.bestMonths.join(", ")}</dd>
+            </div>
+            <div>
+              <dt>SEASONS</dt>
+              <dd>{tour.data.season.join(", ")}</dd>
             </div>
             <div>
               <dt>Cost</dt>
@@ -60,7 +68,7 @@ const description =
               <dd>Minimum {tour.data.minHeadCount} heads</dd>
             </div>
           </dl>
-          <a class="button" href={withBase('/about/')}>Enquire now</a>
+          <a class="button" href={withBase("/about/")}>Enquire now</a>
         </aside>
         <div class="prose itinerary">
           <Content />

@@ -6,7 +6,7 @@ duration:
   days: 4
   nights: 3
 bestMonths: ["March", "April", "May", "October", "November"]
-season: "Spring"
+season: ["Spring"]
 coverImage: "/uploads/tour-sikkim.svg"
 costInr: 14500
 minHeadCount: 4

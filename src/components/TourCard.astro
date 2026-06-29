@@ -14,7 +14,7 @@ const { tour, compact = false } = Astro.props;
 <article
   class:list={['tour-card', { compact }]}
   data-place={tour.data.place}
-  data-season={tour.data.season}
+  data-seasons={tour.data.season.join(',')}
   data-duration={tour.data.duration.days <= 4 ? 'short' : 'long'}
   data-months={tour.data.bestMonths.join(',')}
 >

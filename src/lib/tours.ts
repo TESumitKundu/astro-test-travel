@@ -60,7 +60,7 @@ export async function getRelatedTours(current: Tour, limit = 3): Promise<Tour[]>
     .filter(
       (tour) =>
         tour.data.place === current.data.place ||
-        tour.data.season === current.data.season ||
+        tour.data.season.some((season) => current.data.season.includes(season)) ||
         tour.data.bestMonths.some((month) => current.data.bestMonths.includes(month))
     )
     .slice(0, limit);
@@ -71,7 +71,7 @@ export async function getAllPlaces(): Promise<string[]> {
 }
 
 export async function getAllSeasons(): Promise<string[]> {
-  return [...new Set((await getAllTours()).map((tour) => tour.data.season))].sort();
+  return [...new Set((await getAllTours()).flatMap((tour) => tour.data.season))].sort();
 }
 
 export function getAllMonths(): string[] {

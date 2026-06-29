@@ -6,7 +6,7 @@ duration:
   days: 8
   nights: 7
 bestMonths: ["June", "July", "August", "September"]
-season: "Summer"
+season: ["Summer"]
 coverImage: "/uploads/tour-ladakh.svg"
 costInr: 39500
 minHeadCount: 6
