@@ -2,8 +2,9 @@
 title: "Meghalaya Monsoon Trails"
 slug: "meghalaya-monsoon-trails"
 place: "Meghalaya"
-durationDays: 6
-durationLabel: "5 Nights / 6 Days"
+duration:
+  days: 6
+  nights: 5
 bestMonths: ["June"]
 season: "Monsoon"
 coverImage: "/uploads/tour-meghalaya.svg"

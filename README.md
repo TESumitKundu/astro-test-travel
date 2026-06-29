@@ -15,8 +15,8 @@ Each tour supports:
 - `title`
 - `slug`
 - `place`
-- `durationDays`
-- `durationLabel`
+- `duration.days`
+- `duration.nights`
 - `bestMonths`
 - `season`
 - `coverImage`
@@ -46,8 +46,8 @@ public/uploads
 The homepage uses `src/lib/tours.ts`.
 
 - Current month tours: tours where `bestMonths` includes the build month.
-- Short duration tours: `durationDays <= 4`.
-- Long duration tours: `durationDays >= 5`.
+- Short duration tours: `duration.days <= 4`.
+- Long duration tours: `duration.days >= 5`.
 
 Because this is static, month-wise content updates when the site rebuilds. Use GitHub Actions on content changes and optionally add a monthly scheduled rebuild.
 

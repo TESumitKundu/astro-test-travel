@@ -2,8 +2,9 @@
 title: "Sikkim Mountain Break"
 slug: "sikkim-mountain-break"
 place: "Sikkim"
-durationDays: 4
-durationLabel: "3 Nights / 4 Days"
+duration:
+  days: 4
+  nights: 3
 bestMonths: ["March", "April", "May", "October", "November"]
 season: "Spring"
 coverImage: "/uploads/tour-sikkim.svg"

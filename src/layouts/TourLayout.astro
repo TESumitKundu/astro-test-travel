@@ -1,7 +1,7 @@
 ---
 import BaseLayout from './BaseLayout.astro';
 import type { Tour } from '../lib/tours';
-import { formatInr } from '../lib/tours';
+import { formatDuration, formatInr } from '../lib/tours';
 import { withBase } from '../lib/paths';
 
 interface Props {
@@ -13,7 +13,7 @@ const { Content } = await tour.render();
 const title = tour.data.seoTitle ?? tour.data.title;
 const description =
   tour.data.seoDescription ??
-  `${tour.data.durationLabel} ${tour.data.place} tour from ${formatInr(tour.data.costInr)}.`;
+  `${formatDuration(tour.data.duration)} ${tour.data.place} tour from ${formatInr(tour.data.costInr)}.`;
 ---
 
 <BaseLayout title={title} description={description} image={tour.data.coverImage}>
@@ -25,7 +25,7 @@ const description =
           <p class="eyebrow">{tour.data.place} • {tour.data.season}</p>
           <h1>{tour.data.title}</h1>
           <div class="facts">
-            <span>{tour.data.durationLabel}</span>
+            <span>{formatDuration(tour.data.duration)}</span>
             <span>{formatInr(tour.data.costInr)}</span>
             <span>Minimum {tour.data.minHeadCount} heads</span>
           </div>
@@ -45,7 +45,7 @@ const description =
             </div>
             <div>
               <dt>Duration</dt>
-              <dd>{tour.data.durationLabel}</dd>
+              <dd>{formatDuration(tour.data.duration)}</dd>
             </div>
             <div>
               <dt>Best months</dt>

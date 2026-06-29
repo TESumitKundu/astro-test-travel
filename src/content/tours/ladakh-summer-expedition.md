@@ -2,8 +2,9 @@
 title: "Ladakh Summer Expedition"
 slug: "ladakh-summer-expedition"
 place: "Ladakh"
-durationDays: 8
-durationLabel: "7 Nights / 8 Days"
+duration:
+  days: 8
+  nights: 7
 bestMonths: ["June", "July", "August", "September"]
 season: "Summer"
 coverImage: "/uploads/tour-ladakh.svg"

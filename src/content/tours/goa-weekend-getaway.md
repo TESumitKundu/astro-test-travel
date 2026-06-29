@@ -2,8 +2,9 @@
 title: "Goa Weekend Getaway"
 slug: "goa-weekend-getaway"
 place: "Goa"
-durationDays: 3
-durationLabel: "2 Nights / 3 Days"
+duration:
+  days: 3
+  nights: 2
 bestMonths: ["November", "December", "January", "February", "March"]
 season: "Winter"
 coverImage: "/uploads/tour-goa.svg"

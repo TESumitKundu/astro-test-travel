@@ -1,6 +1,6 @@
 ---
 import type { Tour } from '../lib/tours';
-import { formatInr } from '../lib/tours';
+import { formatDuration, formatInr } from '../lib/tours';
 import { withBase } from '../lib/paths';
 
 interface Props {
@@ -15,7 +15,7 @@ const { tour, compact = false } = Astro.props;
   class:list={['tour-card', { compact }]}
   data-place={tour.data.place}
   data-season={tour.data.season}
-  data-duration={tour.data.durationDays <= 4 ? 'short' : 'long'}
+  data-duration={tour.data.duration.days <= 4 ? 'short' : 'long'}
   data-months={tour.data.bestMonths.join(',')}
 >
   <a class="image-link" href={withBase(`/tours/${tour.slug}/`)} aria-label={tour.data.title}>
@@ -24,7 +24,7 @@ const { tour, compact = false } = Astro.props;
   <div class="card-body">
     <div class="meta">
       <span>{tour.data.place}</span>
-      <span>{tour.data.durationLabel}</span>
+      <span>{formatDuration(tour.data.duration)}</span>
     </div>
     <h3><a href={withBase(`/tours/${tour.slug}/`)}>{tour.data.title}</a></h3>
     {!compact && (

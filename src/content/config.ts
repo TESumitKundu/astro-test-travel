@@ -5,10 +5,27 @@ const tours = defineCollection({
   schema: z.object({
     title: z.string(),
     place: z.string(),
-    durationDays: z.number().int().positive(),
-    durationLabel: z.string(),
-    bestMonths: z.array(z.string()),
-    season: z.string(),
+    duration: z.object({
+      days: z.number().int().positive(),
+      nights: z.number().int().nonnegative()
+    }),
+    bestMonths: z.array(
+      z.enum([
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December'
+      ])
+    ),
+    season: z.enum(['Spring', 'Summer', 'Monsoon', 'Autumn', 'Winter']),
     coverImage: z.string(),
     costInr: z.number().int().positive(),
     minHeadCount: z.number().int().positive(),

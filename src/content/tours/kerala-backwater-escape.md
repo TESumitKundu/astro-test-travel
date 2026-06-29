@@ -2,8 +2,9 @@
 title: "Kerala Backwater Escape"
 slug: "kerala-backwater-escape"
 place: "Kerala"
-durationDays: 5
-durationLabel: "4 Nights / 5 Days"
+duration:
+  days: 5
+  nights: 4
 bestMonths: ["November", "December", "January", "February"]
 season: "Winter"
 coverImage: "/uploads/tour-kerala.svg"

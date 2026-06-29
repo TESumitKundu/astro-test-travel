@@ -22,23 +22,64 @@ content:
         label: Place
         type: string
         required: true
-      - name: durationDays
-        label: Duration Days
-        type: number
+      - name: duration
+        label: Duration
+        type: object
         required: true
-      - name: durationLabel
-        label: Duration Label
-        type: string
-        required: true
+        fields:
+          - name: days
+            label: Days
+            type: number
+            required: true
+          - name: nights
+            label: Nights
+            type: number
+            required: true
       - name: bestMonths
         label: Best Months
-        type: string
+        type: select
         list: true
         required: true
+        options:
+          - label: January
+            value: January
+          - label: February
+            value: February
+          - label: March
+            value: March
+          - label: April
+            value: April
+          - label: May
+            value: May
+          - label: June
+            value: June
+          - label: July
+            value: July
+          - label: August
+            value: August
+          - label: September
+            value: September
+          - label: October
+            value: October
+          - label: November
+            value: November
+          - label: December
+            value: December
       - name: season
         label: Season
-        type: string
+        type: select
         required: true
+        options:
+          - label: Spring
+            value: Spring
+          - label: Summer
+            value: Summer
+          - label: Monsoon
+            value: Monsoon
+          - label: Autumn
+            value: Autumn
+          - label: Winter
+            value: Winter
       - name: coverImage
         label: Cover Image
         type: image

@@ -18,7 +18,7 @@ const monthNames = [
 ] as const;
 
 const byCost = (a: Tour, b: Tour) => a.data.costInr - b.data.costInr;
-const byDuration = (a: Tour, b: Tour) => a.data.durationDays - b.data.durationDays;
+const byDuration = (a: Tour, b: Tour) => a.data.duration.days - b.data.duration.days;
 const published = (tour: Tour) => !tour.data.draft;
 
 export function getCurrentMonthName(date = new Date()) {
@@ -42,14 +42,14 @@ export async function getCurrentMonthTours(limit = 6): Promise<Tour[]> {
 
 export async function getShortDurationTours(limit = 8): Promise<Tour[]> {
   return (await getAllTours())
-    .filter((tour) => tour.data.durationDays <= 4)
+    .filter((tour) => tour.data.duration.days <= 4)
     .sort(byDuration)
     .slice(0, limit);
 }
 
 export async function getLongDurationTours(limit = 8): Promise<Tour[]> {
   return (await getAllTours())
-    .filter((tour) => tour.data.durationDays >= 5)
+    .filter((tour) => tour.data.duration.days >= 5)
     .sort(byDuration)
     .slice(0, limit);
 }
@@ -84,4 +84,8 @@ export function formatInr(amount: number) {
     currency: 'INR',
     maximumFractionDigits: 0
   }).format(amount);
+}
+
+export function formatDuration(duration: Tour['data']['duration']) {
+  return `${duration.nights} ${duration.nights === 1 ? 'Night' : 'Nights'} / ${duration.days} ${duration.days === 1 ? 'Day' : 'Days'}`;
 }

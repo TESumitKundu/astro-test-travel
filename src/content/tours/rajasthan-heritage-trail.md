@@ -2,8 +2,9 @@
 title: "Rajasthan Heritage Trail"
 slug: "rajasthan-heritage-trail"
 place: "Rajasthan"
-durationDays: 7
-durationLabel: "6 Nights / 7 Days"
+duration:
+  days: 7
+  nights: 6
 bestMonths: ["October", "November", "December", "January", "February", "March"]
 season: "Winter"
 coverImage: "/uploads/tour-rajasthan.svg"
