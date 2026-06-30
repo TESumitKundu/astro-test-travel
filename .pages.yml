@@ -151,15 +151,15 @@ content:
     label: Hotels
     type: collection
     path: src/content/hotels
-    filename: "{fields.cmsSlug}.md"
+    filename: "{fields.hotelSlug}.md"
     format: yaml-frontmatter
     fields:
       - name: name
         label: Hotel Name
         type: string
         required: true
-      - name: cmsSlug
-        label: Slug
+      - name: hotelSlug
+        label: Hotel Slug
         type: string
         required: true
       - name: place
