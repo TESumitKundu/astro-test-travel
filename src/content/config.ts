@@ -63,4 +63,18 @@ const pages = defineCollection({
   })
 });
 
-export const collections = { tours, pages };
+const hotels = defineCollection({
+  type: 'content',
+  schema: z.object({
+    name: z.string(),
+    place: z.string(),
+    startingRoomPriceInr: z.number().int().positive(),
+    images: z.array(z.string()).min(1),
+    website: z.string().url().optional(),
+    note: z.string(),
+    featured: z.boolean(),
+    draft: z.boolean()
+  })
+});
+
+export const collections = { tours, pages, hotels };

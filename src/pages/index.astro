@@ -12,6 +12,7 @@ import {
   getLongDurationTours,
   getShortDurationTours
 } from '../lib/tours';
+import { getFeaturedHotels } from '../lib/hotels';
 import site from '../../config/site.json';
 import { withBase } from '../lib/paths';
 
@@ -23,25 +24,7 @@ const places = await getAllPlaces();
 const seasons = await getAllSeasons();
 const travelStyles = await getAllTravelStyles();
 const months = getAllMonths();
-
-const hotels = [
-  {
-    name: 'Cloudline Retreat',
-    place: 'Gangtok, Sikkim',
-    price: 4200,
-    images: ['/uploads/tour-sikkim.svg', '/uploads/tour-ladakh.svg', '/uploads/tour-meghalaya.svg'],
-    website: 'https://example.com',
-    note: 'View-facing rooms, warm breakfasts, and easy access to mountain viewpoints.'
-  },
-  {
-    name: 'Palm Canal Houseboat',
-    place: 'Alleppey, Kerala',
-    price: 7600,
-    images: ['/uploads/tour-kerala.svg', '/uploads/tour-goa.svg', '/uploads/tour-rajasthan.svg'],
-    website: 'https://example.com',
-    note: 'Private deck, fresh meals onboard, and a slow backwater route for relaxed stays.'
-  }
-];
+const hotels = await getFeaturedHotels();
 ---
 
 <BaseLayout title={site.siteName} description={site.siteDescription}>
@@ -148,27 +131,27 @@ const hotels = [
         <div class="hotel-track">
           {hotels.map((hotel, index) => (
             <article class:list={['hotel-slide', { active: index === 0 }]} data-hotel-slide>
-              <div class="hotel-gallery" aria-label={`${hotel.name} images`}>
-                {hotel.images.map((image, imageIndex) => (
+              <div class="hotel-gallery" aria-label={`${hotel.data.name} images`}>
+                {hotel.data.images.map((image, imageIndex) => (
                   <img class={`image-${imageIndex + 1}`} src={withBase(image)} alt="" loading="lazy" />
                 ))}
               </div>
               <div class="hotel-body">
-                <span>{hotel.place}</span>
-                <h3>{hotel.name}</h3>
-                <p>{hotel.note}</p>
+                <span>{hotel.data.place}</span>
+                <h3>{hotel.data.name}</h3>
+                <p>{hotel.data.note}</p>
                 <div class="hotel-meta">
-                  <strong>{formatInr(hotel.price)}</strong>
+                  <strong>{formatInr(hotel.data.startingRoomPriceInr)}</strong>
                   <small>starting room price / night</small>
                 </div>
-                {hotel.website ? <a href={hotel.website} target="_blank" rel="noreferrer">Visit website</a> : <em>Website coming soon</em>}
+                {hotel.data.website ? <a href={hotel.data.website} target="_blank" rel="noreferrer">Visit website</a> : <em>Website coming soon</em>}
               </div>
             </article>
           ))}
         </div>
         <div class="hotel-dots" aria-label="Hotel slides">
           {hotels.map((hotel, index) => (
-            <button class:list={{ active: index === 0 }} type="button" data-hotel-dot aria-label={`Show ${hotel.name}`}></button>
+            <button class:list={{ active: index === 0 }} type="button" data-hotel-dot aria-label={`Show ${hotel.data.name}`}></button>
           ))}
         </div>
       </div>
