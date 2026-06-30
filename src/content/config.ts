@@ -39,7 +39,7 @@ const tours = defineCollection({
         'Culture',
         'Leisure'
       ])
-    ),
+    ).default([]),
     coverImage: z.string().optional(),
     coverImageUrl: z.string().url().optional(),
     costInr: z.number().int().positive(),

@@ -1,6 +1,6 @@
 ---
 import type { Tour } from "../lib/tours";
-import { formatDuration, formatInr, getTourImage } from "../lib/tours";
+import { asList, formatDuration, formatInr, getTourImage } from "../lib/tours";
 import { withBase } from "../lib/paths";
 
 interface Props {
@@ -10,15 +10,18 @@ interface Props {
 
 const { tour, compact = false } = Astro.props;
 const image = getTourImage(tour);
+const seasons = asList(tour.data.season);
+const travelStyles = asList(tour.data.travelStyle);
+const bestMonths = asList(tour.data.bestMonths);
 ---
 
 <article
   class:list={["tour-card", { compact }]}
   data-place={tour.data.place}
-  data-seasons={tour.data.season.join(",")}
-  data-styles={tour.data.travelStyle.join(",")}
+  data-seasons={seasons.join(",")}
+  data-styles={travelStyles.join(",")}
   data-duration={tour.data.duration.days <= 4 ? "short" : "long"}
-  data-months={tour.data.bestMonths.join(",")}
+  data-months={bestMonths.join(",")}
 >
   <a
     class="image-link"
@@ -35,16 +38,16 @@ const image = getTourImage(tour);
 
     <h3><a href={withBase(`/tours/${tour.slug}/`)}>{tour.data.title}</a></h3>
     <div class="meta">
-      <span>{tour.data.season.join(", ")}</span>
+      <span>{seasons.join(", ") || "All season"}</span>
     </div>
     <div class="style-row" aria-label="Travel styles">
-      {tour.data.travelStyle.slice(0, 3).map((style) => <span>{style}</span>)}
+      {(travelStyles.length ? travelStyles : ["Leisure"]).slice(0, 3).map((style) => <span>{style}</span>)}
     </div>
     {
       !compact && (
         <p>
-          Best in {tour.data.bestMonths.slice(0, 3).join(", ")}
-          {tour.data.bestMonths.length > 3 ? "..." : ""}
+          Best in {bestMonths.slice(0, 3).join(", ") || "flexible months"}
+          {bestMonths.length > 3 ? "..." : ""}
         </p>
       )
     }

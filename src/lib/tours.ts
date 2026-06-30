@@ -21,6 +21,10 @@ const byCost = (a: Tour, b: Tour) => a.data.costInr - b.data.costInr;
 const byDuration = (a: Tour, b: Tour) => a.data.duration.days - b.data.duration.days;
 const published = (tour: Tour) => !tour.data.draft;
 
+export function asList(value: string[] | undefined | null): string[] {
+  return Array.isArray(value) ? value : [];
+}
+
 export function getCurrentMonthName(date = new Date()) {
   return monthNames[date.getMonth()];
 }
@@ -60,9 +64,9 @@ export async function getRelatedTours(current: Tour, limit = 3): Promise<Tour[]>
     .filter(
       (tour) =>
         tour.data.place === current.data.place ||
-        tour.data.season.some((season) => current.data.season.includes(season)) ||
-        tour.data.travelStyle.some((style) => current.data.travelStyle.includes(style)) ||
-        tour.data.bestMonths.some((month) => current.data.bestMonths.includes(month))
+        asList(tour.data.season).some((season) => asList(current.data.season).includes(season)) ||
+        asList(tour.data.travelStyle).some((style) => asList(current.data.travelStyle).includes(style)) ||
+        asList(tour.data.bestMonths).some((month) => asList(current.data.bestMonths).includes(month))
     )
     .slice(0, limit);
 }
@@ -72,11 +76,11 @@ export async function getAllPlaces(): Promise<string[]> {
 }
 
 export async function getAllSeasons(): Promise<string[]> {
-  return [...new Set((await getAllTours()).flatMap((tour) => tour.data.season))].sort();
+  return [...new Set((await getAllTours()).flatMap((tour) => asList(tour.data.season)))].sort();
 }
 
 export async function getAllTravelStyles(): Promise<string[]> {
-  return [...new Set((await getAllTours()).flatMap((tour) => tour.data.travelStyle))].sort();
+  return [...new Set((await getAllTours()).flatMap((tour) => asList(tour.data.travelStyle)))].sort();
 }
 
 export function getAllMonths(): string[] {
