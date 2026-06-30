@@ -1,6 +1,6 @@
 ---
 name: Palm Canal Houseboat
-slug: palm-canal-houseboat
+cmsSlug: palm-canal-houseboat
 place: Alleppey, Kerala
 startingRoomPriceInr: 7600
 images:

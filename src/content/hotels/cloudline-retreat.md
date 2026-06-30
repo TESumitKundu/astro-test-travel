@@ -1,6 +1,6 @@
 ---
 name: Cloudline Retreat
-slug: cloudline-retreat
+cmsSlug: cloudline-retreat
 place: Gangtok, Sikkim
 startingRoomPriceInr: 4200
 images:
@@ -10,5 +10,5 @@ images:
 website: https://example.com
 note: View-facing rooms, warm breakfasts, and easy access to mountain viewpoints.
 featured: true
-draft: true
+draft: false
 ---
