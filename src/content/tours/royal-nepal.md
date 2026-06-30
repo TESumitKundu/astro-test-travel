@@ -14,6 +14,10 @@ season:
   - Summer
   - Spring
   - Winter
+travelStyle:
+  - Mountain
+  - Heritage
+  - Culture
 coverImage: /uploads/Tourist-Attractions-in-Kathmandu-Nepal-.jpg
 costInr: 12297
 minHeadCount: 22

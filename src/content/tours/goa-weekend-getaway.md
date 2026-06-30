@@ -7,6 +7,7 @@ duration:
   nights: 2
 bestMonths: ["November", "December", "January", "February", "March"]
 season: ["Summer"]
+travelStyle: ["Beach", "Leisure"]
 coverImage: "/uploads/tour-goa.svg"
 costInr: 9500
 minHeadCount: 2

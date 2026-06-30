@@ -1,25 +1,32 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import TourCard from '../../components/TourCard.astro';
-import { getAllMonths, getAllPlaces, getAllSeasons, getAllTours } from '../../lib/tours';
+import { getAllMonths, getAllPlaces, getAllSeasons, getAllTours, getAllTravelStyles } from '../../lib/tours';
+import { withBase } from '../../lib/paths';
 
 const tours = await getAllTours();
 const places = await getAllPlaces();
 const seasons = await getAllSeasons();
+const travelStyles = await getAllTravelStyles();
 const months = getAllMonths();
 ---
 
-<BaseLayout title="Tours" description="Browse India tour packages by place, duration, month, and season.">
-  <section class="page-head">
+<BaseLayout title="Tours" description="Browse India tour packages by place, duration, month, season, and travel style.">
+  <section class="page-head" style={`--page-hero-image: url('${withBase('/uploads/tour-ladakh.svg')}')`}>
     <div class="container">
-      <h1>Tour List</h1>
-      <p>Browse every available tour package and filter by place, duration, best month, or season.</p>
+      <p class="eyebrow">Find your route</p>
+      <h1>Choose a tour that fits your calendar</h1>
+      <p>Filter by destination, duration, season, travel style, and the month you want to travel.</p>
     </div>
   </section>
 
   <section class="section">
     <div class="container">
       <form class="filters" data-tour-filters>
+        <div class="filter-title">
+          <strong>Trip finder</strong>
+          <span>Adjust filters to narrow the list instantly.</span>
+        </div>
         <label>
           <span>Place</span>
           <select name="place">
@@ -49,7 +56,14 @@ const months = getAllMonths();
             {seasons.map((season) => <option value={season}>{season}</option>)}
           </select>
         </label>
-        <button type="reset">Reset</button>
+        <label>
+          <span>Travel style</span>
+          <select name="style">
+            <option value="">All styles</option>
+            {travelStyles.map((style) => <option value={style}>{style}</option>)}
+          </select>
+        </label>
+        <button type="reset">Reset filters</button>
       </form>
 
       <p class="result-count" data-result-count>{tours.length} tours found</p>
@@ -80,16 +94,19 @@ const months = getAllMonths();
         const duration = String(data.get('duration') ?? '');
         const month = String(data.get('month') ?? '');
         const season = String(data.get('season') ?? '');
+        const style = String(data.get('style') ?? '');
         let visible = 0;
 
         cards.forEach((card) => {
           const months = (card.getAttribute('data-months') ?? '').split(',');
           const seasons = (card.getAttribute('data-seasons') ?? '').split(',');
+          const styles = (card.getAttribute('data-styles') ?? '').split(',');
           const matches =
             (!place || card.getAttribute('data-place') === place) &&
             (!duration || card.getAttribute('data-duration') === duration) &&
             (!month || months.includes(month)) &&
-            (!season || seasons.includes(season));
+            (!season || seasons.includes(season)) &&
+            (!style || styles.includes(style));
 
           card.toggleAttribute('hidden', !matches);
           if (matches) visible += 1;
@@ -116,34 +133,66 @@ const months = getAllMonths();
 
 <style>
   .page-head {
-    padding: 70px 0 42px;
-    background: var(--surface);
-    border-bottom: 1px solid var(--line);
+    padding: 76px 0 48px;
+    background:
+      linear-gradient(135deg, rgba(15, 118, 110, 0.9), rgba(239, 111, 47, 0.62)),
+      var(--page-hero-image, none);
+    background-position: center;
+    background-size: cover;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    color: #fff;
+  }
+
+  .eyebrow {
+    margin: 0 0 12px;
+    color: var(--sun);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
   }
 
   h1 {
+    max-width: 780px;
     margin: 0;
-    font-size: clamp(2.4rem, 6vw, 4.6rem);
-    line-height: 1;
+    font-size: clamp(2.35rem, 6vw, 4.5rem);
+    line-height: 1.02;
     letter-spacing: 0;
+    text-wrap: balance;
   }
 
   .page-head p {
     max-width: 660px;
     margin: 16px 0 0;
-    color: var(--muted);
+    color: rgba(255, 255, 255, 0.86);
     font-size: 1.12rem;
   }
 
   .filters {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
+    grid-template-columns: minmax(190px, 1.1fr) repeat(5, minmax(0, 1fr)) auto;
     gap: 14px;
     align-items: end;
-    padding: 18px;
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    background: #fff;
+    margin-top: -42px;
+    padding: 16px;
+    border: 1px solid rgba(232, 221, 201, 0.9);
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow: 0 24px 70px rgba(23, 33, 27, 0.13);
+    backdrop-filter: blur(12px);
+  }
+
+  .filter-title {
+    display: grid;
+    gap: 3px;
+  }
+
+  .filter-title strong {
+    font-size: 1.12rem;
+  }
+
+  .filter-title span {
+    color: var(--muted);
+    font-size: 0.9rem;
   }
 
   label {
@@ -156,22 +205,27 @@ const months = getAllMonths();
 
   select,
   button {
-    min-height: 42px;
+    min-height: 48px;
     border: 1px solid var(--line);
-    border-radius: 8px;
+    border-radius: 13px;
     background: #fff;
     color: var(--ink);
     font: inherit;
   }
 
   select {
+    width: 100%;
     padding: 0 10px;
   }
 
   button {
     padding: 0 16px;
+    border-color: #ffe2c8;
+    background: #fff4ea;
+    color: var(--accent-dark);
     cursor: pointer;
     font-weight: 800;
+    white-space: nowrap;
   }
 
   .result-count {
@@ -193,6 +247,12 @@ const months = getAllMonths();
   @media (max-width: 940px) {
     .filters {
       grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-top: -30px;
+    }
+
+    .filter-title,
+    .filters button {
+      grid-column: 1 / -1;
     }
 
     .tour-grid {
@@ -201,9 +261,37 @@ const months = getAllMonths();
   }
 
   @media (max-width: 620px) {
-    .filters,
+    .page-head {
+      min-height: 42svh;
+      padding: 44px 0 70px;
+      border-radius: 0 0 28px 28px;
+    }
+
+    .filters {
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: -58px;
+      padding: 14px;
+      border-radius: 24px;
+    }
+
     .tour-grid {
       grid-template-columns: 1fr;
+    }
+
+    .filter-title,
+    .filters button {
+      grid-column: 1 / -1;
+    }
+
+    select,
+    button {
+      min-height: 52px;
+      border-radius: 16px;
+    }
+
+    .result-count {
+      padding: 0 2px;
     }
   }
 </style>

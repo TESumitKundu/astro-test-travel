@@ -2,8 +2,13 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import TourSection from '../components/TourSection.astro';
 import {
+  getAllMonths,
+  getAllPlaces,
+  getAllSeasons,
+  getAllTravelStyles,
   getCurrentMonthName,
   getCurrentMonthTours,
+  formatInr,
   getLongDurationTours,
   getShortDurationTours
 } from '../lib/tours';
@@ -14,43 +19,199 @@ const currentMonth = getCurrentMonthName();
 const currentMonthTours = await getCurrentMonthTours(12);
 const shortTours = await getShortDurationTours(8);
 const longTours = await getLongDurationTours(8);
+const places = await getAllPlaces();
+const seasons = await getAllSeasons();
+const travelStyles = await getAllTravelStyles();
+const months = getAllMonths();
+
+const hotels = [
+  {
+    name: 'Cloudline Retreat',
+    place: 'Gangtok, Sikkim',
+    price: 4200,
+    images: ['/uploads/tour-sikkim.svg', '/uploads/tour-ladakh.svg', '/uploads/tour-meghalaya.svg'],
+    website: 'https://example.com',
+    note: 'View-facing rooms, warm breakfasts, and easy access to mountain viewpoints.'
+  },
+  {
+    name: 'Palm Canal Houseboat',
+    place: 'Alleppey, Kerala',
+    price: 7600,
+    images: ['/uploads/tour-kerala.svg', '/uploads/tour-goa.svg', '/uploads/tour-rajasthan.svg'],
+    website: 'https://example.com',
+    note: 'Private deck, fresh meals onboard, and a slow backwater route for relaxed stays.'
+  }
+];
 ---
 
 <BaseLayout title={site.siteName} description={site.siteDescription}>
-  <section class="hero travel-hero">
+  <section class="hero travel-hero" style={`--hero-image: url('${withBase('/uploads/tour-kerala.svg')}')`}>
     <div class="container hero-grid">
       <div>
-        <p class="eyebrow">Curated India tour packages</p>
-        <h1>{site.siteName}</h1>
-        <p>{site.siteDescription} Find seasonal trips, short breaks, and longer journeys managed from simple Git-based content.</p>
-        <a class="button" href={withBase('/tours/')}>Explore tours</a>
+        <p class="eyebrow">Small group journeys across India</p>
+        <h1>Find your next escape</h1>
+        <p>Season-smart tours, easy weekend breaks, hotel-ready ideas, and custom routes planned around weather, group size, and budget.</p>
+        <div class="hero-actions">
+          <a class="button" href={withBase('/tours/')}>Explore tours</a>
+          <a class="ghost-button" href="#plan-trip">Plan my trip</a>
+        </div>
       </div>
       <div class="hero-panel" aria-label="Travel planning highlights">
-        <strong>Plan by season, duration, and budget</strong>
-        <ul>
-          <li>Month-wise tour recommendations update on rebuild.</li>
-          <li>Short and long duration tours are grouped automatically.</li>
-          <li>Every tour is editable from Pages CMS.</li>
-        </ul>
+        <span class="panel-kicker">This month</span>
+        <strong>{currentMonth} picks are ready</strong>
+        <p>Browse trips matched to the current season, then tune the list by place, month, duration, and travel style.</p>
+        <div class="mini-stats">
+          <span><b>{currentMonthTours.length}</b> seasonal tours</span>
+          <span><b>{places.length}</b> destinations</span>
+        </div>
       </div>
+    </div>
+  </section>
+
+  <section class="section month-section">
+    <div class="container">
+      <TourSection title={`Best Tours for ${currentMonth}`} tours={currentMonthTours} viewAllLink={`/tours/?month=${currentMonth}`} />
+    </div>
+  </section>
+
+  <section class="planner-band" id="plan-trip">
+    <div class="container">
+      <form class="trip-planner" action={withBase('/tours/')} method="get">
+        <div class="planner-copy">
+          <p class="eyebrow">Plan your trip</p>
+          <h2>Find tours that fit your mood.</h2>
+          <p>Use the quick filters to match destination, season, timing, and travel style.</p>
+        </div>
+        <div class="planner-fields">
+          <label class="planner-field">
+            <span>Where</span>
+            <select name="place">
+              <option value="">Any place</option>
+              {places.map((place) => <option value={place}>{place}</option>)}
+            </select>
+          </label>
+          <label class="planner-field">
+            <span>Duration</span>
+            <select name="duration">
+              <option value="">Any length</option>
+              <option value="short">Short escape</option>
+              <option value="long">Long journey</option>
+            </select>
+          </label>
+          <label class="planner-field">
+            <span>Month</span>
+            <select name="month">
+              <option value="">Any month</option>
+              {months.map((month) => <option value={month}>{month}</option>)}
+            </select>
+          </label>
+          <label class="planner-field">
+            <span>Season</span>
+            <select name="season">
+              <option value="">Any season</option>
+              {seasons.map((season) => <option value={season}>{season}</option>)}
+            </select>
+          </label>
+          <label class="planner-field wide">
+            <span>Travel style</span>
+            <select name="style">
+              <option value="">Any style</option>
+              {travelStyles.map((style) => <option value={style}>{style}</option>)}
+            </select>
+          </label>
+          <button type="submit">Search tours</button>
+        </div>
+      </form>
     </div>
   </section>
 
   <section class="section">
     <div class="container">
-      <TourSection title={`Best Tours for ${currentMonth}`} tours={currentMonthTours} viewAllLink={`/tours/?month=${currentMonth}`} />
       <TourSection title="Short Duration Tours" tours={shortTours} viewAllLink="/tours/?duration=short" carousel />
       <TourSection title="Long Duration Tours" tours={longTours} viewAllLink="/tours/?duration=long" carousel />
     </div>
   </section>
 
-  <section class="section section-alt about-preview">
-    <div class="container split">
-      <div>
-        <h2>Travel content that stays easy to update</h2>
-        <p>Add a tour, upload a cover image, edit the itinerary, and commit it through the CMS. GitHub Actions can rebuild the static site whenever content changes.</p>
+  <section class="section hotels-section">
+    <div class="container">
+      <div class="hotel-head">
+        <div>
+          <p class="eyebrow">Stay ideas</p>
+          <h2>Hotels to pair with your route</h2>
+        </div>
+        <div class="hotel-controls" aria-label="Hotel carousel controls">
+          <button type="button" data-hotel-prev aria-label="Previous hotel">Prev</button>
+          <button type="button" data-hotel-next aria-label="Next hotel">Next</button>
+        </div>
       </div>
-      <a class="button" href={withBase('/about/')}>About us</a>
+      <div class="hotel-carousel" data-hotel-carousel>
+        <div class="hotel-track">
+          {hotels.map((hotel, index) => (
+            <article class:list={['hotel-slide', { active: index === 0 }]} data-hotel-slide>
+              <div class="hotel-gallery" aria-label={`${hotel.name} images`}>
+                {hotel.images.map((image, imageIndex) => (
+                  <img class={`image-${imageIndex + 1}`} src={withBase(image)} alt="" loading="lazy" />
+                ))}
+              </div>
+              <div class="hotel-body">
+                <span>{hotel.place}</span>
+                <h3>{hotel.name}</h3>
+                <p>{hotel.note}</p>
+                <div class="hotel-meta">
+                  <strong>{formatInr(hotel.price)}</strong>
+                  <small>starting room price / night</small>
+                </div>
+                {hotel.website ? <a href={hotel.website} target="_blank" rel="noreferrer">Visit website</a> : <em>Website coming soon</em>}
+              </div>
+            </article>
+          ))}
+        </div>
+        <div class="hotel-dots" aria-label="Hotel slides">
+          {hotels.map((hotel, index) => (
+            <button class:list={{ active: index === 0 }} type="button" data-hotel-dot aria-label={`Show ${hotel.name}`}></button>
+          ))}
+        </div>
+      </div>
+    </div>
+    <script>
+      const carousel = document.querySelector('[data-hotel-carousel]');
+
+      if (carousel) {
+        const slides = [...carousel.querySelectorAll('[data-hotel-slide]')];
+        const dots = [...carousel.querySelectorAll('[data-hotel-dot]')];
+        const prev = document.querySelector('[data-hotel-prev]');
+        const next = document.querySelector('[data-hotel-next]');
+        let active = 0;
+
+        const showSlide = (index) => {
+          active = (index + slides.length) % slides.length;
+
+          slides.forEach((slide, slideIndex) => {
+            slide.classList.toggle('active', slideIndex === active);
+            slide.setAttribute('aria-hidden', String(slideIndex !== active));
+          });
+
+          dots.forEach((dot, dotIndex) => {
+            dot.classList.toggle('active', dotIndex === active);
+          });
+        };
+
+        prev?.addEventListener('click', () => showSlide(active - 1));
+        next?.addEventListener('click', () => showSlide(active + 1));
+        dots.forEach((dot, index) => dot.addEventListener('click', () => showSlide(index)));
+        showSlide(0);
+      }
+    </script>
+  </section>
+
+  <section class="custom-hero">
+    <div class="container custom-grid">
+      <div>
+        <p class="eyebrow">Custom route</p>
+        <h2>Need a private plan for your group?</h2>
+        <p>Tell us your dates, head count, budget, and travel style. We can shape a custom itinerary around family trips, pilgrimages, mountain breaks, or mixed destination plans.</p>
+      </div>
+      <a class="button" href={withBase('/contact/')}>Contact us</a>
     </div>
   </section>
 </BaseLayout>
@@ -58,10 +219,173 @@ const longTours = await getLongDurationTours(8);
 <style>
   .eyebrow {
     margin: 0 0 14px;
-    color: var(--green);
+    color: var(--sun);
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.08em;
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .hero-actions .button {
+    width: auto;
+  }
+
+  .ghost-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0 18px;
+    border: 1px solid rgba(255, 255, 255, 0.52);
+    border-radius: 8px;
+    color: #fff;
+    font-weight: 800;
+    text-decoration: none;
+  }
+
+  .panel-kicker {
+    display: inline-block;
+    margin-bottom: 10px;
+    color: var(--sun);
+    font-size: 0.86rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .hero-panel p {
+    margin: 0 0 22px;
+    color: rgba(255, 255, 255, 0.84);
+  }
+
+  .mini-stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .mini-stats span {
+    padding: 12px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.18);
+  }
+
+  .mini-stats b {
+    display: block;
+    color: #fff;
+    font-size: 1.4rem;
+    line-height: 1;
+  }
+
+  .month-section {
+    padding-bottom: 44px;
+  }
+
+  .planner-band {
+    padding: 70px 0;
+    background:
+      radial-gradient(circle at 12% 18%, rgba(246, 183, 60, 0.2), transparent 18rem),
+      linear-gradient(135deg, #fff7e8 0%, #eaf8f2 48%, #e4f2ff 100%);
+    position: relative;
+    color: var(--ink);
+  }
+
+  .trip-planner {
+    display: grid;
+    grid-template-columns: minmax(260px, 0.8fr) minmax(0, 1.2fr);
+    gap: 0;
+    overflow: hidden;
+    border: 1px solid rgba(232, 221, 201, 0.9);
+    border-radius: 30px;
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: 0 28px 90px rgba(23, 33, 27, 0.14);
+  }
+
+  .planner-copy {
+    display: grid;
+    align-content: center;
+    min-height: 300px;
+    padding: 34px;
+    background: #113c35;
+    color: #fff;
+  }
+
+  .planner-copy h2 {
+    margin: 0;
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    line-height: 1.15;
+  }
+
+  .planner-copy p:not(.eyebrow) {
+    margin: 12px 0 0;
+    color: rgba(255, 255, 255, 0.78);
+  }
+
+  .planner-copy .eyebrow {
+    margin-bottom: 5px;
+    color: var(--sun);
+    font-size: 0.78rem;
+  }
+
+  .planner-fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    padding: 22px;
+    align-content: center;
+  }
+
+  .planner-field,
+  .trip-planner :global(label.planner-field) {
+    display: grid;
+    padding: 14px;
+    border: 1px solid rgba(232, 221, 201, 0.9);
+    border-radius: 18px;
+    background: #fff;
+  }
+
+  .planner-field span,
+  .trip-planner :global(label.planner-field > span) {
+    color: var(--green);
+    font-size: 0.78rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .planner-field select,
+  .trip-planner :global(label.planner-field select) {
+    width: 100%;
+    min-height: 42px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--ink);
+    font: inherit;
+    font-weight: 800;
+  }
+
+  .planner-field.wide {
+    grid-column: span 2;
+  }
+
+  .trip-planner button,
+  .trip-planner :global(.planner-fields > button) {
+    min-height: 56px;
+    border: 0;
+    border-radius: 18px;
+    border-color: var(--accent);
+    background: var(--accent);
+    color: #fff;
+    font: inherit;
+    font-weight: 900;
+    cursor: pointer;
+    box-shadow: 0 16px 34px rgba(200, 77, 22, 0.22);
   }
 
   .split {
@@ -71,25 +395,328 @@ const longTours = await getLongDurationTours(8);
     gap: 32px;
   }
 
-  .about-preview h2 {
-    max-width: 760px;
-    margin: 0 0 14px;
-    font-size: clamp(1.9rem, 4vw, 3rem);
-    line-height: 1.1;
-    letter-spacing: 0;
+  .section-title {
+    max-width: 720px;
+    margin-bottom: 24px;
   }
 
-  .about-preview p {
+  .section-title h2,
+  .custom-hero h2 {
+    margin: 0;
+    font-size: clamp(1.9rem, 4vw, 3rem);
+    line-height: 1.08;
+  }
+
+  .hotels-section {
+    background: linear-gradient(180deg, #fff 0%, #fff9ed 100%);
+  }
+
+  .hotel-head {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 24px;
+  }
+
+  .hotel-head h2 {
     max-width: 720px;
     margin: 0;
+    font-size: clamp(1.9rem, 4vw, 3rem);
+    line-height: 1.08;
+  }
+
+  .hotel-controls {
+    display: flex;
+    gap: 10px;
+  }
+
+  .hotel-controls button {
+    min-height: 42px;
+    padding: 0 16px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: #fff;
+    color: var(--ink);
+    font: inherit;
+    font-weight: 900;
+    cursor: pointer;
+  }
+
+  .hotel-carousel {
+    position: relative;
+  }
+
+  .hotel-track {
+    position: relative;
+    min-height: 440px;
+    perspective: 1200px;
+  }
+
+  .hotel-slide {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.8fr);
+    overflow: hidden;
+    border: 1px solid rgba(232, 221, 201, 0.9);
+    border-radius: 30px;
+    background: #fff;
+    box-shadow: 0 30px 90px rgba(23, 33, 27, 0.12);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(34px) rotateY(-5deg) scale(0.96);
+    transition: opacity 360ms ease, transform 520ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .hotel-slide.active {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(0) rotateY(0) scale(1);
+  }
+
+  .hotel-gallery {
+    position: relative;
+    min-height: 440px;
+    overflow: hidden;
+    background: #112f2b;
+  }
+
+  .hotel-gallery img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transform: scale(1.06);
+    animation: hotelImageFade 12s infinite;
+  }
+
+  .hotel-gallery .image-2 {
+    animation-delay: 4s;
+  }
+
+  .hotel-gallery .image-3 {
+    animation-delay: 8s;
+  }
+
+  .hotel-body {
+    display: grid;
+    align-content: center;
+    gap: 14px;
+    padding: 42px;
+    background:
+      radial-gradient(circle at 100% 0%, rgba(246, 183, 60, 0.14), transparent 16rem),
+      #fff;
+  }
+
+  .hotel-body span {
+    display: inline-flex;
+    width: fit-content;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: #eef8f4;
+    color: var(--green);
+    font-size: 0.78rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .hotel-body h3 {
+    margin: 0;
+    font-family: Fraunces, Georgia, serif;
+    font-size: clamp(1.8rem, 4vw, 3.2rem);
+    line-height: 1;
+  }
+
+  .hotel-body p {
+    margin: 0;
     color: var(--muted);
+    font-size: 1.05rem;
+  }
+
+  .hotel-meta {
+    display: grid;
+    gap: 4px;
+    margin-top: 8px;
+    padding: 16px;
+    border-radius: 18px;
+    background: #fff4ea;
+  }
+
+  .hotel-meta strong {
+    color: var(--accent-dark);
+    font-size: 1.55rem;
+    line-height: 1;
+  }
+
+  .hotel-meta small {
+    color: var(--muted);
+    font-weight: 800;
+  }
+
+  .hotel-body a,
+  .hotel-body em {
+    color: var(--accent-dark);
+    font-style: normal;
+    font-weight: 900;
+    text-decoration: none;
+  }
+
+  .hotel-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 18px;
+  }
+
+  .hotel-dots button {
+    width: 32px;
+    height: 8px;
+    border: 0;
+    border-radius: 999px;
+    background: rgba(20, 116, 91, 0.22);
+    cursor: pointer;
+    transition: width 180ms ease, background 180ms ease;
+  }
+
+  .hotel-dots button.active {
+    width: 54px;
+    background: var(--green);
+  }
+
+  @keyframes hotelImageFade {
+    0% {
+      opacity: 0;
+      transform: scale(1.06);
+    }
+    8%,
+    33% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    42%,
+    100% {
+      opacity: 0;
+      transform: scale(1.04);
+    }
+  }
+
+  .custom-hero {
+    padding: 74px 0;
+    background: #112f2b;
+    color: #fff;
+  }
+
+  .custom-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 28px;
+    align-items: center;
+  }
+
+  .custom-hero p:not(.eyebrow) {
+    max-width: 760px;
+    margin: 16px 0 0;
+    color: rgba(255, 255, 255, 0.78);
     font-size: 1.08rem;
   }
 
   @media (max-width: 760px) {
+    .hero-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .hero-actions .button,
+    .ghost-button {
+      width: 100%;
+      min-height: 50px;
+      border-radius: 14px;
+    }
+
+    .planner-band {
+      padding: 42px 0;
+      border-radius: 28px;
+      margin-inline: 12px;
+    }
+
+    .trip-planner {
+      grid-template-columns: 1fr;
+      border-radius: 26px;
+    }
+
+    .planner-copy {
+      min-height: auto;
+      padding: 24px;
+    }
+
+    .planner-copy h2 {
+      font-size: 1.35rem;
+    }
+
+    .planner-fields {
+      grid-template-columns: 1fr;
+      padding: 14px;
+      gap: 10px;
+    }
+
+    .planner-field.wide {
+      grid-column: auto;
+    }
+
+    .planner-field select,
+    .trip-planner button {
+      min-height: 52px;
+      border-radius: 16px;
+    }
+
     .split {
       align-items: flex-start;
       flex-direction: column;
     }
+
+    .hotel-slide,
+    .custom-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .hotel-head {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+    .hotel-controls {
+      width: 100%;
+    }
+
+    .hotel-controls button {
+      flex: 1;
+    }
+
+    .hotel-track {
+      min-height: 620px;
+    }
+
+    .hotel-slide {
+      border-radius: 26px;
+    }
+
+    .hotel-gallery {
+      min-height: 300px;
+    }
+
+    .hotel-body {
+      padding: 24px;
+    }
+
+    .custom-hero {
+      margin-inline: 12px;
+      border-radius: 28px;
+      padding: 44px 0;
+    }
   }
+
 </style>

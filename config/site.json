@@ -2,12 +2,13 @@
   "siteName": "TrailNest Tours",
   "siteDescription": "Curated India tour packages powered by Astro and Git-based CMS.",
   "logo": "/uploads/logo.svg",
+  "favicon": "/uploads/logo.svg",
   "email": "hello@example.com",
   "phone": "+91 00000 00000",
   "socialLinks": {
     "facebook": "#",
+    "instagram": "#",
     "twitter": "#",
-    "linkedin": "#",
-    "github": "#"
+    "linkedin": "#"
   }
 }

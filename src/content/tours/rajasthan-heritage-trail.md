@@ -7,6 +7,7 @@ duration:
   nights: 6
 bestMonths: ["October", "November", "December", "January", "February", "March"]
 season: ["Winter"]
+travelStyle: ["Heritage", "Culture", "Leisure"]
 coverImage: "/uploads/tour-rajasthan.svg"
 costInr: 28500
 minHeadCount: 6

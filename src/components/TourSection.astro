@@ -25,7 +25,7 @@ const { title, tours, viewAllLink = '/tours/', carousel = false } = Astro.props;
 
 <style>
   .tour-section + .tour-section {
-    margin-top: 64px;
+    margin-top: 70px;
   }
 
   .section-head {
@@ -38,12 +38,21 @@ const { title, tours, viewAllLink = '/tours/', carousel = false } = Astro.props;
 
   h2 {
     margin: 0;
-    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    font-size: clamp(1.7rem, 4vw, 2.55rem);
+    line-height: 1.08;
     letter-spacing: 0;
+    text-wrap: balance;
   }
 
   .section-head a {
-    color: var(--accent);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 38px;
+    padding: 0 14px;
+    border-radius: 999px;
+    background: #fff4ea;
+    color: var(--accent-dark);
     font-weight: 800;
     text-decoration: none;
     white-space: nowrap;
@@ -52,7 +61,7 @@ const { title, tours, viewAllLink = '/tours/', carousel = false } = Astro.props;
   .tour-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 22px;
+    gap: 24px;
   }
 
   .tour-strip {
@@ -61,8 +70,9 @@ const { title, tours, viewAllLink = '/tours/', carousel = false } = Astro.props;
     grid-auto-flow: column;
     gap: 18px;
     overflow-x: auto;
-    padding-bottom: 12px;
+    padding: 4px 4px 16px;
     scroll-snap-type: x proximity;
+    scrollbar-width: thin;
   }
 
   .tour-strip :global(.tour-card) {
@@ -81,8 +91,8 @@ const { title, tours, viewAllLink = '/tours/', carousel = false } = Astro.props;
 
   @media (max-width: 620px) {
     .section-head {
-      align-items: flex-start;
-      flex-direction: column;
+      align-items: center;
+      flex-direction: row;
     }
 
     .tour-grid {
@@ -90,7 +100,9 @@ const { title, tours, viewAllLink = '/tours/', carousel = false } = Astro.props;
     }
 
     .tour-strip {
-      grid-auto-columns: minmax(250px, 88%);
+      grid-auto-columns: minmax(258px, 86%);
+      margin-inline: -12px;
+      padding-inline: 12px;
     }
   }
 </style>

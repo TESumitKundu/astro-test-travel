@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { withBase } from '../lib/paths';
 
 const about = (await getCollection('pages')).find((page) => page.slug === 'about');
 
@@ -13,31 +14,223 @@ const { Content } = await about.render();
 
 <BaseLayout
   title={about.data.seoTitle ?? about.data.title}
-  description={about.data.seoDescription ?? 'About this Astro Git CMS website.'}
+  description={about.data.seoDescription ?? 'About TrailNest Tours and our travel planning approach.'}
 >
-  <section class="page-head">
-    <div class="container">
-      <h1>{about.data.title}</h1>
+  <section class="about-hero">
+    <div class="container about-grid">
+      <div>
+        <p class="eyebrow">About TrailNest</p>
+        <h1>Travel planning that starts with the right season.</h1>
+        <p>We shape practical India itineraries around weather, duration, group size, travel style, and the kind of stay that makes the route feel easy.</p>
+        <div class="hero-actions">
+          <a class="button" href={withBase('/tours/')}>Explore tours</a>
+          <a class="ghost-button" href={withBase('/contact/')}>Contact us</a>
+        </div>
+      </div>
+      <div class="about-card">
+        <span>How we plan</span>
+        <strong>Season first, route second, comfort always.</strong>
+        <p>Every tour carries best months, duration, cost, minimum head count, travel style, and day-wise notes so guests can compare without guesswork.</p>
+      </div>
     </div>
   </section>
+
   <section class="section">
-    <div class="container prose">
-      <Content />
+    <div class="container story-grid">
+      <div class="prose">
+        <Content />
+      </div>
+      <div class="values">
+        <article>
+          <span>01</span>
+          <h2>Clear itineraries</h2>
+          <p>Day-wise routes, realistic pacing, and visible costs before enquiry.</p>
+        </article>
+        <article>
+          <span>02</span>
+          <h2>Flexible tour styles</h2>
+          <p>Mountain, forest, beach, heritage, pilgrimage, backwater, and leisure trips can all live in one catalogue.</p>
+        </article>
+        <article>
+          <span>03</span>
+          <h2>Fast content updates</h2>
+          <p>The site is static, but tours can still be edited through Git-based CMS workflows.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section promise-band">
+    <div class="container promise-grid">
+      <div>
+        <p class="eyebrow">Our promise</p>
+        <h2>No heavy package noise. Just useful trip choices.</h2>
+      </div>
+      <p>TrailNest is designed for travelers who want to scan, compare, and enquire quickly. The focus is simple: right destination, right month, right pace, right stay.</p>
     </div>
   </section>
 </BaseLayout>
 
 <style>
-  .page-head {
-    padding: 70px 0;
-    background: var(--surface);
-    border-bottom: 1px solid var(--line);
+  .about-hero {
+    padding: 88px 0;
+    background:
+      linear-gradient(135deg, rgba(17, 60, 53, 0.94), rgba(239, 111, 47, 0.58)),
+      var(--hero-image, none);
+    color: #fff;
+  }
+
+  .about-grid,
+  .story-grid,
+  .promise-grid {
+    display: grid;
+    gap: 34px;
+  }
+
+  .about-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 0.55fr);
+    align-items: center;
+  }
+
+  .eyebrow {
+    margin: 0 0 14px;
+    color: var(--sun);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
   }
 
   h1 {
+    max-width: 850px;
     margin: 0;
-    font-size: clamp(2.4rem, 6vw, 4.6rem);
+    font-size: clamp(2.5rem, 7vw, 5rem);
     line-height: 1;
     letter-spacing: 0;
+  }
+
+  .about-hero p {
+    max-width: 660px;
+    margin: 18px 0 0;
+    color: rgba(255, 255, 255, 0.84);
+    font-size: 1.12rem;
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 28px;
+  }
+
+  .ghost-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0 18px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 14px;
+    color: #fff;
+    font-weight: 900;
+    text-decoration: none;
+  }
+
+  .about-card {
+    padding: 26px;
+    border: 1px solid rgba(255, 255, 255, 0.38);
+    border-radius: 28px;
+    background: rgba(255, 255, 255, 0.16);
+    box-shadow: 0 24px 70px rgba(15, 33, 27, 0.22);
+    backdrop-filter: blur(12px);
+  }
+
+  .about-card span {
+    color: var(--sun);
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .about-card strong {
+    display: block;
+    margin-top: 14px;
+    font-size: 1.55rem;
+    line-height: 1.15;
+  }
+
+  .story-grid {
+    grid-template-columns: minmax(0, 0.9fr) minmax(300px, 1fr);
+    align-items: start;
+  }
+
+  .values {
+    display: grid;
+    gap: 14px;
+  }
+
+  .values article {
+    padding: 22px;
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    background: #fff;
+    box-shadow: 0 18px 48px rgba(23, 33, 27, 0.08);
+  }
+
+  .values span {
+    color: var(--accent-dark);
+    font-weight: 900;
+  }
+
+  .values h2 {
+    margin: 8px 0;
+    font-size: 1.35rem;
+  }
+
+  .values p {
+    margin: 0;
+    color: var(--muted);
+  }
+
+  .promise-band {
+    background: #113c35;
+    color: #fff;
+  }
+
+  .promise-grid {
+    grid-template-columns: minmax(0, 0.85fr) minmax(280px, 1fr);
+    align-items: center;
+  }
+
+  .promise-grid h2 {
+    margin: 0;
+    font-size: clamp(1.9rem, 4vw, 3rem);
+    line-height: 1.08;
+  }
+
+  .promise-grid p {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.78);
+    font-size: 1.1rem;
+  }
+
+  @media (max-width: 760px) {
+    .about-hero {
+      padding: 54px 0;
+      border-radius: 0 0 28px 28px;
+    }
+
+    .about-grid,
+    .story-grid,
+    .promise-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .hero-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .ghost-button {
+      min-height: 48px;
+    }
   }
 </style>

@@ -1,7 +1,7 @@
 ---
-import type { Tour } from '../lib/tours';
-import { formatDuration, formatInr } from '../lib/tours';
-import { withBase } from '../lib/paths';
+import type { Tour } from "../lib/tours";
+import { formatDuration, formatInr, getTourImage } from "../lib/tours";
+import { withBase } from "../lib/paths";
 
 interface Props {
   tour: Tour;
@@ -9,32 +9,51 @@ interface Props {
 }
 
 const { tour, compact = false } = Astro.props;
+const image = getTourImage(tour);
 ---
 
 <article
-  class:list={['tour-card', { compact }]}
+  class:list={["tour-card", { compact }]}
   data-place={tour.data.place}
-  data-seasons={tour.data.season.join(',')}
-  data-duration={tour.data.duration.days <= 4 ? 'short' : 'long'}
-  data-months={tour.data.bestMonths.join(',')}
+  data-seasons={tour.data.season.join(",")}
+  data-styles={tour.data.travelStyle.join(",")}
+  data-duration={tour.data.duration.days <= 4 ? "short" : "long"}
+  data-months={tour.data.bestMonths.join(",")}
 >
-  <a class="image-link" href={withBase(`/tours/${tour.slug}/`)} aria-label={tour.data.title}>
-    <img src={withBase(tour.data.coverImage)} alt="" loading="lazy" />
+  <a
+    class="image-link"
+    href={withBase(`/tours/${tour.slug}/`)}
+    aria-label={tour.data.title}
+  >
+    <img src={withBase(image)} alt="" loading="lazy" />
   </a>
   <div class="card-body">
-    <div class="meta">
-      <span>{tour.data.place}</span>
+    <div class="price-row">
+      <p class="place-heading">{tour.data.place}</p>
       <span>{formatDuration(tour.data.duration)}</span>
     </div>
+
     <h3><a href={withBase(`/tours/${tour.slug}/`)}>{tour.data.title}</a></h3>
-    {!compact && (
-      <p>
-        Best in {tour.data.bestMonths.slice(0, 3).join(', ')}
-        {tour.data.bestMonths.length > 3 ? '...' : ''}
-      </p>
-    )}
+    <div class="meta">
+      <span>{tour.data.season.join(", ")}</span>
+    </div>
+    <div class="style-row" aria-label="Travel styles">
+      {tour.data.travelStyle.slice(0, 3).map((style) => <span>{style}</span>)}
+    </div>
+    {
+      !compact && (
+        <p>
+          Best in {tour.data.bestMonths.slice(0, 3).join(", ")}
+          {tour.data.bestMonths.length > 3 ? "..." : ""}
+        </p>
+      )
+    }
     <div class="price-row">
-      <strong>{formatInr(tour.data.costInr)}</strong>
+      <div>
+        <span>Starting from</span>
+        <br />
+        <strong class="pricing">{formatInr(tour.data.costInr)}</strong>
+      </div>
       <span>min {tour.data.minHeadCount} heads</span>
     </div>
     <a class="read-more" href={withBase(`/tours/${tour.slug}/`)}>View tour</a>
@@ -43,47 +62,102 @@ const { tour, compact = false } = Astro.props;
 
 <style>
   .tour-card {
+    position: relative;
     display: grid;
     overflow: hidden;
     min-height: 100%;
-    border: 1px solid var(--line);
-    border-radius: 8px;
+    border: 1px solid rgba(232, 221, 201, 0.9);
+    border-radius: 18px;
     background: #fff;
+    box-shadow: 0 18px 48px rgba(23, 33, 27, 0.09);
+    transition:
+      transform 180ms ease,
+      box-shadow 180ms ease;
+  }
+
+  .tour-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 24px 60px rgba(23, 33, 27, 0.14);
+  }
+
+  .image-link {
+    position: relative;
+    display: block;
+    overflow: hidden;
   }
 
   .image-link img {
     width: 100%;
-    aspect-ratio: 16 / 10;
+    aspect-ratio: 16 / 11;
     object-fit: cover;
     border-bottom: 1px solid var(--line);
+    transition: transform 240ms ease;
+  }
+
+  .tour-card:hover .image-link img {
+    transform: scale(1.035);
   }
 
   .card-body {
     display: grid;
-    gap: 12px;
-    padding: 20px;
+    gap: 10px;
+    padding: 18px;
+  }
+
+  .place-heading {
+    margin: 0;
+    color: var(--accent-dark);
+    font-family: Fraunces, Georgia, serif;
+    font-size: 1.05rem;
+    font-weight: 800;
+    line-height: 1;
   }
 
   .meta,
   .price-row {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
+    align-items: flex-end;
     justify-content: space-between;
     gap: 8px;
     color: var(--muted);
-    font-size: 0.92rem;
+    font-size: 0.84rem;
+    font-weight: 800;
   }
 
-  .meta span:first-child {
+  .meta span {
+    padding: 4px 9px;
+    border-radius: 999px;
+    background: var(--surface);
+  }
+
+  .style-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+
+  .style-row span {
+    padding: 5px 9px;
+    border: 1px solid rgba(15, 118, 110, 0.16);
+    border-radius: 999px;
+    background: #eef8f4;
     color: var(--green);
-    font-weight: 800;
+    font-size: 0.78rem;
+    font-weight: 900;
+  }
+
+  strong.pricing {
+    color: var(--accent-dark);
   }
 
   h3 {
     margin: 0;
-    font-size: 1.28rem;
+    margin-top: 0.5rem;
+    font-size: 1.22rem;
+    font-weight: 700;
     line-height: 1.25;
+    color: #075a4d;
   }
 
   h3 a,
@@ -103,15 +177,37 @@ const { tour, compact = false } = Astro.props;
 
   strong {
     color: var(--ink);
-    font-size: 1.15rem;
+    font-size: 1.22rem;
   }
 
   .read-more {
-    color: var(--accent);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    border-radius: 12px;
+    background: #fff4ea;
+    color: var(--accent-dark);
     font-weight: 800;
   }
 
   .compact .card-body {
     padding: 16px;
+  }
+
+  @media (max-width: 620px) {
+    .tour-card {
+      border-radius: 22px;
+      box-shadow: 0 14px 40px rgba(23, 33, 27, 0.12);
+    }
+
+    .image-link img {
+      aspect-ratio: 1.22 / 1;
+    }
+
+    .read-more {
+      min-height: 48px;
+      border-radius: 16px;
+    }
   }
 </style>

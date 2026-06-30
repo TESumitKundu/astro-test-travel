@@ -1,7 +1,7 @@
 ---
 import BaseLayout from "./BaseLayout.astro";
 import type { Tour } from "../lib/tours";
-import { formatDuration, formatInr } from "../lib/tours";
+import { formatDuration, formatInr, getTourImage } from "../lib/tours";
 import { withBase } from "../lib/paths";
 
 interface Props {
@@ -10,6 +10,7 @@ interface Props {
 
 const { tour } = Astro.props;
 const { Content } = await tour.render();
+const image = getTourImage(tour);
 const title = tour.data.seoTitle ?? tour.data.title;
 const description =
   tour.data.seoDescription ??
@@ -19,22 +20,23 @@ const description =
 <BaseLayout
   title={title}
   description={description}
-  image={tour.data.coverImage}
+  image={image}
 >
   <article>
     <header class="tour-hero">
       <div class="container tour-hero-grid">
         <div>
           <a class="back-link" href={withBase("/tours/")}>Back to tours</a>
-          <p class="eyebrow">{tour.data.place} | {tour.data.season.join(', ')}</p>
+          <p class="eyebrow">{tour.data.place} | {tour.data.travelStyle.join(', ')}</p>
           <h1>{tour.data.title}</h1>
           <div class="facts">
             <span>{formatDuration(tour.data.duration)}</span>
             <span>{formatInr(tour.data.costInr)}</span>
+            <span>{tour.data.travelStyle[0]}</span>
             <span>Minimum {tour.data.minHeadCount} heads</span>
           </div>
         </div>
-        <img src={withBase(tour.data.coverImage)} alt="" />
+        <img src={withBase(image)} alt="" />
       </div>
     </header>
 
@@ -56,19 +58,24 @@ const description =
               <dd>{tour.data.bestMonths.join(", ")}</dd>
             </div>
             <div>
-              <dt>SEASONS</dt>
+              <dt>Seasons</dt>
               <dd>{tour.data.season.join(", ")}</dd>
             </div>
             <div>
-              <dt>Cost</dt>
-              <dd>{formatInr(tour.data.costInr)} per person</dd>
+              <dt>Travel style</dt>
+              <dd>{tour.data.travelStyle.join(", ")}</dd>
             </div>
             <div>
               <dt>Group size</dt>
               <dd>Minimum {tour.data.minHeadCount} heads</dd>
             </div>
           </dl>
-          <a class="button" href={withBase("/about/")}>Enquire now</a>
+          <div class="price-box">
+            <span>Starting from</span>
+            <strong>{formatInr(tour.data.costInr)}</strong>
+            <small>per person</small>
+          </div>
+          <a class="button enquire-button" href={withBase("/contact/")}>Enquire now</a>
         </aside>
         <div class="prose itinerary">
           <Content />
@@ -151,8 +158,9 @@ const description =
     top: 92px;
     padding: 22px;
     border: 1px solid var(--line);
-    border-radius: 8px;
+    border-radius: 18px;
     background: #fff;
+    box-shadow: 0 18px 48px rgba(23, 33, 27, 0.08);
   }
 
   .summary h2 {
@@ -176,6 +184,32 @@ const description =
   dd {
     margin: 2px 0 0;
     font-weight: 700;
+  }
+
+  .price-box {
+    display: grid;
+    gap: 2px;
+    margin-bottom: 12px;
+    padding: 18px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #fff4ea, #eef8f4);
+    border: 1px solid rgba(239, 111, 47, 0.18);
+  }
+
+  .price-box span,
+  .price-box small {
+    color: var(--muted);
+    font-weight: 800;
+  }
+
+  .price-box strong {
+    color: var(--accent-dark);
+    font-size: 2rem;
+    line-height: 1;
+  }
+
+  .enquire-button {
+    width: 100%;
   }
 
   @media (max-width: 860px) {

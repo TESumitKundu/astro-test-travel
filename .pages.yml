@@ -66,12 +66,34 @@ content:
             - Monsoon
             - Autumn
             - Winter
-      - name: coverImage
-        label: Cover Image
-        type: image
+      - name: travelStyle
+        label: Travel Style
+        type: select
         required: true
+        options:
+          multiple: true
+          values:
+            - Mountain
+            - Forest
+            - Pilgrimage
+            - Beach
+            - Heritage
+            - Backwater
+            - Wildlife
+            - Adventure
+            - Culture
+            - Leisure
+      - name: coverImage
+        label: Cover Image Upload
+        type: image
+        required: false
+      - name: coverImageUrl
+        label: Cover Image URL
+        type: string
+        required: false
+        description: Optional. Use this for Unsplash, CDN, or any external image URL. If filled, it will be used instead of the uploaded image.
       - name: costInr
-        label: Cost in INR
+        label: Starting From INR
         type: number
         required: true
       - name: minHeadCount
@@ -140,6 +162,9 @@ content:
       - name: logo
         label: Logo
         type: image
+      - name: favicon
+        label: Favicon
+        type: image
       - name: email
         label: Email
         type: string
@@ -153,12 +178,12 @@ content:
           - name: facebook
             label: Facebook
             type: string
+          - name: instagram
+            label: Instagram
+            type: string
           - name: twitter
             label: Twitter
             type: string
           - name: linkedin
             label: LinkedIn
-            type: string
-          - name: github
-            label: GitHub
             type: string

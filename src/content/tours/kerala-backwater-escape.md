@@ -7,6 +7,7 @@ duration:
   nights: 4
 bestMonths: ["November", "December", "January", "February"]
 season: ["Winter"]
+travelStyle: ["Backwater", "Leisure", "Culture"]
 coverImage: "/uploads/tour-kerala.svg"
 costInr: 18500
 minHeadCount: 4

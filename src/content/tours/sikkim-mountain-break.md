@@ -9,6 +9,9 @@ bestMonths:
   - July
 season:
   - Spring
+travelStyle:
+  - Mountain
+  - Leisure
 coverImage: /uploads/tour-sikkim.svg
 costInr: 14500
 minHeadCount: 4

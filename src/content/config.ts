@@ -26,13 +26,31 @@ const tours = defineCollection({
       ])
     ),
     season: z.array(z.enum(['Spring', 'Summer', 'Monsoon', 'Autumn', 'Winter'])),
-    coverImage: z.string(),
+    travelStyle: z.array(
+      z.enum([
+        'Mountain',
+        'Forest',
+        'Pilgrimage',
+        'Beach',
+        'Heritage',
+        'Backwater',
+        'Wildlife',
+        'Adventure',
+        'Culture',
+        'Leisure'
+      ])
+    ),
+    coverImage: z.string().optional(),
+    coverImageUrl: z.string().url().optional(),
     costInr: z.number().int().positive(),
     minHeadCount: z.number().int().positive(),
     featured: z.boolean(),
     draft: z.boolean(),
     seoTitle: z.string().optional(),
     seoDescription: z.string().optional()
+  }).refine((data) => data.coverImage || data.coverImageUrl, {
+    message: 'Add either a cover image upload or a cover image URL.',
+    path: ['coverImage']
   })
 });
 
