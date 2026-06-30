@@ -5,10 +5,19 @@ place: Goa
 duration:
   days: 3
   nights: 2
-bestMonths: ["November", "December", "January", "February", "March"]
-season: ["Summer"]
-travelStyle: ["Beach", "Leisure"]
-coverImage: "/uploads/tour-goa.svg"
+bestMonths:
+  - November
+  - December
+  - January
+  - February
+  - March
+season:
+  - Summer
+travelStyle:
+  - Beach
+  - Leisure
+coverImage: /uploads/tour-goa.svg
+coverImageUrl: https://images.unsplash.com/photo-1512343879784-a960bf40e7f2
 costInr: 9500
 minHeadCount: 2
 featured: true
