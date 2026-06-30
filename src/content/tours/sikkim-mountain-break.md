@@ -13,6 +13,7 @@ travelStyle:
   - Mountain
   - Leisure
 coverImage: /uploads/tour-sikkim.svg
+coverImageUrl: https://images.unsplash.com/photo-1627119703136-3964f14b7325
 costInr: 14500
 minHeadCount: 4
 featured: false
