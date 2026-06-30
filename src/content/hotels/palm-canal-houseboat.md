@@ -11,5 +11,5 @@ website: https://example.com
 note: Private deck, fresh meals onboard, and a slow backwater route for relaxed
   stays.
 featured: true
-draft: true
+draft: false
 ---
