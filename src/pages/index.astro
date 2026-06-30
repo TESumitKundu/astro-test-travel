@@ -25,6 +25,7 @@ const seasons = await getAllSeasons();
 const travelStyles = await getAllTravelStyles();
 const months = getAllMonths();
 const hotels = await getFeaturedHotels();
+const hasMultipleHotels = hotels.length > 1;
 ---
 
 <BaseLayout title={site.siteName} description={site.siteDescription}>
@@ -122,10 +123,12 @@ const hotels = await getFeaturedHotels();
           <p class="eyebrow">Stay ideas</p>
           <h2>Hotels to pair with your route</h2>
         </div>
-        <div class="hotel-controls" aria-label="Hotel carousel controls">
-          <button type="button" data-hotel-prev aria-label="Previous hotel">Prev</button>
-          <button type="button" data-hotel-next aria-label="Next hotel">Next</button>
-        </div>
+        {hasMultipleHotels && (
+          <div class="hotel-controls" aria-label="Hotel carousel controls">
+            <button type="button" data-hotel-prev aria-label="Previous hotel">Prev</button>
+            <button type="button" data-hotel-next aria-label="Next hotel">Next</button>
+          </div>
+        )}
       </div>
       <div class="hotel-carousel" data-hotel-carousel>
         <div class="hotel-track">
@@ -149,39 +152,41 @@ const hotels = await getFeaturedHotels();
             </article>
           ))}
         </div>
-        <div class="hotel-dots" aria-label="Hotel slides">
-          {hotels.map((hotel, index) => (
-            <button class:list={{ active: index === 0 }} type="button" data-hotel-dot aria-label={`Show ${hotel.data.name}`}></button>
-          ))}
-        </div>
+        {hasMultipleHotels && (
+          <div class="hotel-dots" aria-label="Hotel slides">
+            {hotels.map((hotel, index) => (
+              <button class:list={{ active: index === 0 }} type="button" data-hotel-dot aria-label={`Show ${hotel.data.name}`}></button>
+            ))}
+          </div>
+        )}
       </div>
     </div>
     <script>
       const carousel = document.querySelector('[data-hotel-carousel]');
 
       if (carousel) {
-        const slides = [...carousel.querySelectorAll('[data-hotel-slide]')];
-        const dots = [...carousel.querySelectorAll('[data-hotel-dot]')];
+        const slides = [...carousel.querySelectorAll<HTMLElement>('[data-hotel-slide]')];
+        const dots = [...carousel.querySelectorAll<HTMLButtonElement>('[data-hotel-dot]')];
         const prev = document.querySelector('[data-hotel-prev]');
         const next = document.querySelector('[data-hotel-next]');
         let active = 0;
 
-        const showSlide = (index) => {
+        const showSlide = (index: number) => {
           active = (index + slides.length) % slides.length;
 
-          slides.forEach((slide, slideIndex) => {
+          slides.forEach((slide: HTMLElement, slideIndex: number) => {
             slide.classList.toggle('active', slideIndex === active);
             slide.setAttribute('aria-hidden', String(slideIndex !== active));
           });
 
-          dots.forEach((dot, dotIndex) => {
+          dots.forEach((dot: HTMLButtonElement, dotIndex: number) => {
             dot.classList.toggle('active', dotIndex === active);
           });
         };
 
         prev?.addEventListener('click', () => showSlide(active - 1));
         next?.addEventListener('click', () => showSlide(active + 1));
-        dots.forEach((dot, index) => dot.addEventListener('click', () => showSlide(index)));
+        dots.forEach((dot: HTMLButtonElement, index: number) => dot.addEventListener('click', () => showSlide(index)));
         showSlide(0);
       }
     </script>
