@@ -11,7 +11,7 @@ import site from '../../config/site.json';
 import { withBase } from '../lib/paths';
 
 const currentMonth = getCurrentMonthName();
-const currentMonthTours = await getCurrentMonthTours(6);
+const currentMonthTours = await getCurrentMonthTours(12);
 const shortTours = await getShortDurationTours(8);
 const longTours = await getLongDurationTours(8);
 ---
