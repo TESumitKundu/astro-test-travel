@@ -40,6 +40,12 @@ const tours = defineCollection({
         'Leisure'
       ])
     ).default([]),
+    placesToCover: z.array(
+      z.object({
+        name: z.string(),
+        nights: z.number().int().nonnegative()
+      })
+    ).default([]),
     coverImage: z.string().optional(),
     coverImageUrl: z.string().url().optional(),
     costInr: z.number().int().positive(),

@@ -12,6 +12,11 @@ season:
 travelStyle:
   - Mountain
   - Leisure
+placesToCover:
+  - name: Gangtok
+    nights: 2
+  - name: Pelling
+    nights: 1
 coverImage: /uploads/tour-sikkim.svg
 coverImageUrl: https://images.unsplash.com/photo-1662551392187-768334a36d4e
 costInr: 14500000

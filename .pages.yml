@@ -83,6 +83,20 @@ content:
             - Adventure
             - Culture
             - Leisure
+      - name: placesToCover
+        label: Places to Cover
+        type: object
+        list: true
+        required: false
+        fields:
+          - name: name
+            label: Place Name
+            type: string
+            required: true
+          - name: nights
+            label: Nights
+            type: number
+            required: true
       - name: coverImage
         label: Cover Image Upload
         type: image
@@ -119,6 +133,7 @@ content:
       - name: body
         label: Day-wise Itinerary
         type: rich-text
+        required: false
 
   - name: pages
     label: Pages

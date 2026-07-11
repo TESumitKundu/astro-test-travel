@@ -14,6 +14,7 @@ export const GET: APIRoute = async () => {
         bestMonths: tour.data.bestMonths,
         season: tour.data.season,
         travelStyle: tour.data.travelStyle,
+        placesToCover: tour.data.placesToCover,
         coverImage: getTourImage(tour),
         costInr: tour.data.costInr,
         minHeadCount: tour.data.minHeadCount

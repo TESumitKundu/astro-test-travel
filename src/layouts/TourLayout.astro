@@ -14,6 +14,8 @@ const image = getTourImage(tour);
 const seasons = asList(tour.data.season);
 const travelStyles = asList(tour.data.travelStyle);
 const bestMonths = asList(tour.data.bestMonths);
+const placesToCover = tour.data.placesToCover ?? [];
+const hasItinerary = Boolean(tour.body?.trim());
 const title = tour.data.seoTitle ?? tour.data.title;
 const description =
   tour.data.seoDescription ??
@@ -26,63 +28,98 @@ const description =
   image={image}
 >
   <article>
-    <header class="tour-hero">
-      <div class="container tour-hero-grid">
-        <div>
-          <a class="back-link" href={withBase("/tours/")}>Back to tours</a>
-          <p class="eyebrow">{tour.data.place} | {(travelStyles.length ? travelStyles : ['Leisure']).join(', ')}</p>
+    <header class="tour-hero" style={`--tour-image: url('${withBase(image)}')`}>
+      <div class="container">
+        <a class="back-link" href={withBase("/tours/")}>Back to tours</a>
+      </div>
+       <div class="container">
+        <div class="tour-hero-content">
+          <p class="eyebrow">{tour.data.place}</p>
           <h1>{tour.data.title}</h1>
-          <div class="facts">
+          <div class="hero-tags" aria-label="Tour highlights">
             <span>{formatDuration(tour.data.duration)}</span>
-            <span>{formatInr(tour.data.costInr)}</span>
-            <span>{travelStyles[0] ?? 'Leisure'}</span>
-            <span>Minimum {tour.data.minHeadCount} heads</span>
+            <span>{seasons.join(", ") || "All season"}</span>
+            <span>{(travelStyles.length ? travelStyles : ['Leisure']).join(", ")}</span>
           </div>
         </div>
-        <img src={withBase(image)} alt="" />
       </div>
     </header>
 
     <section class="section">
-      <div class="container detail-grid">
-        <aside class="summary">
-          <h2>Tour Summary</h2>
-          <dl>
-            <div>
-              <dt>Place</dt>
-              <dd>{tour.data.place}</dd>
+      <div class="container package-grid">
+        <main class="package-main">
+          <section class="info-panel" aria-labelledby="package-overview-title">
+            <div class="section-title">
+              <p class="eyebrow">Package overview</p>
+              <h2 id="package-overview-title">Tour details</h2>
             </div>
-            <div>
-              <dt>Duration</dt>
-              <dd>{formatDuration(tour.data.duration)}</dd>
-            </div>
-            <div>
-              <dt>Best months</dt>
-              <dd>{bestMonths.join(", ") || "Flexible"}</dd>
-            </div>
-            <div>
-              <dt>Seasons</dt>
-              <dd>{seasons.join(", ") || "All season"}</dd>
-            </div>
-            <div>
-              <dt>Travel style</dt>
-              <dd>{(travelStyles.length ? travelStyles : ['Leisure']).join(", ")}</dd>
-            </div>
-            <div>
-              <dt>Group size</dt>
-              <dd>Minimum {tour.data.minHeadCount} heads</dd>
-            </div>
-          </dl>
-          <div class="price-box">
-            <span>Starting from</span>
-            <strong>{formatInr(tour.data.costInr)}</strong>
-            <small>per person</small>
-          </div>
-          <a class="button enquire-button" href={withBase("/contact/")}>Enquire now</a>
+            <dl class="fact-grid">
+              <div>
+                <dt>Place</dt>
+                <dd>{tour.data.place}</dd>
+              </div>
+              <div>
+                <dt>Duration</dt>
+                <dd>{formatDuration(tour.data.duration)}</dd>
+              </div>
+              <div>
+                <dt>Best months</dt>
+                <dd>{bestMonths.join(", ") || "Flexible"}</dd>
+              </div>
+              <div>
+                <dt>Season</dt>
+                <dd>{seasons.join(", ") || "All season"}</dd>
+              </div>
+              <div>
+                <dt>Travel style</dt>
+                <dd>{(travelStyles.length ? travelStyles : ['Leisure']).join(", ")}</dd>
+              </div>
+              <div>
+                <dt>Group size</dt>
+                <dd>Minimum {tour.data.minHeadCount} heads</dd>
+              </div>
+            </dl>
+          </section>
+
+          {placesToCover.length > 0 && (
+            <section class="places-cover" aria-labelledby="places-cover-title">
+              <div class="section-title">
+                <p class="eyebrow">Route nights</p>
+                <h2 id="places-cover-title">Places to cover</h2>
+              </div>
+              <div class="places-list">
+                {placesToCover.map((place, index) => (
+                  <article>
+                    <span class="route-step">{String(index + 1).padStart(2, '0')}</span>
+                    <div>
+                      <strong>{place.name}</strong>
+                      <span>{place.nights} {place.nights === 1 ? 'Night' : 'Nights'}</span>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {hasItinerary && (
+            <section class="itinerary-panel" aria-labelledby="itinerary-title">
+              <div class="section-title">
+                <p class="eyebrow">Day-wise plan</p>
+                <h2 id="itinerary-title">Itinerary</h2>
+              </div>
+              <div class="prose itinerary">
+                <Content />
+              </div>
+            </section>
+          )}
+        </main>
+
+        <aside class="booking-card">
+          <span>Starting from</span>
+          <strong>{formatInr(tour.data.costInr)}</strong>
+          <small>per person</small>
+          <a class="button" href={withBase("/contact/")}>Enquire now</a>
         </aside>
-        <div class="prose itinerary">
-          <Content />
-        </div>
       </div>
     </section>
     <slot name="related" />
@@ -91,90 +128,152 @@ const description =
 
 <style>
   .tour-hero {
-    padding: 58px 0;
-    background: var(--surface);
-    border-bottom: 1px solid var(--line);
+    position: relative;
+    min-height: 85svh;
+    padding: 34px 0 52px;
+    background:
+    linear-gradient(180deg, rgba(10, 28, 24, 0.28), rgba(10, 28, 24, 0.82)),
+    var(--tour-image);
+    background-position: center;
+    background-size: cover;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 2rem;
   }
-
-  .tour-hero-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(320px, 0.78fr);
-    gap: 42px;
-    align-items: center;
-  }
+  
 
   .back-link {
-    color: var(--accent);
+    display: inline-flex;
+    margin-bottom: 28px;
+    padding: 10px 14px;
+    border: 1px solid rgba(255, 255, 255, 0.36);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
     font-weight: 800;
     text-decoration: none;
+    backdrop-filter: blur(12px);
+  }
+
+
+  .tour-hero-content {
+    width: min(100%, 760px);
+    padding-bottom: 10px;
+    text-align: left;
   }
 
   .eyebrow {
-    margin: 28px 0 12px;
-    color: var(--green);
+    margin: 0 0 10px;
+    color: var(--sun);
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.08em;
   }
 
   h1 {
-    max-width: 860px;
+    max-width: 760px;
     margin: 0;
-    font-size: clamp(2.3rem, 6vw, 4.4rem);
+    font-size: clamp(2.6rem, 7vw, 5.6rem);
     line-height: 1.02;
     letter-spacing: 0;
   }
 
-  .facts {
+  .hero-tags {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
     margin-top: 24px;
   }
 
-  .facts span {
-    padding: 7px 12px;
-    border: 1px solid var(--line);
+  .hero-tags span {
+    padding: 8px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.32);
     border-radius: 999px;
-    background: #fff;
-    color: var(--muted);
-    font-weight: 700;
+    background: rgba(255, 255, 255, 0.14);
+    color: rgba(255, 255, 255, 0.92);
+    font-weight: 800;
+    backdrop-filter: blur(12px);
   }
 
-  .tour-hero img {
-    width: 100%;
-    aspect-ratio: 4 / 3;
-    object-fit: cover;
-    border: 1px solid var(--line);
-    border-radius: 8px;
-  }
-
-  .detail-grid {
+  .booking-card {
     display: grid;
-    grid-template-columns: 320px minmax(0, 1fr);
-    gap: 44px;
+    gap: 6px;
+    padding: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.32);
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.16);
+    box-shadow: 0 28px 80px rgba(8, 25, 21, 0.25);
+    backdrop-filter: blur(16px);
+  }
+
+  .package-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 28px;
     align-items: start;
   }
 
-  .summary {
-    position: sticky;
-    top: 92px;
-    padding: 22px;
-    border: 1px solid var(--line);
-    border-radius: 18px;
+  .package-main {
+    display: grid;
+    gap: 28px;
+  }
+
+  .info-panel,
+  .places-cover,
+  .itinerary-panel {
+    padding: 30px;
+    border: 1px solid rgba(232, 221, 201, 0.9);
+    border-radius: 24px;
     background: #fff;
     box-shadow: 0 18px 48px rgba(23, 33, 27, 0.08);
   }
 
-  .summary h2 {
-    margin: 0 0 18px;
-    font-size: 1.2rem;
+  .section-title {
+    margin-bottom: 22px;
   }
 
-  dl {
+  .section-title h2 {
+    margin: 0;
+    font-size: clamp(1.65rem, 4vw, 2.6rem);
+    line-height: 1.05;
+  }
+
+  .fact-grid {
     display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 14px;
-    margin: 0 0 22px;
+    margin: 0;
+  }
+
+  .fact-grid div {
+    min-height: 116px;
+    padding: 18px;
+    border: 1px solid rgba(15, 118, 110, 0.12);
+    border-radius: 18px;
+    background: linear-gradient(135deg, #fffaf0, #eef8f4);
+  }
+
+  .booking-card {
+    position: sticky;
+    top: 92px;
+    background: linear-gradient(135deg, #fff4ea, #eef8f4);
+    color: var(--ink);
+    border: 1px solid rgba(239, 111, 47, 0.18);
+    backdrop-filter: none;
+  }
+
+  .booking-card span,
+  .booking-card small {
+    color: var(--muted);
+    font-weight: 900;
+  }
+
+  .booking-card strong {
+    color: var(--accent-dark);
+    font-size: 2.35rem;
+    line-height: 1;
   }
 
   dt {
@@ -189,40 +288,74 @@ const description =
     font-weight: 700;
   }
 
-  .price-box {
+  .places-list {
     display: grid;
-    gap: 2px;
-    margin-bottom: 12px;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 12px;
+  }
+
+  .places-list article {
+    position: relative;
+    display: grid;
+    gap: 14px;
     padding: 18px;
-    border-radius: 18px;
-    background: linear-gradient(135deg, #fff4ea, #eef8f4);
-    border: 1px solid rgba(239, 111, 47, 0.18);
+    border: 1px solid rgba(15, 118, 110, 0.12);
+    border-radius: 20px;
+    background:
+      linear-gradient(135deg, rgba(238, 248, 244, 0.94), rgba(255, 244, 234, 0.7));
   }
 
-  .price-box span,
-  .price-box small {
-    color: var(--muted);
-    font-weight: 800;
+  .route-step {
+    display: inline-grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    border: 2px solid #fff;
+    border-radius: 999px;
+    background: var(--green);
+    color: #fff;
+    box-shadow: 0 10px 24px rgba(15, 118, 110, 0.22);
+    font-size: 0.82rem;
+    font-weight: 900;
   }
 
-  .price-box strong {
-    color: var(--accent-dark);
-    font-size: 2rem;
+  .places-list article div {
+    display: grid;
+    gap: 5px;
+  }
+
+  .places-list article div span {
+    color: var(--green);
+    font-size: 0.78rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .places-list strong {
+    color: var(--ink);
+    font-family: Fraunces, Georgia, serif;
+    font-size: 1.35rem;
     line-height: 1;
   }
 
-  .enquire-button {
-    width: 100%;
-  }
-
   @media (max-width: 860px) {
-    .tour-hero-grid,
-    .detail-grid {
+    .tour-hero {
+      min-height: 76svh;
+      padding: 22px 0 34px;
+    }
+
+
+    .package-grid {
       grid-template-columns: 1fr;
     }
 
-    .summary {
+    .booking-card {
       position: static;
+    }
+
+    .fact-grid {
+      grid-template-columns: 1fr;
     }
   }
 </style>
