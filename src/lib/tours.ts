@@ -26,7 +26,10 @@ export function asList(value: string[] | undefined | null): string[] {
 }
 
 export function getCurrentMonthName(date = new Date()) {
-  return monthNames[date.getMonth()];
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'long',
+    timeZone: 'Asia/Kolkata'
+  }).format(date) as (typeof monthNames)[number];
 }
 
 export async function getAllTours(): Promise<Tour[]> {

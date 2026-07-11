@@ -7,7 +7,6 @@ import {
   getAllSeasons,
   getAllTravelStyles,
   getCurrentMonthName,
-  getCurrentMonthTours,
   formatInr,
   getLongDurationTours,
   getShortDurationTours
@@ -17,7 +16,6 @@ import site from '../../config/site.json';
 import { withBase } from '../lib/paths';
 
 const currentMonth = getCurrentMonthName();
-const currentMonthTours = await getCurrentMonthTours(12);
 const shortTours = await getShortDurationTours(8);
 const longTours = await getLongDurationTours(8);
 const places = await getAllPlaces();
@@ -42,10 +40,10 @@ const hasMultipleHotels = hotels.length > 1;
       </div>
       <div class="hero-panel" aria-label="Travel planning highlights">
         <span class="panel-kicker">This month</span>
-        <strong>{currentMonth} picks are ready</strong>
+        <strong><span data-current-month-label>{currentMonth}</span> picks are ready</strong>
         <p>Browse trips matched to the current season, then tune the list by place, month, duration, and travel style.</p>
         <div class="mini-stats">
-          <span><b>{currentMonthTours.length}</b> seasonal tours</span>
+          <span><b data-current-month-count>...</b> seasonal tours</span>
           <span><b>{places.length}</b> destinations</span>
         </div>
       </div>
@@ -54,8 +52,168 @@ const hasMultipleHotels = hotels.length > 1;
 
   <section class="section month-section">
     <div class="container">
-      <TourSection title={`Best Tours for ${currentMonth}`} tours={currentMonthTours} viewAllLink={`/tours/?month=${currentMonth}`} />
+      <section
+        class="tour-section client-month-tours"
+        data-month-tours
+        data-tours-url={withBase('/data/tours.json')}
+        data-base-path={withBase('/')}
+      >
+        <div class="section-head">
+          <h2 data-month-title>Best Tours for {currentMonth}</h2>
+          <a data-month-view-all href={withBase(`/tours/?month=${currentMonth}`)}>View all</a>
+        </div>
+        <div class="tour-grid" data-month-results>
+          <p class="month-loading">Finding this month&apos;s best trips...</p>
+        </div>
+      </section>
     </div>
+    <script>
+      type MonthTour = {
+        title: string;
+        slug: string;
+        place: string;
+        duration: { days: number; nights: number };
+        bestMonths: string[];
+        season?: string[];
+        travelStyle?: string[];
+        coverImage: string;
+        costInr: number;
+        minHeadCount: number;
+      };
+
+      const monthNames = [
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December'
+      ];
+
+      const escapeHtml = (value: string) =>
+        value.replace(/[&<>"']/g, (character) => {
+          const entities: Record<string, string> = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+          };
+          return entities[character] || character;
+        });
+
+      const formatInrClient = (amount: number) =>
+        new Intl.NumberFormat('en-IN', {
+          style: 'currency',
+          currency: 'INR',
+          maximumFractionDigits: 0
+        }).format(amount);
+
+      const formatDurationClient = (duration: MonthTour['duration']) =>
+        `${duration.nights} ${duration.nights === 1 ? 'Night' : 'Nights'} / ${duration.days} ${duration.days === 1 ? 'Day' : 'Days'}`;
+
+      const getIndiaMonth = () =>
+        new Intl.DateTimeFormat('en-US', {
+          month: 'long',
+          timeZone: 'Asia/Kolkata'
+        }).format(new Date());
+
+      const normalizeMonth = (month: string | null) => {
+        if (!month) return getIndiaMonth();
+        const match = monthNames.find((monthName) => monthName.toLowerCase() === month.toLowerCase());
+        return match || getIndiaMonth();
+      };
+
+      const withClientBase = (basePath: string, path: string) => {
+        if (/^https?:\/\//.test(path)) return path;
+        const cleanBase = basePath.endsWith('/') ? basePath.slice(0, -1) : basePath;
+        return `${cleanBase}${path.startsWith('/') ? path : `/${path}`}`;
+      };
+
+      const renderMonthTour = (tour: MonthTour, basePath: string) => {
+        const seasons = Array.isArray(tour.season) ? tour.season : [];
+        const styles = Array.isArray(tour.travelStyle) ? tour.travelStyle : [];
+        const bestMonths = Array.isArray(tour.bestMonths) ? tour.bestMonths : [];
+        const href = withClientBase(basePath, `/tours/${tour.slug}/`);
+        const image = withClientBase(basePath, tour.coverImage || '/uploads/tour-kerala.svg');
+
+        return `
+          <article class="month-tour-card">
+            <a class="month-image-link" href="${href}" aria-label="${escapeHtml(tour.title)}">
+              <img src="${image}" alt="" loading="lazy" />
+            </a>
+            <div class="month-card-body">
+              <div class="month-price-row">
+                <p class="month-place-heading">${escapeHtml(tour.place)}</p>
+                <span>${escapeHtml(formatDurationClient(tour.duration))}</span>
+              </div>
+              <h3><a href="${href}">${escapeHtml(tour.title)}</a></h3>
+              <div class="month-meta"><span>${escapeHtml(seasons.join(', ') || 'All season')}</span></div>
+              <div class="month-style-row" aria-label="Travel styles">
+                ${(styles.length ? styles : ['Leisure']).slice(0, 3).map((style) => `<span>${escapeHtml(style)}</span>`).join('')}
+              </div>
+              <p>Best in ${escapeHtml(bestMonths.slice(0, 3).join(', ') || 'flexible months')}${bestMonths.length > 3 ? '...' : ''}</p>
+              <div class="month-price-row">
+                <div>
+                  <span>Starting from</span>
+                  <br />
+                  <strong>${formatInrClient(tour.costInr)}</strong>
+                </div>
+                <span>min ${tour.minHeadCount} heads</span>
+              </div>
+              <a class="month-read-more" href="${href}">View tour</a>
+            </div>
+          </article>
+        `;
+      };
+
+      const monthSection = document.querySelector<HTMLElement>('[data-month-tours]');
+
+      if (monthSection) {
+        const params = new URLSearchParams(window.location.search);
+        const selectedMonth = normalizeMonth(params.get('month'));
+        const toursUrl = monthSection.dataset.toursUrl || '/data/tours.json';
+        const basePath = monthSection.dataset.basePath || '/';
+        const title = monthSection.querySelector<HTMLElement>('[data-month-title]');
+        const viewAll = monthSection.querySelector<HTMLAnchorElement>('[data-month-view-all]');
+        const results = monthSection.querySelector<HTMLElement>('[data-month-results]');
+        const heroMonth = document.querySelector<HTMLElement>('[data-current-month-label]');
+        const heroCount = document.querySelector<HTMLElement>('[data-current-month-count]');
+
+        title && (title.textContent = `Best Tours for ${selectedMonth}`);
+        heroMonth && (heroMonth.textContent = selectedMonth);
+        viewAll && (viewAll.href = withClientBase(basePath, `/tours/?month=${encodeURIComponent(selectedMonth)}`));
+
+        fetch(toursUrl)
+          .then((response) => response.json() as Promise<MonthTour[]>)
+          .then((tours) => {
+            const monthTours = tours
+              .filter((tour) => Array.isArray(tour.bestMonths) && tour.bestMonths.includes(selectedMonth))
+              .sort((a, b) => a.costInr - b.costInr)
+              .slice(0, 12);
+
+            heroCount && (heroCount.textContent = String(monthTours.length));
+
+            if (!results) return;
+
+            results.innerHTML = monthTours.length
+              ? monthTours.map((tour) => renderMonthTour(tour, basePath)).join('')
+              : `<p class="month-loading">No tours are tagged for ${escapeHtml(selectedMonth)} yet.</p>`;
+          })
+          .catch(() => {
+            heroCount && (heroCount.textContent = '0');
+            if (results) {
+              results.innerHTML = '<p class="month-loading">Tours could not be loaded right now.</p>';
+            }
+          });
+      }
+    </script>
   </section>
 
   <section class="planner-band" id="plan-trip">
@@ -273,6 +431,179 @@ const hasMultipleHotels = hotels.length > 1;
 
   .month-section {
     padding-bottom: 44px;
+  }
+
+  .client-month-tours .section-head {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 24px;
+  }
+
+  .client-month-tours .section-head h2 {
+    margin: 0;
+    font-size: clamp(1.7rem, 4vw, 2.55rem);
+    line-height: 1.08;
+    letter-spacing: 0;
+    text-wrap: balance;
+  }
+
+  .client-month-tours .section-head a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 38px;
+    padding: 0 14px;
+    border-radius: 999px;
+    background: #fff4ea;
+    color: var(--accent-dark);
+    font-weight: 800;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .client-month-tours .tour-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+  }
+
+  :global(.month-loading) {
+    grid-column: 1 / -1;
+    margin: 0;
+    padding: 28px;
+    border: 1px solid rgba(232, 221, 201, 0.9);
+    border-radius: 18px;
+    background: #fff;
+    color: var(--muted);
+    font-weight: 800;
+  }
+
+  :global(.month-tour-card) {
+    position: relative;
+    display: grid;
+    overflow: hidden;
+    min-height: 100%;
+    border: 1px solid rgba(232, 221, 201, 0.9);
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: 0 18px 48px rgba(23, 33, 27, 0.09);
+    transition:
+      transform 180ms ease,
+      box-shadow 180ms ease;
+  }
+
+  :global(.month-tour-card:hover) {
+    transform: translateY(-3px);
+    box-shadow: 0 24px 60px rgba(23, 33, 27, 0.14);
+  }
+
+  :global(.month-image-link) {
+    position: relative;
+    display: block;
+    overflow: hidden;
+  }
+
+  :global(.month-image-link img) {
+    width: 100%;
+    aspect-ratio: 16 / 11;
+    object-fit: cover;
+    border-bottom: 1px solid var(--line);
+    transition: transform 240ms ease;
+  }
+
+  :global(.month-tour-card:hover .month-image-link img) {
+    transform: scale(1.035);
+  }
+
+  :global(.month-card-body) {
+    display: grid;
+    gap: 10px;
+    padding: 18px;
+  }
+
+  :global(.month-place-heading) {
+    margin: 0;
+    color: var(--accent-dark);
+    font-family: Fraunces, Georgia, serif;
+    font-size: 1.05rem;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  :global(.month-meta),
+  :global(.month-price-row) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 8px;
+    color: var(--muted);
+    font-size: 0.84rem;
+    font-weight: 800;
+  }
+
+  :global(.month-meta span) {
+    padding: 4px 9px;
+    border-radius: 999px;
+    background: var(--surface);
+  }
+
+  :global(.month-style-row) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+
+  :global(.month-style-row span) {
+    padding: 5px 9px;
+    border: 1px solid rgba(15, 118, 110, 0.16);
+    border-radius: 999px;
+    background: #eef8f4;
+    color: var(--green);
+    font-size: 0.78rem;
+    font-weight: 900;
+  }
+
+  :global(.month-card-body h3) {
+    margin: 0;
+    margin-top: 0.5rem;
+    color: #075a4d;
+    font-size: 1.22rem;
+    font-weight: 700;
+    line-height: 1.25;
+  }
+
+  :global(.month-card-body h3 a),
+  :global(.month-read-more) {
+    text-decoration: none;
+  }
+
+  :global(.month-card-body h3 a:hover),
+  :global(.month-read-more:hover) {
+    color: var(--accent);
+  }
+
+  :global(.month-card-body p) {
+    margin: 0;
+    color: var(--muted);
+  }
+
+  :global(.month-price-row strong) {
+    color: var(--accent-dark);
+    font-size: 1.22rem;
+  }
+
+  :global(.month-read-more) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    border-radius: 12px;
+    background: #fff4ea;
+    color: var(--accent-dark);
+    font-weight: 800;
   }
 
   .planner-band {
@@ -660,6 +991,29 @@ const hasMultipleHotels = hotels.length > 1;
     .planner-field select,
     .trip-planner button {
       min-height: 52px;
+      border-radius: 16px;
+    }
+
+    .client-month-tours .section-head {
+      align-items: center;
+      flex-direction: row;
+    }
+
+    .client-month-tours .tour-grid {
+      grid-template-columns: 1fr;
+    }
+
+    :global(.month-tour-card) {
+      border-radius: 22px;
+      box-shadow: 0 14px 40px rgba(23, 33, 27, 0.12);
+    }
+
+    :global(.month-image-link img) {
+      aspect-ratio: 1.22 / 1;
+    }
+
+    :global(.month-read-more) {
+      min-height: 48px;
       border-radius: 16px;
     }
 
