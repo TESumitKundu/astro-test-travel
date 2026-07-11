@@ -33,13 +33,14 @@ const { title, tours, viewAllLink = '/tours/', carousel = false } = Astro.props;
     align-items: end;
     justify-content: space-between;
     gap: 18px;
-    margin-bottom: 24px;
+    margin-bottom: 28px;
   }
 
   h2 {
     margin: 0;
-    font-size: clamp(1.7rem, 4vw, 2.55rem);
-    line-height: 1.08;
+    max-width: 740px;
+    font-size: clamp(2rem, 5vw, 3.25rem);
+    line-height: 1;
     letter-spacing: 0;
     text-wrap: balance;
   }
@@ -48,8 +49,8 @@ const { title, tours, viewAllLink = '/tours/', carousel = false } = Astro.props;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 38px;
-    padding: 0 14px;
+    min-height: 44px;
+    padding: 0 18px;
     border-radius: 999px;
     background: #fff4ea;
     color: var(--accent-dark);
@@ -61,16 +62,16 @@ const { title, tours, viewAllLink = '/tours/', carousel = false } = Astro.props;
   .tour-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 24px;
+    gap: 26px;
   }
 
   .tour-strip {
     display: grid;
-    grid-auto-columns: minmax(260px, 34%);
+    grid-auto-columns: minmax(300px, 32%);
     grid-auto-flow: column;
-    gap: 18px;
+    gap: 22px;
     overflow-x: auto;
-    padding: 4px 4px 16px;
+    padding: 8px 4px 24px;
     scroll-snap-type: x proximity;
     scrollbar-width: thin;
   }
@@ -85,7 +86,7 @@ const { title, tours, viewAllLink = '/tours/', carousel = false } = Astro.props;
     }
 
     .tour-strip {
-      grid-auto-columns: minmax(260px, 72%);
+      grid-auto-columns: minmax(280px, 72%);
     }
   }
 
@@ -95,12 +96,18 @@ const { title, tours, viewAllLink = '/tours/', carousel = false } = Astro.props;
       flex-direction: row;
     }
 
+    .section-head a {
+      min-height: 40px;
+      padding: 0 13px;
+      font-size: 0.86rem;
+    }
+
     .tour-grid {
       grid-template-columns: 1fr;
     }
 
     .tour-strip {
-      grid-auto-columns: minmax(258px, 86%);
+      grid-auto-columns: minmax(282px, 86%);
       margin-inline: -12px;
       padding-inline: 12px;
     }

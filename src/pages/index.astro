@@ -389,7 +389,7 @@ const hasMultipleHotels = hotels.length > 1;
     min-height: 44px;
     padding: 0 18px;
     border: 1px solid rgba(255, 255, 255, 0.52);
-    border-radius: 8px;
+    border-radius: 999px;
     color: #fff;
     font-weight: 800;
     text-decoration: none;
@@ -418,7 +418,7 @@ const hasMultipleHotels = hotels.length > 1;
 
   .mini-stats span {
     padding: 12px;
-    border-radius: 8px;
+    border-radius: 16px;
     background: rgba(255, 255, 255, 0.18);
   }
 
@@ -443,8 +443,8 @@ const hasMultipleHotels = hotels.length > 1;
 
   .client-month-tours .section-head h2 {
     margin: 0;
-    font-size: clamp(1.7rem, 4vw, 2.55rem);
-    line-height: 1.08;
+    font-size: clamp(2rem, 5vw, 3.25rem);
+    line-height: 1;
     letter-spacing: 0;
     text-wrap: balance;
   }
@@ -453,8 +453,8 @@ const hasMultipleHotels = hotels.length > 1;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 38px;
-    padding: 0 14px;
+    min-height: 44px;
+    padding: 0 18px;
     border-radius: 999px;
     background: #fff4ea;
     color: var(--accent-dark);
@@ -473,9 +473,9 @@ const hasMultipleHotels = hotels.length > 1;
     grid-column: 1 / -1;
     margin: 0;
     padding: 28px;
-    border: 1px solid rgba(232, 221, 201, 0.9);
-    border-radius: 18px;
-    background: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.72);
+    border-radius: 24px;
+    background: var(--surface-strong);
     color: var(--muted);
     font-weight: 800;
   }
@@ -485,10 +485,10 @@ const hasMultipleHotels = hotels.length > 1;
     display: grid;
     overflow: hidden;
     min-height: 100%;
-    border: 1px solid rgba(232, 221, 201, 0.9);
-    border-radius: 18px;
-    background: #fff;
-    box-shadow: 0 18px 48px rgba(23, 33, 27, 0.09);
+    border: 1px solid rgba(255, 255, 255, 0.72);
+    border-radius: 28px;
+    background: var(--surface-strong);
+    box-shadow: 0 22px 70px rgba(23, 33, 27, 0.12);
     transition:
       transform 180ms ease,
       box-shadow 180ms ease;
@@ -496,7 +496,7 @@ const hasMultipleHotels = hotels.length > 1;
 
   :global(.month-tour-card:hover) {
     transform: translateY(-3px);
-    box-shadow: 0 24px 60px rgba(23, 33, 27, 0.14);
+    box-shadow: 0 32px 90px rgba(23, 33, 27, 0.18);
   }
 
   :global(.month-image-link) {
@@ -507,9 +507,8 @@ const hasMultipleHotels = hotels.length > 1;
 
   :global(.month-image-link img) {
     width: 100%;
-    aspect-ratio: 16 / 11;
+    aspect-ratio: 4 / 3;
     object-fit: cover;
-    border-bottom: 1px solid var(--line);
     transition: transform 240ms ease;
   }
 
@@ -520,7 +519,7 @@ const hasMultipleHotels = hotels.length > 1;
   :global(.month-card-body) {
     display: grid;
     gap: 10px;
-    padding: 18px;
+    padding: 20px;
   }
 
   :global(.month-place-heading) {
@@ -568,11 +567,10 @@ const hasMultipleHotels = hotels.length > 1;
 
   :global(.month-card-body h3) {
     margin: 0;
-    margin-top: 0.5rem;
     color: #075a4d;
-    font-size: 1.22rem;
+    font-size: 1.42rem;
     font-weight: 700;
-    line-height: 1.25;
+    line-height: 1.08;
   }
 
   :global(.month-card-body h3 a),
@@ -600,7 +598,7 @@ const hasMultipleHotels = hotels.length > 1;
     align-items: center;
     justify-content: center;
     min-height: 42px;
-    border-radius: 12px;
+    border-radius: 16px;
     background: #fff4ea;
     color: var(--accent-dark);
     font-weight: 800;
@@ -609,8 +607,9 @@ const hasMultipleHotels = hotels.length > 1;
   .planner-band {
     padding: 70px 0;
     background:
-      radial-gradient(circle at 12% 18%, rgba(246, 183, 60, 0.2), transparent 18rem),
-      linear-gradient(135deg, #fff7e8 0%, #eaf8f2 48%, #e4f2ff 100%);
+      radial-gradient(circle at 12% 18%, rgba(243, 178, 58, 0.22), transparent 20rem),
+      radial-gradient(circle at 92% 20%, rgba(13, 117, 111, 0.16), transparent 22rem),
+      linear-gradient(135deg, #fff8e9 0%, #eef8f4 58%, #fffdf8 100%);
     position: relative;
     color: var(--ink);
   }
@@ -621,9 +620,9 @@ const hasMultipleHotels = hotels.length > 1;
     gap: 0;
     overflow: hidden;
     border: 1px solid rgba(232, 221, 201, 0.9);
-    border-radius: 30px;
-    background: rgba(255, 255, 255, 0.92);
-    box-shadow: 0 28px 90px rgba(23, 33, 27, 0.14);
+    border-radius: 34px;
+    background: rgba(255, 253, 248, 0.92);
+    box-shadow: 0 34px 100px rgba(23, 33, 27, 0.16);
   }
 
   .planner-copy {
@@ -631,7 +630,9 @@ const hasMultipleHotels = hotels.length > 1;
     align-content: center;
     min-height: 300px;
     padding: 34px;
-    background: #113c35;
+    background:
+      radial-gradient(circle at 0% 0%, rgba(243, 178, 58, 0.16), transparent 18rem),
+      #0b332d;
     color: #fff;
   }
 
@@ -665,8 +666,9 @@ const hasMultipleHotels = hotels.length > 1;
     display: grid;
     padding: 14px;
     border: 1px solid rgba(232, 221, 201, 0.9);
-    border-radius: 18px;
-    background: #fff;
+    border-radius: 22px;
+    background: var(--surface-strong);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.38);
   }
 
   .planner-field span,
@@ -698,7 +700,7 @@ const hasMultipleHotels = hotels.length > 1;
   .trip-planner :global(.planner-fields > button) {
     min-height: 56px;
     border: 0;
-    border-radius: 18px;
+    border-radius: 999px;
     border-color: var(--accent);
     background: var(--accent);
     color: #fff;
@@ -728,7 +730,9 @@ const hasMultipleHotels = hotels.length > 1;
   }
 
   .hotels-section {
-    background: linear-gradient(180deg, #fff 0%, #fff9ed 100%);
+    background:
+      radial-gradient(circle at 85% 5%, rgba(243, 178, 58, 0.14), transparent 18rem),
+      linear-gradient(180deg, #fffdf8 0%, #f7efe1 100%);
   }
 
   .hotel-head {
@@ -779,9 +783,9 @@ const hasMultipleHotels = hotels.length > 1;
     grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.8fr);
     overflow: hidden;
     border: 1px solid rgba(232, 221, 201, 0.9);
-    border-radius: 30px;
-    background: #fff;
-    box-shadow: 0 30px 90px rgba(23, 33, 27, 0.12);
+    border-radius: 34px;
+    background: var(--surface-strong);
+    box-shadow: 0 34px 100px rgba(23, 33, 27, 0.16);
     opacity: 0;
     pointer-events: none;
     transform: translateX(18px) scale(0.985);
@@ -800,7 +804,7 @@ const hasMultipleHotels = hotels.length > 1;
     position: relative;
     min-height: 420px;
     overflow: hidden;
-    background: #112f2b;
+    background: #071411;
   }
 
   .hotel-gallery img {
@@ -829,7 +833,7 @@ const hasMultipleHotels = hotels.length > 1;
     padding: 42px;
     background:
       radial-gradient(circle at 100% 0%, rgba(246, 183, 60, 0.14), transparent 16rem),
-      #fff;
+      var(--surface-strong);
   }
 
   .hotel-body span {
@@ -863,7 +867,7 @@ const hasMultipleHotels = hotels.length > 1;
     gap: 4px;
     margin-top: 8px;
     padding: 16px;
-    border-radius: 18px;
+    border-radius: 22px;
     background: #fff4ea;
   }
 
@@ -927,7 +931,9 @@ const hasMultipleHotels = hotels.length > 1;
 
   .custom-hero {
     padding: 74px 0;
-    background: #112f2b;
+    background:
+      radial-gradient(circle at 82% 20%, rgba(243, 178, 58, 0.14), transparent 20rem),
+      linear-gradient(135deg, #071411, #123f37);
     color: #fff;
   }
 

@@ -29,17 +29,15 @@ const bestMonths = asList(tour.data.bestMonths);
     aria-label={tour.data.title}
   >
     <img src={withBase(image)} alt="" loading="lazy" />
+    <span class="image-badge">{formatDuration(tour.data.duration)}</span>
   </a>
   <div class="card-body">
-    <div class="price-row">
+    <div class="place-row">
       <p class="place-heading">{tour.data.place}</p>
-      <span>{formatDuration(tour.data.duration)}</span>
+      <span>{seasons.join(", ") || "All season"}</span>
     </div>
 
     <h3><a href={withBase(`/tours/${tour.slug}/`)}>{tour.data.title}</a></h3>
-    <div class="meta">
-      <span>{seasons.join(", ") || "All season"}</span>
-    </div>
     <div class="style-row" aria-label="Travel styles">
       {(travelStyles.length ? travelStyles : ["Leisure"]).slice(0, 3).map((style) => <span>{style}</span>)}
     </div>
@@ -69,10 +67,10 @@ const bestMonths = asList(tour.data.bestMonths);
     display: grid;
     overflow: hidden;
     min-height: 100%;
-    border: 1px solid rgba(232, 221, 201, 0.9);
-    border-radius: 18px;
-    background: #fff;
-    box-shadow: 0 18px 48px rgba(23, 33, 27, 0.09);
+    border: 1px solid rgba(255, 255, 255, 0.72);
+    border-radius: 28px;
+    background: var(--surface-strong);
+    box-shadow: 0 22px 70px rgba(23, 33, 27, 0.12);
     transition:
       transform 180ms ease,
       box-shadow 180ms ease;
@@ -80,7 +78,7 @@ const bestMonths = asList(tour.data.bestMonths);
 
   .tour-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 24px 60px rgba(23, 33, 27, 0.14);
+    box-shadow: 0 32px 90px rgba(23, 33, 27, 0.18);
   }
 
   .image-link {
@@ -91,10 +89,36 @@ const bestMonths = asList(tour.data.bestMonths);
 
   .image-link img {
     width: 100%;
-    aspect-ratio: 16 / 11;
+    aspect-ratio: 4 / 3;
     object-fit: cover;
-    border-bottom: 1px solid var(--line);
     transition: transform 240ms ease;
+  }
+
+  .image-link::after {
+    position: absolute;
+    inset: auto 0 0;
+    height: 48%;
+    content: "";
+    background: linear-gradient(180deg, transparent, rgba(8, 24, 20, 0.58));
+    pointer-events: none;
+  }
+
+  .image-badge {
+    position: absolute;
+    left: 14px;
+    bottom: 14px;
+    z-index: 1;
+    display: inline-flex;
+    min-height: 34px;
+    align-items: center;
+    padding: 0 12px;
+    border: 1px solid rgba(255, 255, 255, 0.42);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.18);
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 900;
+    backdrop-filter: blur(12px);
   }
 
   .tour-card:hover .image-link img {
@@ -103,8 +127,8 @@ const bestMonths = asList(tour.data.bestMonths);
 
   .card-body {
     display: grid;
-    gap: 10px;
-    padding: 18px;
+    gap: 12px;
+    padding: 20px;
   }
 
   .place-heading {
@@ -116,7 +140,7 @@ const bestMonths = asList(tour.data.bestMonths);
     line-height: 1;
   }
 
-  .meta,
+  .place-row,
   .price-row {
     display: flex;
     flex-wrap: wrap;
@@ -128,10 +152,14 @@ const bestMonths = asList(tour.data.bestMonths);
     font-weight: 800;
   }
 
-  .meta span {
-    padding: 4px 9px;
+  .place-row > span {
+    padding: 5px 10px;
     border-radius: 999px;
-    background: var(--surface);
+    background: #eef8f4;
+    color: var(--green);
+    font-size: 0.76rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
   }
 
   .style-row {
@@ -156,11 +184,10 @@ const bestMonths = asList(tour.data.bestMonths);
 
   h3 {
     margin: 0;
-    margin-top: 0.5rem;
-    font-size: 1.22rem;
+    font-size: 1.42rem;
     font-weight: 700;
-    line-height: 1.25;
-    color: #075a4d;
+    line-height: 1.08;
+    color: var(--ink);
   }
 
   h3 a,
@@ -188,10 +215,15 @@ const bestMonths = asList(tour.data.bestMonths);
     align-items: center;
     justify-content: center;
     min-height: 42px;
-    border-radius: 12px;
+    border-radius: 16px;
     background: #fff4ea;
     color: var(--accent-dark);
     font-weight: 800;
+  }
+
+  .read-more:hover {
+    background: var(--accent);
+    color: #fff;
   }
 
   .compact .card-body {

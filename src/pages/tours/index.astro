@@ -133,13 +133,16 @@ const months = getAllMonths();
 
 <style>
   .page-head {
-    padding: 76px 0 48px;
+    min-height: 58svh;
+    display: grid;
+    align-items: end;
+    padding: 120px 0 72px;
     background:
-      linear-gradient(135deg, rgba(15, 118, 110, 0.9), rgba(239, 111, 47, 0.62)),
+      linear-gradient(90deg, rgba(8, 24, 20, 0.64), rgba(8, 24, 20, 0.14) 58%, rgba(8, 24, 20, 0.44)),
       var(--page-hero-image, none);
     background-position: center;
     background-size: cover;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 0 0 34px 34px;
     color: #fff;
   }
 
@@ -154,8 +157,8 @@ const months = getAllMonths();
   h1 {
     max-width: 780px;
     margin: 0;
-    font-size: clamp(2.35rem, 6vw, 4.5rem);
-    line-height: 1.02;
+    font-size: clamp(3rem, 8vw, 6.4rem);
+    line-height: 0.94;
     letter-spacing: 0;
     text-wrap: balance;
   }
@@ -169,16 +172,16 @@ const months = getAllMonths();
 
   .filters {
     display: grid;
-    grid-template-columns: minmax(190px, 1.1fr) repeat(5, minmax(0, 1fr)) auto;
+    grid-template-columns: minmax(220px, 1.2fr) repeat(5, minmax(0, 1fr)) auto;
     gap: 14px;
     align-items: end;
-    margin-top: -42px;
-    padding: 16px;
-    border: 1px solid rgba(232, 221, 201, 0.9);
-    border-radius: 20px;
-    background: rgba(255, 255, 255, 0.96);
-    box-shadow: 0 24px 70px rgba(23, 33, 27, 0.13);
-    backdrop-filter: blur(12px);
+    margin-top: -64px;
+    padding: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.72);
+    border-radius: 28px;
+    background: rgba(255, 253, 248, 0.92);
+    box-shadow: 0 28px 90px rgba(23, 33, 27, 0.16);
+    backdrop-filter: blur(18px);
   }
 
   .filter-title {
@@ -198,17 +201,19 @@ const months = getAllMonths();
   label {
     display: grid;
     gap: 6px;
-    color: var(--muted);
+    color: var(--green);
     font-weight: 800;
     font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
   }
 
   select,
   button {
     min-height: 48px;
     border: 1px solid var(--line);
-    border-radius: 13px;
-    background: #fff;
+    border-radius: 999px;
+    background: var(--surface-strong);
     color: var(--ink);
     font: inherit;
   }
@@ -237,7 +242,7 @@ const months = getAllMonths();
   .tour-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 22px;
+    gap: 26px;
   }
 
   .tour-grid :global(.tour-card[hidden]) {
@@ -262,15 +267,15 @@ const months = getAllMonths();
 
   @media (max-width: 620px) {
     .page-head {
-      min-height: 42svh;
-      padding: 44px 0 70px;
+      min-height: 62svh;
+      padding: 54px 0 92px;
       border-radius: 0 0 28px 28px;
     }
 
     .filters {
       grid-template-columns: 1fr 1fr;
       gap: 10px;
-      margin-top: -58px;
+      margin-top: -72px;
       padding: 14px;
       border-radius: 24px;
     }
@@ -287,7 +292,7 @@ const months = getAllMonths();
     select,
     button {
       min-height: 52px;
-      border-radius: 16px;
+      border-radius: 18px;
     }
 
     .result-count {

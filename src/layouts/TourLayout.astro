@@ -50,8 +50,8 @@ const description =
         <main class="package-main">
           <section class="info-panel" aria-labelledby="package-overview-title">
             <div class="section-title">
-              <p class="eyebrow">Package overview</p>
-              <h2 id="package-overview-title">Tour details</h2>
+              <p class="eyebrow">Trip compass</p>
+              <h2 id="package-overview-title">What to expect</h2>
             </div>
             <dl class="fact-grid">
               <div>
@@ -88,9 +88,8 @@ const description =
                 <h2 id="places-cover-title">Places to cover</h2>
               </div>
               <div class="places-list">
-                {placesToCover.map((place, index) => (
+                {placesToCover.map((place) => (
                   <article>
-                    <span class="route-step">{String(index + 1).padStart(2, '0')}</span>
                     <div>
                       <strong>{place.name}</strong>
                       <span>{place.nights} {place.nights === 1 ? 'Night' : 'Nights'}</span>
@@ -129,13 +128,15 @@ const description =
 <style>
   .tour-hero {
     position: relative;
-    min-height: 85svh;
-    padding: 34px 0 52px;
+    min-height: 86svh;
+    padding: 38px 0 64px;
     background:
-    linear-gradient(180deg, rgba(10, 28, 24, 0.28), rgba(10, 28, 24, 0.82)),
+    linear-gradient(90deg, rgba(8, 24, 20, 0.64), rgba(8, 24, 20, 0.12) 58%, rgba(8, 24, 20, 0.42)),
+    linear-gradient(180deg, rgba(10, 28, 24, 0.08), rgba(10, 28, 24, 0.58)),
     var(--tour-image);
     background-position: center;
     background-size: cover;
+    border-radius: 0 0 34px 34px;
     color: #fff;
     display: flex;
     flex-direction: column;
@@ -175,8 +176,8 @@ const description =
   h1 {
     max-width: 760px;
     margin: 0;
-    font-size: clamp(2.6rem, 7vw, 5.6rem);
-    line-height: 1.02;
+    font-size: clamp(3.2rem, 9vw, 7rem);
+    line-height: 0.94;
     letter-spacing: 0;
   }
 
@@ -210,24 +211,24 @@ const description =
 
   .package-grid {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 320px;
-    gap: 28px;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 32px;
     align-items: start;
   }
 
   .package-main {
     display: grid;
-    gap: 28px;
+    gap: 32px;
   }
 
   .info-panel,
   .places-cover,
   .itinerary-panel {
-    padding: 30px;
-    border: 1px solid rgba(232, 221, 201, 0.9);
-    border-radius: 24px;
-    background: #fff;
-    box-shadow: 0 18px 48px rgba(23, 33, 27, 0.08);
+    padding: 34px;
+    border: 1px solid rgba(255, 255, 255, 0.72);
+    border-radius: 30px;
+    background: var(--surface-strong);
+    box-shadow: 0 24px 80px rgba(23, 33, 27, 0.1);
   }
 
   .section-title {
@@ -243,21 +244,24 @@ const description =
   .fact-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 14px;
+    gap: 16px;
     margin: 0;
   }
 
   .fact-grid div {
-    min-height: 116px;
-    padding: 18px;
-    border: 1px solid rgba(15, 118, 110, 0.12);
-    border-radius: 18px;
-    background: linear-gradient(135deg, #fffaf0, #eef8f4);
+    min-height: 124px;
+    padding: 20px;
+    border: 1px solid rgba(15, 118, 110, 0.1);
+    border-radius: 24px;
+    background:
+      radial-gradient(circle at 100% 0%, rgba(243, 178, 58, 0.12), transparent 8rem),
+      linear-gradient(135deg, #fffaf0, #eef8f4);
   }
 
   .booking-card {
     position: sticky;
     top: 92px;
+    padding: 28px;
     background: linear-gradient(135deg, #fff4ea, #eef8f4);
     color: var(--ink);
     border: 1px solid rgba(239, 111, 47, 0.18);
@@ -272,7 +276,7 @@ const description =
 
   .booking-card strong {
     color: var(--accent-dark);
-    font-size: 2.35rem;
+    font-size: 2.55rem;
     line-height: 1;
   }
 
@@ -290,38 +294,26 @@ const description =
 
   .places-list {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-    gap: 12px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
   }
 
   .places-list article {
-    position: relative;
     display: grid;
-    gap: 14px;
-    padding: 18px;
-    border: 1px solid rgba(15, 118, 110, 0.12);
-    border-radius: 20px;
-    background:
-      linear-gradient(135deg, rgba(238, 248, 244, 0.94), rgba(255, 244, 234, 0.7));
-  }
-
-  .route-step {
-    display: inline-grid;
-    place-items: center;
-    width: 46px;
-    height: 46px;
-    border: 2px solid #fff;
-    border-radius: 999px;
-    background: var(--green);
-    color: #fff;
-    box-shadow: 0 10px 24px rgba(15, 118, 110, 0.22);
-    font-size: 0.82rem;
-    font-weight: 900;
+    min-height: 132px;
   }
 
   .places-list article div {
     display: grid;
     gap: 5px;
+    align-content: end;
+    padding: 22px;
+    border: 1px solid rgba(15, 118, 110, 0.1);
+    border-radius: 24px;
+    background:
+      radial-gradient(circle at 100% 0%, rgba(243, 178, 58, 0.16), transparent 8rem),
+      linear-gradient(135deg, rgba(238, 248, 244, 0.96), rgba(255, 244, 234, 0.76));
+    box-shadow: 0 18px 48px rgba(23, 33, 27, 0.08);
   }
 
   .places-list article div span {
@@ -341,8 +333,9 @@ const description =
 
   @media (max-width: 860px) {
     .tour-hero {
-      min-height: 76svh;
-      padding: 22px 0 34px;
+      min-height: 82svh;
+      padding: 24px 0 38px;
+      border-radius: 0 0 30px 30px;
     }
 
 
@@ -352,9 +345,14 @@ const description =
 
     .booking-card {
       position: static;
+      order: -1;
     }
 
     .fact-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .places-list {
       grid-template-columns: 1fr;
     }
   }
