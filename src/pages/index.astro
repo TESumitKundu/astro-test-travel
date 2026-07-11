@@ -137,28 +137,20 @@ const hasMultipleHotels = hotels.length > 1;
       };
 
       const renderMonthTour = (tour: MonthTour, basePath: string) => {
-        const seasons = Array.isArray(tour.season) ? tour.season : [];
-        const styles = Array.isArray(tour.travelStyle) ? tour.travelStyle : [];
-        const bestMonths = Array.isArray(tour.bestMonths) ? tour.bestMonths : [];
         const href = withClientBase(basePath, `/tours/${tour.slug}/`);
         const image = withClientBase(basePath, tour.coverImage || '/uploads/tour-kerala.svg');
 
         return `
-          <article class="month-tour-card">
-            <a class="month-image-link" href="${href}" aria-label="${escapeHtml(tour.title)}">
+          <a class="month-tour-card" href="${href}" aria-label="${escapeHtml(tour.title)}">
+            <span class="month-image-link">
               <img src="${image}" alt="" loading="lazy" />
-            </a>
-            <div class="month-card-body">
-              <div class="month-price-row">
+            </span>
+            <span class="month-card-body">
+              <div class="month-place-row">
                 <p class="month-place-heading">${escapeHtml(tour.place)}</p>
                 <span>${escapeHtml(formatDurationClient(tour.duration))}</span>
               </div>
-              <h3><a href="${href}">${escapeHtml(tour.title)}</a></h3>
-              <div class="month-meta"><span>${escapeHtml(seasons.join(', ') || 'All season')}</span></div>
-              <div class="month-style-row" aria-label="Travel styles">
-                ${(styles.length ? styles : ['Leisure']).slice(0, 3).map((style) => `<span>${escapeHtml(style)}</span>`).join('')}
-              </div>
-              <p>Best in ${escapeHtml(bestMonths.slice(0, 3).join(', ') || 'flexible months')}${bestMonths.length > 3 ? '...' : ''}</p>
+              <h3>${escapeHtml(tour.title)}</h3>
               <div class="month-price-row">
                 <div>
                   <span>Starting from</span>
@@ -167,9 +159,8 @@ const hasMultipleHotels = hotels.length > 1;
                 </div>
                 <span>min ${tour.minHeadCount} heads</span>
               </div>
-              <a class="month-read-more" href="${href}">View tour</a>
-            </div>
-          </article>
+            </span>
+          </a>
         `;
       };
 
@@ -485,10 +476,13 @@ const hasMultipleHotels = hotels.length > 1;
     display: grid;
     overflow: hidden;
     min-height: 100%;
-    border: 1px solid rgba(255, 255, 255, 0.72);
-    border-radius: 28px;
-    background: var(--surface-strong);
+    min-height: 520px;
+    border: 0;
+    border-radius: 16px;
+    background: #071411;
     box-shadow: 0 22px 70px rgba(23, 33, 27, 0.12);
+    color: #fff;
+    text-decoration: none;
     transition:
       transform 180ms ease,
       box-shadow 180ms ease;
@@ -500,16 +494,27 @@ const hasMultipleHotels = hotels.length > 1;
   }
 
   :global(.month-image-link) {
-    position: relative;
-    display: block;
+    position: absolute;
+    inset: 0;
+    display: grid;
     overflow: hidden;
   }
 
   :global(.month-image-link img) {
     width: 100%;
-    aspect-ratio: 4 / 3;
+    height: 100%;
     object-fit: cover;
     transition: transform 240ms ease;
+  }
+
+  :global(.month-image-link::after) {
+    position: absolute;
+    inset: 0;
+    content: "";
+    background:
+      linear-gradient(180deg, rgba(7, 20, 17, 0.02), rgba(7, 20, 17, 0.5)),
+      linear-gradient(90deg, rgba(7, 20, 17, 0.18), transparent 62%);
+    pointer-events: none;
   }
 
   :global(.month-tour-card:hover .month-image-link img) {
@@ -517,36 +522,43 @@ const hasMultipleHotels = hotels.length > 1;
   }
 
   :global(.month-card-body) {
+    position: relative;
+    z-index: 1;
     display: grid;
-    gap: 10px;
-    padding: 20px;
+    gap: 12px;
+    align-content: end;
+    padding: 24px;
   }
 
   :global(.month-place-heading) {
     margin: 0;
-    color: var(--accent-dark);
+    color: var(--sun);
     font-family: Fraunces, Georgia, serif;
     font-size: 1.05rem;
     font-weight: 800;
     line-height: 1;
   }
 
-  :global(.month-meta),
+  :global(.month-place-row),
   :global(.month-price-row) {
     display: flex;
     flex-wrap: wrap;
     align-items: flex-end;
     justify-content: space-between;
     gap: 8px;
-    color: var(--muted);
+    color: rgba(255, 255, 255, 0.76);
     font-size: 0.84rem;
     font-weight: 800;
   }
 
-  :global(.month-meta span) {
-    padding: 4px 9px;
+  :global(.month-place-row > span) {
+    padding: 5px 10px;
     border-radius: 999px;
-    background: var(--surface);
+    background: rgba(255, 255, 255, 0.14);
+    color: #fff;
+    font-size: 0.76rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
   }
 
   :global(.month-style-row) {
@@ -556,52 +568,31 @@ const hasMultipleHotels = hotels.length > 1;
   }
 
   :global(.month-style-row span) {
-    padding: 5px 9px;
-    border: 1px solid rgba(15, 118, 110, 0.16);
+    padding: 6px 10px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 999px;
-    background: #eef8f4;
-    color: var(--green);
+    background: rgba(255, 255, 255, 0.14);
+    color: #fff;
     font-size: 0.78rem;
     font-weight: 900;
   }
 
   :global(.month-card-body h3) {
     margin: 0;
-    color: #075a4d;
-    font-size: 1.42rem;
+    color: #fff;
+    font-size: clamp(1.35rem, 2.1vw, 1.9rem);
     font-weight: 700;
-    line-height: 1.08;
-  }
-
-  :global(.month-card-body h3 a),
-  :global(.month-read-more) {
-    text-decoration: none;
-  }
-
-  :global(.month-card-body h3 a:hover),
-  :global(.month-read-more:hover) {
-    color: var(--accent);
+    line-height: 1.05;
   }
 
   :global(.month-card-body p) {
     margin: 0;
-    color: var(--muted);
+    color: rgba(255, 255, 255, 0.78);
   }
 
   :global(.month-price-row strong) {
-    color: var(--accent-dark);
+    color: #fff;
     font-size: 1.22rem;
-  }
-
-  :global(.month-read-more) {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 42px;
-    border-radius: 16px;
-    background: #fff4ea;
-    color: var(--accent-dark);
-    font-weight: 800;
   }
 
   .planner-band {
@@ -1010,17 +1001,13 @@ const hasMultipleHotels = hotels.length > 1;
     }
 
     :global(.month-tour-card) {
-      border-radius: 22px;
+      border-radius: 14px;
       box-shadow: 0 14px 40px rgba(23, 33, 27, 0.12);
+      min-height: 520px;
     }
 
     :global(.month-image-link img) {
-      aspect-ratio: 1.22 / 1;
-    }
-
-    :global(.month-read-more) {
-      min-height: 48px;
-      border-radius: 16px;
+      height: 100%;
     }
 
     .split {

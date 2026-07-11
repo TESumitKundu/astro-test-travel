@@ -5,7 +5,7 @@ place: "Rajasthan"
 duration:
   days: 7
   nights: 6
-bestMonths: ["October", "November", "December", "January", "February", "March"]
+bestMonths: ["October", "November", "December", "January", "February", "July"]
 season: ["Winter"]
 travelStyle: ["Heritage", "Culture", "Leisure"]
 coverImage: "/uploads/tour-rajasthan.svg"
