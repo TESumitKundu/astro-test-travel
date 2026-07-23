@@ -1,6 +1,6 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import TourSection from '../components/TourSection.astro';
+import BaseLayout from "../layouts/BaseLayout.astro";
+import TourSection from "../components/TourSection.astro";
 import {
   getAllMonths,
   getAllPlaces,
@@ -9,11 +9,11 @@ import {
   getCurrentMonthName,
   formatInr,
   getLongDurationTours,
-  getShortDurationTours
-} from '../lib/tours';
-import { getFeaturedHotels } from '../lib/hotels';
-import site from '../../config/site.json';
-import { withBase } from '../lib/paths';
+  getShortDurationTours,
+} from "../lib/tours";
+import { getFeaturedHotels } from "../lib/hotels";
+import site from "../../config/site.json";
+import { withBase } from "../lib/paths";
 
 const currentMonth = getCurrentMonthName();
 const shortTours = await getShortDurationTours(8);
@@ -24,29 +24,60 @@ const travelStyles = await getAllTravelStyles();
 const months = getAllMonths();
 const hotels = await getFeaturedHotels();
 const hasMultipleHotels = hotels.length > 1;
+const heroMoodTiles = site.heroMoodTiles || [];
 ---
 
 <BaseLayout title={site.siteName} description={site.siteDescription}>
-  <section class="hero travel-hero" style={`--hero-image: url('${withBase('/uploads/tour-kerala.svg')}')`}>
-    <div class="container hero-grid">
-      <div>
-        <p class="eyebrow">Small group journeys across India</p>
-        <h1>Find your next escape</h1>
-        <p>Season-smart tours, easy weekend breaks, hotel-ready ideas, and custom routes planned around weather, group size, and budget.</p>
+  <section class="travel-hero" data-travel-hero>
+    <div class="travel-hero__sticky">
+      <div class="travel-hero__gallery" data-travel-gallery></div>
+      <script
+        type="application/json"
+        data-hero-mood-tiles
+        set:html={JSON.stringify(heroMoodTiles)}
+      />
+
+      <div class="travel-hero__mask">
+        <img
+          src={withBase("/hero.jpg")}
+          alt="A scenic India travel landscape"
+        />
+      </div>
+
+      <div class="container">
+        <div class="travel-hero__content">
+        <p class="eyebrow">TOUR N MORE</p>
+        <h1>Your perfect tour starts with the right guide.</h1>
+        <!-- Your trusted guide to the perfect tour. -->
+        <p>
+          Month-smart routes, handpicked stays, and private plans shaped around
+          weather, pace, and the way your group likes to travel.
+        </p>
         <div class="hero-actions">
-          <a class="button" href={withBase('/tours/')}>Explore tours</a>
+          <a class="button" href={withBase("/tours/")}>Explore tours</a>
           <a class="ghost-button" href="#plan-trip">Plan my trip</a>
         </div>
-      </div>
-      <div class="hero-panel" aria-label="Travel planning highlights">
-        <span class="panel-kicker">This month</span>
-        <strong><span data-current-month-label>{currentMonth}</span> picks are ready</strong>
-        <p>Browse trips matched to the current season, then tune the list by place, month, duration, and travel style.</p>
-        <div class="mini-stats">
-          <span><b data-current-month-count>...</b> seasonal tours</span>
-          <span><b>{places.length}</b> destinations</span>
         </div>
       </div>
+
+      <div class="travel-hero__month-copy" data-travel-copy>
+        Choose your travel style
+      </div>
+    </div>
+  </section>
+
+  <section class="brand-reveal" data-brand-reveal>
+    <div class="brand-reveal__inner">
+      <p class="eyebrow">TrailNest Tours</p>
+      <h4
+        class="brand-reveal__copy"
+      >
+        We design India journeys around your month 🗓️, mood ✨, pace 🚶, and the
+        places that stay with you long after the road ends 🧭
+    </h4>
+    </div>
+    <div class="brand-marquee" aria-label="TOUR N MORE">
+      <span>TOUR N MORE</span>
     </div>
   </section>
 
@@ -55,12 +86,15 @@ const hasMultipleHotels = hotels.length > 1;
       <section
         class="tour-section client-month-tours"
         data-month-tours
-        data-tours-url={withBase('/data/tours.json')}
-        data-base-path={withBase('/')}
+        data-tours-url={withBase("/data/tours.json")}
+        data-base-path={withBase("/")}
       >
         <div class="section-head">
-          <h2 data-month-title>Best Tours for {currentMonth}</h2>
-          <a data-month-view-all href={withBase(`/tours/?month=${currentMonth}`)}>View all</a>
+          <h2 data-month-title>{currentMonth} tours, ready to move</h2>
+          <a
+            data-month-view-all
+            href={withBase(`/tours/?month=${currentMonth}`)}>View all</a
+          >
         </div>
         <div class="tour-grid" data-month-results>
           <p class="month-loading">Finding this month&apos;s best trips...</p>
@@ -81,64 +115,89 @@ const hasMultipleHotels = hotels.length > 1;
         minHeadCount: number;
       };
 
+      type HeroMoodTile = {
+        label: string;
+        image: string;
+        style: string;
+        href: string;
+        meta?: string;
+      };
+
+      const heroCardNames = [
+        "card-mountain",
+        "card-temple",
+        "card-nature",
+        "card-backwater",
+        "card-sea",
+        "card-peak",
+      ];
+      const heroCardLimit = heroCardNames.length;
+
       const monthNames = [
-        'January',
-        'February',
-        'March',
-        'April',
-        'May',
-        'June',
-        'July',
-        'August',
-        'September',
-        'October',
-        'November',
-        'December'
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
       ];
 
       const escapeHtml = (value: string) =>
         value.replace(/[&<>"']/g, (character) => {
           const entities: Record<string, string> = {
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            '"': '&quot;',
-            "'": '&#039;'
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#039;",
           };
           return entities[character] || character;
         });
 
       const formatInrClient = (amount: number) =>
-        new Intl.NumberFormat('en-IN', {
-          style: 'currency',
-          currency: 'INR',
-          maximumFractionDigits: 0
+        new Intl.NumberFormat("en-IN", {
+          style: "currency",
+          currency: "INR",
+          maximumFractionDigits: 0,
         }).format(amount);
 
-      const formatDurationClient = (duration: MonthTour['duration']) =>
-        `${duration.nights} ${duration.nights === 1 ? 'Night' : 'Nights'} / ${duration.days} ${duration.days === 1 ? 'Day' : 'Days'}`;
+      const formatDurationClient = (duration: MonthTour["duration"]) =>
+        `${duration.nights} ${duration.nights === 1 ? "Night" : "Nights"} / ${duration.days} ${duration.days === 1 ? "Day" : "Days"}`;
 
       const getIndiaMonth = () =>
-        new Intl.DateTimeFormat('en-US', {
-          month: 'long',
-          timeZone: 'Asia/Kolkata'
+        new Intl.DateTimeFormat("en-US", {
+          month: "long",
+          timeZone: "Asia/Kolkata",
         }).format(new Date());
 
       const normalizeMonth = (month: string | null) => {
         if (!month) return getIndiaMonth();
-        const match = monthNames.find((monthName) => monthName.toLowerCase() === month.toLowerCase());
+        const match = monthNames.find(
+          (monthName) => monthName.toLowerCase() === month.toLowerCase(),
+        );
         return match || getIndiaMonth();
       };
 
       const withClientBase = (basePath: string, path: string) => {
         if (/^https?:\/\//.test(path)) return path;
-        const cleanBase = basePath.endsWith('/') ? basePath.slice(0, -1) : basePath;
-        return `${cleanBase}${path.startsWith('/') ? path : `/${path}`}`;
+        const cleanBase = basePath.endsWith("/")
+          ? basePath.slice(0, -1)
+          : basePath;
+        return `${cleanBase}${path.startsWith("/") ? path : `/${path}`}`;
       };
 
       const renderMonthTour = (tour: MonthTour, basePath: string) => {
         const href = withClientBase(basePath, `/tours/${tour.slug}/`);
-        const image = withClientBase(basePath, tour.coverImage || '/uploads/tour-kerala.svg');
+        const image = withClientBase(
+          basePath,
+          tour.coverImage || "/uploads/tour-kerala.svg",
+        );
 
         return `
           <a class="month-tour-card" href="${href}" aria-label="${escapeHtml(tour.title)}">
@@ -164,104 +223,1182 @@ const hasMultipleHotels = hotels.length > 1;
         `;
       };
 
-      const monthSection = document.querySelector<HTMLElement>('[data-month-tours]');
+      const renderHeroTourCard = (
+        tour: MonthTour,
+        basePath: string,
+        index: number,
+      ) => {
+        const href = withClientBase(basePath, `/tours/${tour.slug}/`);
+        const image = withClientBase(
+          basePath,
+          tour.coverImage || "/uploads/tour-kerala.svg",
+        );
+        return `
+          <a class="travel-card ${heroCardNames[index] || "card-peak"}" href="${href}" data-travel-image aria-label="${escapeHtml(tour.title)}">
+            <img src="${image}" alt="" loading="lazy" />
+            <span>
+              <b>${escapeHtml(tour.place)}</b>
+              <small>${escapeHtml(formatDurationClient(tour.duration))}</small>
+            </span>
+          </a>
+        `;
+      };
+
+      const getStyleFromTile = (tile: HeroMoodTile) => {
+        if (tile.style) return tile.style;
+        const href = tile.href || "";
+        const style = new URLSearchParams(href.split("?")[1] || "").get(
+          "style",
+        );
+        return style || tile.label;
+      };
+
+      const renderHeroStyleCard = (
+        tile: HeroMoodTile,
+        basePath: string,
+        index: number,
+        count: number,
+      ) => {
+        const style = getStyleFromTile(tile);
+        const href = withClientBase(
+          basePath,
+          tile.href || `/tours/?style=${encodeURIComponent(style)}`,
+        );
+        const image = withClientBase(
+          basePath,
+          tile.image || "/uploads/tour-kerala.svg",
+        );
+        const countLabel = `${count} ${count === 1 ? "tour" : "tours"}`;
+
+        return `
+          <a class="travel-card mood-card ${heroCardNames[index] || "card-peak"}" href="${href}" data-travel-image aria-label="${escapeHtml(tile.label)}">
+            <img src="${image}" alt="" loading="lazy" />
+            <span>
+              <b>${escapeHtml(tile.label)}</b>
+              <small>${escapeHtml(countLabel)}</small>
+            </span>
+            <em>${escapeHtml(tile.meta || "Explore style")}</em>
+          </a>
+        `;
+      };
+
+      const monthSection =
+        document.querySelector<HTMLElement>("[data-month-tours]");
+      const heroGallery = document.querySelector<HTMLElement>(
+        "[data-travel-gallery]",
+      );
+      const moodTilesData = document.querySelector<HTMLScriptElement>(
+        "[data-hero-mood-tiles]",
+      );
+      const moodTiles: HeroMoodTile[] = moodTilesData?.textContent
+        ? JSON.parse(moodTilesData.textContent)
+        : [];
 
       if (monthSection) {
         const params = new URLSearchParams(window.location.search);
-        const selectedMonth = normalizeMonth(params.get('month'));
-        const toursUrl = monthSection.dataset.toursUrl || '/data/tours.json';
-        const basePath = monthSection.dataset.basePath || '/';
-        const title = monthSection.querySelector<HTMLElement>('[data-month-title]');
-        const viewAll = monthSection.querySelector<HTMLAnchorElement>('[data-month-view-all]');
-        const results = monthSection.querySelector<HTMLElement>('[data-month-results]');
-        const heroMonth = document.querySelector<HTMLElement>('[data-current-month-label]');
-        const heroCount = document.querySelector<HTMLElement>('[data-current-month-count]');
+        const selectedMonth = normalizeMonth(params.get("month"));
+        const toursUrl = monthSection.dataset.toursUrl || "/data/tours.json";
+        const basePath = monthSection.dataset.basePath || "/";
+        const title =
+          monthSection.querySelector<HTMLElement>("[data-month-title]");
+        const viewAll = monthSection.querySelector<HTMLAnchorElement>(
+          "[data-month-view-all]",
+        );
+        const results = monthSection.querySelector<HTMLElement>(
+          "[data-month-results]",
+        );
+        const heroMonth = document.querySelector<HTMLElement>(
+          "[data-current-month-label]",
+        );
+        const heroCount = document.querySelector<HTMLElement>(
+          "[data-current-month-count]",
+        );
 
         title && (title.textContent = `Best Tours for ${selectedMonth}`);
         heroMonth && (heroMonth.textContent = selectedMonth);
-        viewAll && (viewAll.href = withClientBase(basePath, `/tours/?month=${encodeURIComponent(selectedMonth)}`));
+        viewAll &&
+          (viewAll.href = withClientBase(
+            basePath,
+            `/tours/?month=${encodeURIComponent(selectedMonth)}`,
+          ));
 
         fetch(toursUrl)
           .then((response) => response.json() as Promise<MonthTour[]>)
           .then((tours) => {
             const monthTours = tours
-              .filter((tour) => Array.isArray(tour.bestMonths) && tour.bestMonths.includes(selectedMonth))
+              .filter(
+                (tour) =>
+                  Array.isArray(tour.bestMonths) &&
+                  tour.bestMonths.includes(selectedMonth),
+              )
               .sort((a, b) => a.costInr - b.costInr)
               .slice(0, 12);
 
             heroCount && (heroCount.textContent = String(monthTours.length));
 
+            if (heroGallery) {
+              const styleCards = moodTiles
+                .slice(0, heroCardLimit)
+                .map((tile, index) => {
+                  const style = getStyleFromTile(tile);
+                  const count = tours.filter(
+                    (tour) =>
+                      Array.isArray(tour.travelStyle) &&
+                      tour.travelStyle.includes(style),
+                  ).length;
+
+                  return renderHeroStyleCard(tile, basePath, index, count);
+                });
+
+              heroGallery.innerHTML = styleCards.join("");
+              window.dispatchEvent(
+                new CustomEvent("travel-month-gallery-ready"),
+              );
+            }
+
             if (!results) return;
 
             results.innerHTML = monthTours.length
-              ? monthTours.map((tour) => renderMonthTour(tour, basePath)).join('')
+              ? monthTours
+                  .map((tour) => renderMonthTour(tour, basePath))
+                  .join("")
               : `<p class="month-loading">No tours are tagged for ${escapeHtml(selectedMonth)} yet.</p>`;
           })
           .catch(() => {
-            heroCount && (heroCount.textContent = '0');
+            heroCount && (heroCount.textContent = "0");
             if (results) {
-              results.innerHTML = '<p class="month-loading">Tours could not be loaded right now.</p>';
+              results.innerHTML =
+                '<p class="month-loading">Tours could not be loaded right now.</p>';
             }
           });
+      }
+    </script>
+    <script>
+      const brandReveal = document.querySelector<HTMLElement>(
+        "[data-brand-reveal]",
+      );
+
+      if (brandReveal) {
+        const brandCopy =
+          brandReveal.querySelector<HTMLElement>(".brand-reveal__copy");
+        let brandWords: HTMLElement[] = [];
+
+        if (brandCopy) {
+          const copyText = brandCopy.textContent?.trim().replace(/\s+/g, " ");
+          brandCopy.textContent = "";
+
+          if (copyText) {
+            copyText.split(/(\s+)/).forEach((part) => {
+              if (!part.trim()) {
+                brandCopy.append(document.createTextNode(part));
+                return;
+              }
+
+              const word = document.createElement("span");
+              word.className = "brand-word";
+              word.textContent = part;
+              brandCopy.append(word);
+              brandWords.push(word);
+            });
+          }
+        }
+
+        brandWords = Array.from(
+          brandReveal.querySelectorAll<HTMLElement>(".brand-word"),
+        );
+        let brandTicking = false;
+
+        const updateBrandReveal = () => {
+          const rect = brandReveal.getBoundingClientRect();
+          const viewportHeight = window.innerHeight || 1;
+          const progress = Math.min(
+            Math.max(
+              (viewportHeight * 0.64 - rect.top) / (rect.height * 0.58),
+              0,
+            ),
+            1,
+          );
+          const visibleCount = Math.ceil(progress * brandWords.length);
+
+          brandWords.forEach((word, index) => {
+            word.classList.toggle("is-visible", index < visibleCount);
+          });
+
+          brandTicking = false;
+        };
+
+        const requestBrandReveal = () => {
+          if (brandTicking) return;
+          brandTicking = true;
+          window.requestAnimationFrame(updateBrandReveal);
+        };
+
+        updateBrandReveal();
+        window.addEventListener("scroll", requestBrandReveal, { passive: true });
+        window.addEventListener("resize", requestBrandReveal);
       }
     </script>
   </section>
 
   <section class="planner-band" id="plan-trip">
     <div class="container">
-      <form class="trip-planner" action={withBase('/tours/')} method="get">
+      <form
+        class="trip-planner interactive-planner planner-form1"
+        action={withBase("/tours/")}
+        method="get"
+        data-trip-planner
+        data-tours-url={withBase("/data/tours.json")}
+        data-base-path={withBase("/")}
+      >
         <div class="planner-copy">
           <p class="eyebrow">Plan your trip</p>
           <h2>Find tours that fit your mood.</h2>
-          <p>Use the quick filters to match destination, season, timing, and travel style.</p>
+          <p>
+            Pick the signals that matter. Matching tours update instantly
+            before you leave the page.
+          </p>
         </div>
         <div class="planner-fields">
-          <label class="planner-field">
-            <span>Where</span>
-            <select name="place">
+          <div class="planner-native-fields" aria-hidden="true">
+            <select name="place" data-planner-filter>
               <option value="">Any place</option>
               {places.map((place) => <option value={place}>{place}</option>)}
             </select>
-          </label>
-          <label class="planner-field">
-            <span>Duration</span>
-            <select name="duration">
+            <select name="duration" data-planner-filter>
               <option value="">Any length</option>
               <option value="short">Short escape</option>
               <option value="long">Long journey</option>
             </select>
-          </label>
-          <label class="planner-field">
-            <span>Month</span>
-            <select name="month">
+            <select name="month" data-planner-filter>
               <option value="">Any month</option>
               {months.map((month) => <option value={month}>{month}</option>)}
             </select>
-          </label>
-          <label class="planner-field">
-            <span>Season</span>
-            <select name="season">
+            <select name="season" data-planner-filter>
               <option value="">Any season</option>
-              {seasons.map((season) => <option value={season}>{season}</option>)}
+              {
+                seasons.map((season) => (
+                  <option value={season}>{season}</option>
+                ))
+              }
             </select>
-          </label>
-          <label class="planner-field wide">
-            <span>Travel style</span>
-            <select name="style">
+            <select name="style" data-planner-filter>
               <option value="">Any style</option>
-              {travelStyles.map((style) => <option value={style}>{style}</option>)}
+              {
+                travelStyles.map((style) => (
+                  <option value={style}>{style}</option>
+                ))
+              }
             </select>
-          </label>
-          <button type="submit">Search tours</button>
+          </div>
+
+          <div class="sentence-planner" data-sentence-planner>
+            <div class="sentence-planner__copy">
+              <p class="sentence-planner__kicker">Shape the trip</p>
+              <div class="travel-sentence" aria-label="Trip search sentence">
+                <span>I want to go to</span>
+                <span class="signal" data-signal data-field="place">
+                  <button type="button" data-signal-toggle aria-expanded="false">
+                    <strong data-lane-value="place">Anywhere</strong>
+                  </button>
+                  <span class="signal-options">
+                    <button type="button" data-planner-choice data-field="place" data-value="">Anywhere</button>
+                    {places.map((place) => (
+                      <button type="button" data-planner-choice data-field="place" data-value={place}>{place}</button>
+                    ))}
+                  </span>
+                </span>
+                <span>for</span>
+                <span class="signal" data-signal data-field="duration">
+                  <button type="button" data-signal-toggle aria-expanded="false">
+                    <strong data-lane-value="duration">Any length</strong>
+                  </button>
+                  <span class="signal-options">
+                    <button type="button" data-planner-choice data-field="duration" data-value="">Any length</button>
+                    <button type="button" data-planner-choice data-field="duration" data-value="short">Short escape</button>
+                    <button type="button" data-planner-choice data-field="duration" data-value="long">Long journey</button>
+                  </span>
+                </span>
+                <span>in</span>
+                <span class="signal" data-signal data-field="month">
+                  <button type="button" data-signal-toggle aria-expanded="false">
+                    <strong data-lane-value="month">Any month</strong>
+                  </button>
+                  <span class="signal-options">
+                    <button type="button" data-planner-choice data-field="month" data-value="">Any month</button>
+                    {months.map((month) => (
+                      <button type="button" data-planner-choice data-field="month" data-value={month}>{month}</button>
+                    ))}
+                  </span>
+                </span>
+                <span>during</span>
+                <span class="signal" data-signal data-field="season">
+                  <button type="button" data-signal-toggle aria-expanded="false">
+                    <strong data-lane-value="season">Any season</strong>
+                  </button>
+                  <span class="signal-options">
+                    <button type="button" data-planner-choice data-field="season" data-value="">Any season</button>
+                    {seasons.map((season) => (
+                      <button type="button" data-planner-choice data-field="season" data-value={season}>{season}</button>
+                    ))}
+                  </span>
+                </span>
+                <span>with</span>
+                <span class="signal" data-signal data-field="style">
+                  <button type="button" data-signal-toggle aria-expanded="false">
+                    <strong data-lane-value="style">Any style</strong>
+                  </button>
+                  <span class="signal-options">
+                    <button type="button" data-planner-choice data-field="style" data-value="">Any style</button>
+                    {travelStyles.map((style) => (
+                      <button type="button" data-planner-choice data-field="style" data-value={style}>{style}</button>
+                    ))}
+                  </span>
+                </span>
+                <span>in mind.</span>
+              </div>
+              <button class="planner-sentence-submit" type="submit" data-planner-submit>
+                Search tours
+              </button>
+              <div class="planner-next-step" aria-live="polite">
+                <span>Selected so far</span>
+                <strong data-planner-summary>Choose a signal to begin.</strong>
+                <small>Open any highlighted word, pick one option, then search matching tours.</small>
+              </div>
+            </div>
+            <div class="planner-visual" aria-hidden="true" data-planner-visual>
+              <img class="is-active" data-visual-field="place" src={withBase("/hero.jpg")} alt="" />
+              <img data-visual-field="duration" src="https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=900&q=82" alt="" />
+              <img data-visual-field="month" src="https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=900&q=82" alt="" />
+              <img data-visual-field="season" src="https://images.unsplash.com/photo-1433086966358-54859d0ed716?auto=format&fit=crop&w=900&q=82" alt="" />
+              <img data-visual-field="style" src="https://images.unsplash.com/photo-1530789253388-582c481c54b0?auto=format&fit=crop&w=900&q=82" alt="" />
+              <div class="planner-visual__content">
+                <p data-planner-count>Loading tours...</p>
+                <span data-visual-caption>Pick any signal. The preview follows your route.</span>
+              </div>
+            </div>
+            <div class="planner-live-results" data-planner-results aria-label="Matching tour preview"></div>
+          </div>
         </div>
       </form>
+
+      <form
+        class="trip-planner route-passport-planner planner-form2"
+        action={withBase("/tours/")}
+        method="get"
+        data-trip-planner
+        data-tours-url={withBase("/data/tours.json")}
+        data-base-path={withBase("/")}
+      >
+        <div class="planner-native-fields" aria-hidden="true">
+          <select name="place" data-planner-filter>
+            <option value="">Any place</option>
+            {places.map((place) => <option value={place}>{place}</option>)}
+          </select>
+          <select name="duration" data-planner-filter>
+            <option value="">Any length</option>
+            <option value="short">Short escape</option>
+            <option value="long">Long journey</option>
+          </select>
+          <select name="month" data-planner-filter>
+            <option value="">Any month</option>
+            {months.map((month) => <option value={month}>{month}</option>)}
+          </select>
+          <select name="season" data-planner-filter>
+            <option value="">Any season</option>
+            {seasons.map((season) => <option value={season}>{season}</option>)}
+          </select>
+          <select name="style" data-planner-filter>
+            <option value="">Any style</option>
+            {travelStyles.map((style) => <option value={style}>{style}</option>)}
+          </select>
+        </div>
+
+        <div class="passport-visual" aria-hidden="true" data-planner-visual>
+          <img class="is-active" data-visual-field="place" src={withBase("/hero.jpg")} alt="" />
+          <img data-visual-field="duration" src="https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=900&q=82" alt="" />
+          <img data-visual-field="month" src="https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=900&q=82" alt="" />
+          <img data-visual-field="season" src="https://images.unsplash.com/photo-1433086966358-54859d0ed716?auto=format&fit=crop&w=900&q=82" alt="" />
+          <img data-visual-field="style" src="https://images.unsplash.com/photo-1530789253388-582c481c54b0?auto=format&fit=crop&w=900&q=82" alt="" />
+          <div class="passport-visual__content">
+            <p data-planner-count>Loading tours...</p>
+            <span data-visual-caption>Start anywhere. Let one signal shape the route.</span>
+          </div>
+        </div>
+
+        <div class="passport-panel">
+          <p class="passport-kicker">Form2 / Route Passport</p>
+          <h3>Stamp your route.</h3>
+          <p>
+            Choose only what you know. Each stamp narrows the tours instantly.
+          </p>
+
+          <div class="passport-stamps">
+            <span class="signal passport-stamp" data-signal data-field="place">
+              <button type="button" data-signal-toggle aria-expanded="false">
+                <span>Destination</span>
+                <strong data-lane-value="place">Anywhere</strong>
+              </button>
+              <span class="signal-options passport-options">
+                <button type="button" data-planner-choice data-field="place" data-value="">Anywhere</button>
+                {places.map((place) => (
+                  <button type="button" data-planner-choice data-field="place" data-value={place}>{place}</button>
+                ))}
+              </span>
+            </span>
+
+            <span class="signal passport-stamp" data-signal data-field="duration">
+              <button type="button" data-signal-toggle aria-expanded="false">
+                <span>Duration</span>
+                <strong data-lane-value="duration">Any length</strong>
+              </button>
+              <span class="signal-options passport-options">
+                <button type="button" data-planner-choice data-field="duration" data-value="">Any length</button>
+                <button type="button" data-planner-choice data-field="duration" data-value="short">Short escape</button>
+                <button type="button" data-planner-choice data-field="duration" data-value="long">Long journey</button>
+              </span>
+            </span>
+
+            <span class="signal passport-stamp" data-signal data-field="month">
+              <button type="button" data-signal-toggle aria-expanded="false">
+                <span>Month</span>
+                <strong data-lane-value="month">Any month</strong>
+              </button>
+              <span class="signal-options passport-options">
+                <button type="button" data-planner-choice data-field="month" data-value="">Any month</button>
+                {months.map((month) => (
+                  <button type="button" data-planner-choice data-field="month" data-value={month}>{month}</button>
+                ))}
+              </span>
+            </span>
+
+            <span class="signal passport-stamp" data-signal data-field="season">
+              <button type="button" data-signal-toggle aria-expanded="false">
+                <span>Season</span>
+                <strong data-lane-value="season">Any season</strong>
+              </button>
+              <span class="signal-options passport-options">
+                <button type="button" data-planner-choice data-field="season" data-value="">Any season</button>
+                {seasons.map((season) => (
+                  <button type="button" data-planner-choice data-field="season" data-value={season}>{season}</button>
+                ))}
+              </span>
+            </span>
+
+            <span class="signal passport-stamp wide" data-signal data-field="style">
+              <button type="button" data-signal-toggle aria-expanded="false">
+                <span>Travel style</span>
+                <strong data-lane-value="style">Any style</strong>
+              </button>
+              <span class="signal-options passport-options">
+                <button type="button" data-planner-choice data-field="style" data-value="">Any style</button>
+                {travelStyles.map((style) => (
+                  <button type="button" data-planner-choice data-field="style" data-value={style}>{style}</button>
+                ))}
+              </span>
+            </span>
+          </div>
+
+          <button class="passport-submit" type="submit" data-planner-submit>
+            Explore tours
+          </button>
+        </div>
+      </form>
+
+      <form
+        class="trip-planner planner-variant boarding-pass-planner"
+        action={withBase("/tours/")}
+        method="get"
+        data-trip-planner
+        data-tours-url={withBase("/data/tours.json")}
+        data-base-path={withBase("/")}
+      >
+        <div class="planner-native-fields" aria-hidden="true">
+          <select name="place" data-planner-filter><option value="">Any place</option>{places.map((place) => <option value={place}>{place}</option>)}</select>
+          <select name="duration" data-planner-filter><option value="">Any length</option><option value="short">Short escape</option><option value="long">Long journey</option></select>
+          <select name="month" data-planner-filter><option value="">Any month</option>{months.map((month) => <option value={month}>{month}</option>)}</select>
+          <select name="season" data-planner-filter><option value="">Any season</option>{seasons.map((season) => <option value={season}>{season}</option>)}</select>
+          <select name="style" data-planner-filter><option value="">Any style</option>{travelStyles.map((style) => <option value={style}>{style}</option>)}</select>
+        </div>
+        <div class="boarding-ticket">
+          <div class="boarding-photo" data-planner-visual>
+            <img class="is-active" data-visual-field="place" src={withBase("/hero.jpg")} alt="" />
+            <img data-visual-field="duration" src="https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=900&q=82" alt="" />
+            <img data-visual-field="month" src="https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=900&q=82" alt="" />
+            <img data-visual-field="season" src="https://images.unsplash.com/photo-1433086966358-54859d0ed716?auto=format&fit=crop&w=900&q=82" alt="" />
+            <img data-visual-field="style" src="https://images.unsplash.com/photo-1530789253388-582c481c54b0?auto=format&fit=crop&w=900&q=82" alt="" />
+          </div>
+          <div class="boarding-main">
+            <p class="variant-kicker">Form3 / Boarding Pass</p>
+            <h3>Your trip ticket</h3>
+            <p data-visual-caption>Pick one detail and your boarding options update.</p>
+            <div class="boarding-fields">
+              <span class="signal boarding-field" data-signal data-field="place"><button type="button" data-signal-toggle><span>To</span><strong data-lane-value="place">Anywhere</strong></button><span class="signal-options"><button type="button" data-planner-choice data-field="place" data-value="">Anywhere</button>{places.map((place) => <button type="button" data-planner-choice data-field="place" data-value={place}>{place}</button>)}</span></span>
+              <span class="signal boarding-field" data-signal data-field="duration"><button type="button" data-signal-toggle><span>Stay</span><strong data-lane-value="duration">Any length</strong></button><span class="signal-options"><button type="button" data-planner-choice data-field="duration" data-value="">Any length</button><button type="button" data-planner-choice data-field="duration" data-value="short">Short escape</button><button type="button" data-planner-choice data-field="duration" data-value="long">Long journey</button></span></span>
+              <span class="signal boarding-field" data-signal data-field="month"><button type="button" data-signal-toggle><span>Month</span><strong data-lane-value="month">Any month</strong></button><span class="signal-options"><button type="button" data-planner-choice data-field="month" data-value="">Any month</button>{months.map((month) => <button type="button" data-planner-choice data-field="month" data-value={month}>{month}</button>)}</span></span>
+              <span class="signal boarding-field" data-signal data-field="season"><button type="button" data-signal-toggle><span>Season</span><strong data-lane-value="season">Any season</strong></button><span class="signal-options"><button type="button" data-planner-choice data-field="season" data-value="">Any season</button>{seasons.map((season) => <button type="button" data-planner-choice data-field="season" data-value={season}>{season}</button>)}</span></span>
+              <span class="signal boarding-field wide" data-signal data-field="style"><button type="button" data-signal-toggle><span>Mood</span><strong data-lane-value="style">Any style</strong></button><span class="signal-options"><button type="button" data-planner-choice data-field="style" data-value="">Any style</button>{travelStyles.map((style) => <button type="button" data-planner-choice data-field="style" data-value={style}>{style}</button>)}</span></span>
+            </div>
+          </div>
+          <div class="boarding-stub">
+            <span>Options</span>
+            <strong data-planner-count>Loading tours...</strong>
+            <button type="submit" data-planner-submit>View tours</button>
+          </div>
+        </div>
+      </form>
+
+      <form
+        class="trip-planner planner-variant concierge-planner"
+        action={withBase("/tours/")}
+        method="get"
+        data-trip-planner
+        data-tours-url={withBase("/data/tours.json")}
+        data-base-path={withBase("/")}
+      >
+        <div class="planner-native-fields" aria-hidden="true">
+          <select name="place" data-planner-filter><option value="">Any place</option>{places.map((place) => <option value={place}>{place}</option>)}</select>
+          <select name="duration" data-planner-filter><option value="">Any length</option><option value="short">Short escape</option><option value="long">Long journey</option></select>
+          <select name="month" data-planner-filter><option value="">Any month</option>{months.map((month) => <option value={month}>{month}</option>)}</select>
+          <select name="season" data-planner-filter><option value="">Any season</option>{seasons.map((season) => <option value={season}>{season}</option>)}</select>
+          <select name="style" data-planner-filter><option value="">Any style</option>{travelStyles.map((style) => <option value={style}>{style}</option>)}</select>
+        </div>
+        <div class="concierge-board">
+          <div class="concierge-copy">
+            <p class="variant-kicker">Form4 / Concierge Desk</p>
+            <h3>Tell us your first clue.</h3>
+            <p data-visual-caption>Your advisor board updates with every signal.</p>
+            <strong data-planner-count>Loading tours...</strong>
+            <button type="submit" data-planner-submit>Ask for matching tours</button>
+          </div>
+          <div class="concierge-signals">
+            <span class="signal clue-chip" data-signal data-field="place"><button type="button" data-signal-toggle><span>Place</span><strong data-lane-value="place">Anywhere</strong></button><span class="signal-options"><button type="button" data-planner-choice data-field="place" data-value="">Anywhere</button>{places.map((place) => <button type="button" data-planner-choice data-field="place" data-value={place}>{place}</button>)}</span></span>
+            <span class="signal clue-chip" data-signal data-field="duration"><button type="button" data-signal-toggle><span>Pace</span><strong data-lane-value="duration">Any length</strong></button><span class="signal-options"><button type="button" data-planner-choice data-field="duration" data-value="">Any length</button><button type="button" data-planner-choice data-field="duration" data-value="short">Short escape</button><button type="button" data-planner-choice data-field="duration" data-value="long">Long journey</button></span></span>
+            <span class="signal clue-chip" data-signal data-field="month"><button type="button" data-signal-toggle><span>When</span><strong data-lane-value="month">Any month</strong></button><span class="signal-options"><button type="button" data-planner-choice data-field="month" data-value="">Any month</button>{months.map((month) => <button type="button" data-planner-choice data-field="month" data-value={month}>{month}</button>)}</span></span>
+            <span class="signal clue-chip" data-signal data-field="season"><button type="button" data-signal-toggle><span>Season</span><strong data-lane-value="season">Any season</strong></button><span class="signal-options"><button type="button" data-planner-choice data-field="season" data-value="">Any season</button>{seasons.map((season) => <button type="button" data-planner-choice data-field="season" data-value={season}>{season}</button>)}</span></span>
+            <span class="signal clue-chip" data-signal data-field="style"><button type="button" data-signal-toggle><span>Style</span><strong data-lane-value="style">Any style</strong></button><span class="signal-options"><button type="button" data-planner-choice data-field="style" data-value="">Any style</button>{travelStyles.map((style) => <button type="button" data-planner-choice data-field="style" data-value={style}>{style}</button>)}</span></span>
+          </div>
+          <div class="concierge-photo" data-planner-visual>
+            <img class="is-active" data-visual-field="place" src={withBase("/hero.jpg")} alt="" />
+            <img data-visual-field="duration" src="https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=900&q=82" alt="" />
+            <img data-visual-field="month" src="https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=900&q=82" alt="" />
+            <img data-visual-field="season" src="https://images.unsplash.com/photo-1433086966358-54859d0ed716?auto=format&fit=crop&w=900&q=82" alt="" />
+            <img data-visual-field="style" src="https://images.unsplash.com/photo-1530789253388-582c481c54b0?auto=format&fit=crop&w=900&q=82" alt="" />
+          </div>
+        </div>
+      </form>
+
+      <form
+        class="trip-planner planner-variant route-map-planner"
+        action={withBase("/tours/")}
+        method="get"
+        data-trip-planner
+        data-tours-url={withBase("/data/tours.json")}
+        data-base-path={withBase("/")}
+      >
+        <div class="planner-native-fields" aria-hidden="true">
+          <select name="place" data-planner-filter><option value="">Any place</option>{places.map((place) => <option value={place}>{place}</option>)}</select>
+          <select name="duration" data-planner-filter><option value="">Any length</option><option value="short">Short escape</option><option value="long">Long journey</option></select>
+          <select name="month" data-planner-filter><option value="">Any month</option>{months.map((month) => <option value={month}>{month}</option>)}</select>
+          <select name="season" data-planner-filter><option value="">Any season</option>{seasons.map((season) => <option value={season}>{season}</option>)}</select>
+          <select name="style" data-planner-filter><option value="">Any style</option>{travelStyles.map((style) => <option value={style}>{style}</option>)}</select>
+        </div>
+        <div class="route-map-board">
+          <div class="route-map-copy">
+            <p class="variant-kicker">Form5 / Route Map</p>
+            <h3>Plot the first line.</h3>
+            <p data-visual-caption>Every marker can be skipped or selected.</p>
+            <strong data-planner-count>Loading tours...</strong>
+          </div>
+          <div class="route-line">
+            <span class="signal route-stop" data-signal data-field="place"><button type="button" data-signal-toggle><span>Start</span><strong data-lane-value="place">Anywhere</strong></button><span class="signal-options"><button type="button" data-planner-choice data-field="place" data-value="">Anywhere</button>{places.map((place) => <button type="button" data-planner-choice data-field="place" data-value={place}>{place}</button>)}</span></span>
+            <span class="signal route-stop" data-signal data-field="duration"><button type="button" data-signal-toggle><span>Pace</span><strong data-lane-value="duration">Any length</strong></button><span class="signal-options"><button type="button" data-planner-choice data-field="duration" data-value="">Any length</button><button type="button" data-planner-choice data-field="duration" data-value="short">Short escape</button><button type="button" data-planner-choice data-field="duration" data-value="long">Long journey</button></span></span>
+            <span class="signal route-stop" data-signal data-field="month"><button type="button" data-signal-toggle><span>Month</span><strong data-lane-value="month">Any month</strong></button><span class="signal-options"><button type="button" data-planner-choice data-field="month" data-value="">Any month</button>{months.map((month) => <button type="button" data-planner-choice data-field="month" data-value={month}>{month}</button>)}</span></span>
+            <span class="signal route-stop" data-signal data-field="season"><button type="button" data-signal-toggle><span>Season</span><strong data-lane-value="season">Any season</strong></button><span class="signal-options"><button type="button" data-planner-choice data-field="season" data-value="">Any season</button>{seasons.map((season) => <button type="button" data-planner-choice data-field="season" data-value={season}>{season}</button>)}</span></span>
+            <span class="signal route-stop" data-signal data-field="style"><button type="button" data-signal-toggle><span>Mood</span><strong data-lane-value="style">Any style</strong></button><span class="signal-options"><button type="button" data-planner-choice data-field="style" data-value="">Any style</button>{travelStyles.map((style) => <button type="button" data-planner-choice data-field="style" data-value={style}>{style}</button>)}</span></span>
+          </div>
+          <div class="route-map-photo" data-planner-visual>
+            <img class="is-active" data-visual-field="place" src={withBase("/hero.jpg")} alt="" />
+            <img data-visual-field="duration" src="https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=900&q=82" alt="" />
+            <img data-visual-field="month" src="https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=900&q=82" alt="" />
+            <img data-visual-field="season" src="https://images.unsplash.com/photo-1433086966358-54859d0ed716?auto=format&fit=crop&w=900&q=82" alt="" />
+            <img data-visual-field="style" src="https://images.unsplash.com/photo-1530789253388-582c481c54b0?auto=format&fit=crop&w=900&q=82" alt="" />
+            <button type="submit" data-planner-submit>Open route ideas</button>
+          </div>
+        </div>
+      </form>
+
+      <form
+        class="trip-planner planner-variant mood-deck-planner"
+        action={withBase("/tours/")}
+        method="get"
+        data-trip-planner
+        data-tours-url={withBase("/data/tours.json")}
+        data-base-path={withBase("/")}
+      >
+        <div class="planner-native-fields" aria-hidden="true">
+          <select name="place" data-planner-filter><option value="">Any place</option>{places.map((place) => <option value={place}>{place}</option>)}</select>
+          <select name="duration" data-planner-filter><option value="">Any length</option><option value="short">Short escape</option><option value="long">Long journey</option></select>
+          <select name="month" data-planner-filter><option value="">Any month</option>{months.map((month) => <option value={month}>{month}</option>)}</select>
+          <select name="season" data-planner-filter><option value="">Any season</option>{seasons.map((season) => <option value={season}>{season}</option>)}</select>
+          <select name="style" data-planner-filter><option value="">Any style</option>{travelStyles.map((style) => <option value={style}>{style}</option>)}</select>
+        </div>
+        <div class="mood-deck-board">
+          <div>
+            <p class="variant-kicker">Form6 / Mood Deck</p>
+            <h3>Pick a travel card.</h3>
+            <p data-visual-caption>Start with mood, then tune the practical bits.</p>
+          </div>
+          <div class="mood-cards" data-planner-visual>
+            <img class="is-active" data-visual-field="place" src={withBase("/hero.jpg")} alt="" />
+            <img data-visual-field="duration" src="https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=900&q=82" alt="" />
+            <img data-visual-field="month" src="https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=900&q=82" alt="" />
+            <img data-visual-field="season" src="https://images.unsplash.com/photo-1433086966358-54859d0ed716?auto=format&fit=crop&w=900&q=82" alt="" />
+            <img data-visual-field="style" src="https://images.unsplash.com/photo-1530789253388-582c481c54b0?auto=format&fit=crop&w=900&q=82" alt="" />
+          </div>
+          <div class="mood-controls">
+            <span class="signal mood-pill" data-signal data-field="style"><button type="button" data-signal-toggle><span>Mood</span><strong data-lane-value="style">Any style</strong></button><span class="signal-options"><button type="button" data-planner-choice data-field="style" data-value="">Any style</button>{travelStyles.map((style) => <button type="button" data-planner-choice data-field="style" data-value={style}>{style}</button>)}</span></span>
+            <span class="signal mood-pill" data-signal data-field="place"><button type="button" data-signal-toggle><span>Place</span><strong data-lane-value="place">Anywhere</strong></button><span class="signal-options"><button type="button" data-planner-choice data-field="place" data-value="">Anywhere</button>{places.map((place) => <button type="button" data-planner-choice data-field="place" data-value={place}>{place}</button>)}</span></span>
+            <span class="signal mood-pill" data-signal data-field="duration"><button type="button" data-signal-toggle><span>Length</span><strong data-lane-value="duration">Any length</strong></button><span class="signal-options"><button type="button" data-planner-choice data-field="duration" data-value="">Any length</button><button type="button" data-planner-choice data-field="duration" data-value="short">Short escape</button><button type="button" data-planner-choice data-field="duration" data-value="long">Long journey</button></span></span>
+            <span class="signal mood-pill" data-signal data-field="month"><button type="button" data-signal-toggle><span>Month</span><strong data-lane-value="month">Any month</strong></button><span class="signal-options"><button type="button" data-planner-choice data-field="month" data-value="">Any month</button>{months.map((month) => <button type="button" data-planner-choice data-field="month" data-value={month}>{month}</button>)}</span></span>
+            <span class="signal mood-pill" data-signal data-field="season"><button type="button" data-signal-toggle><span>Season</span><strong data-lane-value="season">Any season</strong></button><span class="signal-options"><button type="button" data-planner-choice data-field="season" data-value="">Any season</button>{seasons.map((season) => <button type="button" data-planner-choice data-field="season" data-value={season}>{season}</button>)}</span></span>
+          </div>
+          <div class="mood-footer">
+            <strong data-planner-count>Loading tours...</strong>
+            <button type="submit" data-planner-submit>See matching cards</button>
+          </div>
+        </div>
+      </form>
+
+      <div class="fresh-planner-lab" aria-label="Fresh planner concept variants">
+        <section class="fresh-concept concept-duel" data-fresh-duel>
+          <div class="duel-status">
+            <p class="variant-kicker">Form7 / This or That</p>
+            <h3>Answer with instinct.</h3>
+            <p>Quick choices replace filter fields. The traveller can skip any question.</p>
+            <strong data-duel-count>4 tours still in play</strong>
+            <span class="duel-meter"><i></i></span>
+          </div>
+          <div class="duel-stage">
+            <p class="variant-kicker">Step 1 of 4</p>
+            <h3>What are you craving first?</h3>
+            <div class="duel-choices">
+              <button type="button" class="choice-mountain" data-duel-choice data-label="Mountain air" data-count="4" style={`background-image: linear-gradient(180deg, transparent, rgba(7, 20, 17, 0.2)), url("${withBase("/uploads/tour-sikkim.svg")}")`}>Mountain air</button>
+              <button type="button" class="choice-sea" data-duel-choice data-label="Sea breeze" data-count="1" style={`background-image: linear-gradient(180deg, transparent, rgba(7, 20, 17, 0.2)), url("${withBase("/uploads/tour-goa.svg")}")`}>Sea breeze</button>
+            </div>
+            <div class="duel-actions">
+              <button type="button" data-duel-skip>Skip this</button>
+              <a href={withBase("/tours/")}>Show matches</a>
+            </div>
+          </div>
+        </section>
+
+        <section class="fresh-concept concept-cover" data-fresh-cover>
+          <div class="cover-photo" style={`background-image: linear-gradient(90deg, transparent 48%, rgba(7, 20, 17, 0.22)), url("${withBase("/hero.jpg")}")`} aria-hidden="true"></div>
+          <div class="cover-copy">
+            <p class="variant-kicker">Form8 / Magazine Cover</p>
+            <h3>Your July Escape</h3>
+            <div>
+              <strong data-cover-count>7 routes available</strong>
+              <p data-cover-note>Browse by changing the cover tags.</p>
+              <div class="cover-tags">
+                <button type="button" data-cover-tag data-title="Goa Weekend" data-count="1 routes available" data-note="A quick coastal cover is ready.">Change place</button>
+                <button type="button" data-cover-tag data-title="Your Winter Escape" data-count="3 routes available" data-note="Cool-weather trips move to the front.">Change month</button>
+                <button type="button" data-cover-tag data-title="Slow Leisure Issue" data-count="4 routes available" data-note="Unhurried routes become the main story.">Change mood</button>
+                <button type="button" data-cover-tag data-title="Short Breaks" data-count="2 routes available" data-note="Fast escapes for a smaller window.">Short trips</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="fresh-concept concept-swipe" data-fresh-swipe>
+          <div class="swipe-copy">
+            <p class="variant-kicker">Form9 / Swipe Deck</p>
+            <h3>Pick a travel card.</h3>
+            <p data-swipe-note>React to cards and let the site infer the right filters.</p>
+            <div class="swipe-actions">
+              <button type="button" data-swipe-skip>Skip</button>
+              <button type="button" data-swipe-like>Like this vibe</button>
+            </div>
+          </div>
+          <div class="swipe-cards" aria-hidden="true">
+            <article class="is-active" data-swipe-card data-title="Mountain calm" data-count="4" style={`background-image: url("${withBase("/uploads/tour-sikkim.svg")}")`}>
+              <span>Sikkim</span>
+              <h4>Mountain calm</h4>
+            </article>
+            <article data-swipe-card data-title="Slow water" data-count="1" style={`background-image: url("${withBase("/uploads/tour-kerala.svg")}")`}>
+              <span>Kerala</span>
+              <h4>Slow water</h4>
+            </article>
+            <article data-swipe-card data-title="Royal cities" data-count="2" style={`background-image: url("${withBase("/uploads/tour-rajasthan.svg")}")`}>
+              <span>Rajasthan</span>
+              <h4>Royal cities</h4>
+            </article>
+          </div>
+        </section>
+
+        <section class="fresh-concept concept-map" data-fresh-map>
+          <div class="map-copy">
+            <p class="variant-kicker">Form10 / Spatial Map</p>
+            <h3>Build from a route.</h3>
+            <p>Select a destination bubble, then tune month, season, and pace.</p>
+            <strong data-map-count>7 destinations ready</strong>
+            <div class="map-filters">
+              <button type="button" data-map-filter>Any month</button>
+              <button type="button" data-map-filter>Winter</button>
+              <button type="button" data-map-filter>Short</button>
+              <button type="button" data-map-filter>Mountain</button>
+            </div>
+          </div>
+          <div class="map-canvas" aria-hidden="true">
+            <span class="map-line"></span>
+            <button type="button" class="map-pin pin-sikkim" data-map-pin data-place="Sikkim" data-count="1" style={`background-image: url("${withBase("/uploads/tour-sikkim.svg")}")`}>Sikkim</button>
+            <button type="button" class="map-pin pin-goa" data-map-pin data-place="Goa" data-count="1" style={`background-image: url("${withBase("/uploads/tour-goa.svg")}")`}>Goa</button>
+            <button type="button" class="map-pin pin-kerala" data-map-pin data-place="Kerala" data-count="1" style={`background-image: url("${withBase("/uploads/tour-kerala.svg")}")`}>Kerala</button>
+          </div>
+        </section>
+      </div>
+      <script>
+        type PlannerTour = {
+          title: string;
+          slug: string;
+          place: string;
+          duration: { days: number; nights: number };
+          bestMonths: string[];
+          season?: string[];
+          travelStyle?: string[];
+          coverImage: string;
+          costInr: number;
+        };
+
+        const tripPlanners = Array.from(
+          document.querySelectorAll<HTMLFormElement>("[data-trip-planner]"),
+        );
+
+        tripPlanners.forEach((tripPlanner) => {
+          const plannerBasePath = tripPlanner.dataset.basePath || "/";
+          const plannerToursUrl =
+            tripPlanner.dataset.toursUrl || "/data/tours.json";
+          const filters = Array.from(
+            tripPlanner.querySelectorAll<HTMLSelectElement>("[data-planner-filter]"),
+          );
+          const count = tripPlanner.querySelector<HTMLElement>("[data-planner-count]");
+          const summary =
+            tripPlanner.querySelector<HTMLElement>("[data-planner-summary]");
+          const results =
+            tripPlanner.querySelector<HTMLElement>("[data-planner-results]");
+          const submit =
+            tripPlanner.querySelector<HTMLButtonElement>("[data-planner-submit]");
+          const signalToggles = Array.from(
+            tripPlanner.querySelectorAll<HTMLButtonElement>("[data-signal-toggle]"),
+          );
+          const choiceButtons = Array.from(
+            tripPlanner.querySelectorAll<HTMLButtonElement>("[data-planner-choice]"),
+          );
+          const laneValues = Array.from(
+            tripPlanner.querySelectorAll<HTMLElement>("[data-lane-value]"),
+          );
+          const visualImages = Array.from(
+            tripPlanner.querySelectorAll<HTMLImageElement>("[data-visual-field]"),
+          );
+          const visualCaption =
+            tripPlanner.querySelector<HTMLElement>("[data-visual-caption]");
+          let plannerTours: PlannerTour[] = [];
+
+          const signalLabels: Record<string, string> = {
+            place: "Choose a destination and the picture follows.",
+            duration: "Set the pace. Quick dash or slow drift.",
+            month: "Pick a month and let the weather do some work.",
+            season: "Choose the season that feels right.",
+            style: "Tune the mood of the journey.",
+          };
+
+          const placeImageMap: Record<string, string> = {
+            Goa: "/uploads/tour-goa.svg",
+            Kerala: "/uploads/tour-kerala.svg",
+            Ladakh: "/uploads/tour-ladakh.svg",
+            Meghalaya: "/uploads/tour-meghalaya.svg",
+            Nepal: "/uploads/Tourist-Attractions-in-Kathmandu-Nepal-.jpg",
+            Rajasthan: "/uploads/tour-rajasthan.svg",
+            Sikkim: "/uploads/tour-sikkim.svg",
+          };
+
+          const getField = (name: string) =>
+            tripPlanner.querySelector<HTMLSelectElement>(`select[name="${name}"]`);
+
+          const plannerPath = (path: string) => {
+            if (/^https?:\/\//.test(path)) return path;
+            const cleanBase = plannerBasePath.endsWith("/")
+              ? plannerBasePath.slice(0, -1)
+              : plannerBasePath;
+            return `${cleanBase}${path.startsWith("/") ? path : `/${path}`}`;
+          };
+
+          const defaultPlannerImage = plannerPath("/hero.jpg");
+
+          const getPlannerState = () => ({
+            place: getField("place")?.value || "",
+            duration: getField("duration")?.value || "",
+            month: getField("month")?.value || "",
+            season: getField("season")?.value || "",
+            style: getField("style")?.value || "",
+          });
+
+          const escapePlannerHtml = (value: string) =>
+            value.replace(/[&<>"']/g, (character) => {
+              const entities: Record<string, string> = {
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#039;",
+              };
+              return entities[character] || character;
+            });
+
+          const tourMatches = (tour: PlannerTour) => {
+            const state = getPlannerState();
+            return matchesState(tour, state);
+          };
+
+          const matchesState = (
+            tour: PlannerTour,
+            state: ReturnType<typeof getPlannerState>,
+          ) => {
+            const isShort = tour.duration.days <= 4;
+            return (
+              (!state.place || tour.place === state.place) &&
+              (!state.duration ||
+                (state.duration === "short" ? isShort : !isShort)) &&
+              (!state.month ||
+                (Array.isArray(tour.bestMonths) &&
+                  tour.bestMonths.includes(state.month))) &&
+              (!state.season ||
+                (Array.isArray(tour.season) && tour.season.includes(state.season))) &&
+              (!state.style ||
+                (Array.isArray(tour.travelStyle) &&
+                  tour.travelStyle.includes(state.style)))
+            );
+          };
+
+          const getCountForChoice = (field: string, value: string) => {
+            const state = { ...getPlannerState(), [field]: value };
+            return plannerTours.filter((tour) => matchesState(tour, state)).length;
+          };
+
+          const setVisualByField = (field: string, caption?: string) => {
+            visualImages.forEach((image) => {
+              image.classList.toggle("is-active", image.dataset.visualField === field);
+            });
+            if (visualCaption) {
+              visualCaption.textContent = caption || signalLabels[field] || "Pick a signal.";
+            }
+          };
+
+          const updatePlannerVisual = (activeField?: string) => {
+            const state = getPlannerState();
+            const placeImage = state.place && placeImageMap[state.place];
+            const placeVisual = visualImages.find((image) => image.dataset.visualField === "place");
+            if (placeImage) {
+              if (placeVisual) placeVisual.src = plannerPath(placeImage);
+              setVisualByField("place", `${state.place} is now on the map.`);
+              return;
+            }
+            if (placeVisual) placeVisual.src = defaultPlannerImage;
+            if (state.style) {
+              setVisualByField("style", `${state.style} trips are in focus.`);
+              return;
+            }
+            if (state.season) {
+              setVisualByField("season", `${state.season} routes are warming up.`);
+              return;
+            }
+            if (state.month) {
+              setVisualByField("month", `${state.month} travel windows are ready.`);
+              return;
+            }
+            if (state.duration) {
+              setVisualByField("duration", "The trip pace is set.");
+              return;
+            }
+            setVisualByField(activeField || "place");
+          };
+
+          const renderPlannerCard = (tour: PlannerTour) => `
+            <a class="planner-preview-card" href="${plannerPath(`/tours/${tour.slug}/`)}">
+              <img src="${plannerPath(placeImageMap[tour.place] || tour.coverImage || "/uploads/tour-kerala.svg")}" alt="" loading="lazy" />
+              <span>
+                <b>${escapePlannerHtml(tour.title)}</b>
+                <small>${escapePlannerHtml(tour.place)} · ${tour.duration.nights}N/${tour.duration.days}D</small>
+              </span>
+            </a>
+          `;
+
+          const updatePlannerUrl = () => {
+            const params = new URLSearchParams();
+            Object.entries(getPlannerState()).forEach(([key, value]) => {
+              if (value) params.set(key, value);
+            });
+            tripPlanner.action = plannerPath(
+              `/tours/${params.toString() ? `?${params.toString()}` : ""}`,
+            );
+          };
+
+          const updatePlanner = () => {
+            const signals = Object.values(getPlannerState()).filter(Boolean);
+            const matches = signals.length ? plannerTours.filter(tourMatches) : plannerTours;
+            filters.forEach((filter) => {
+              const label = filter.selectedOptions[0]?.textContent?.trim() || "";
+              const valueTarget = laneValues.find(
+                (item) => item.dataset.laneValue === filter.name,
+              );
+              if (valueTarget) valueTarget.textContent = label;
+              tripPlanner
+                .querySelector<HTMLElement>(`[data-signal][data-field="${filter.name}"]`)
+                ?.classList.toggle("has-value", Boolean(filter.value));
+
+              choiceButtons
+                .filter((button) => button.dataset.field === filter.name)
+                .forEach((button) => {
+                  const optionCount = getCountForChoice(
+                    filter.name,
+                    button.dataset.value || "",
+                  );
+                  button.classList.toggle(
+                    "is-selected",
+                    (button.dataset.value || "") === filter.value,
+                  );
+                  button.dataset.count = `${optionCount} ${optionCount === 1 ? "tour" : "tours"}`;
+                  button.setAttribute(
+                    "aria-label",
+                    `${button.textContent?.trim() || "Any"}: ${optionCount} ${optionCount === 1 ? "tour" : "tours"}`,
+                  );
+                });
+            });
+            tripPlanner.classList.toggle("has-signals", signals.length > 0);
+            updatePlannerVisual();
+
+            if (count) {
+              count.textContent = `${matches.length} ${matches.length === 1 ? "tour" : "tours"} available`;
+            }
+            if (summary) {
+              summary.textContent = signals.length
+                ? signals.join(" + ")
+                : "Choose a signal to begin.";
+            }
+            if (submit) {
+              submit.textContent = signals.length
+                ? matches.length
+                  ? `Show ${matches.length} matching ${matches.length === 1 ? "tour" : "tours"}`
+                  : "Show nearby ideas"
+                : `Explore ${plannerTours.length || ""} tours`.trim();
+            }
+            if (results) {
+              results.innerHTML = matches.slice(0, 3).map(renderPlannerCard).join("");
+            }
+            updatePlannerUrl();
+          };
+
+          filters.forEach((filter) => {
+            filter.addEventListener("change", updatePlanner);
+          });
+
+          signalToggles.forEach((toggle) => {
+            toggle.addEventListener("click", () => {
+              const signal = toggle.closest<HTMLElement>("[data-signal]");
+              if (!signal) return;
+              const willOpen = !signal.classList.contains("is-open");
+              const field = signal.dataset.field || "place";
+
+              tripPlanner
+                .querySelectorAll<HTMLElement>("[data-signal]")
+                .forEach((item) => {
+                  item.classList.remove("is-open");
+                  item
+                    .querySelector<HTMLButtonElement>("[data-signal-toggle]")
+                    ?.setAttribute("aria-expanded", "false");
+                });
+
+              if (willOpen) {
+                signal.classList.add("is-open");
+                toggle.setAttribute("aria-expanded", "true");
+                updatePlannerVisual(field);
+              }
+            });
+          });
+
+          choiceButtons.forEach((button) => {
+            button.addEventListener("click", () => {
+              const field = button.dataset.field || "";
+              const select = getField(field);
+              if (!select) return;
+              select.value = button.dataset.value || "";
+              select.dispatchEvent(new Event("change", { bubbles: true }));
+              button.closest<HTMLElement>("[data-signal]")?.classList.remove("is-open");
+              button
+                .closest<HTMLElement>("[data-signal]")
+                ?.querySelector<HTMLButtonElement>("[data-signal-toggle]")
+                ?.setAttribute("aria-expanded", "false");
+            });
+          });
+
+          document.addEventListener("click", (event) => {
+            const openSignal = tripPlanner.querySelector<HTMLElement>("[data-signal].is-open");
+            if (!openSignal) return;
+            if (openSignal.contains(event.target as Node)) return;
+            tripPlanner
+              .querySelectorAll<HTMLElement>("[data-signal].is-open")
+              .forEach((item) => {
+                item.classList.remove("is-open");
+                item
+                  .querySelector<HTMLButtonElement>("[data-signal-toggle]")
+                  ?.setAttribute("aria-expanded", "false");
+              });
+          });
+
+          document.addEventListener("keydown", (event) => {
+            if (event.key !== "Escape") return;
+            tripPlanner
+              .querySelectorAll<HTMLElement>("[data-signal].is-open")
+              .forEach((item) => {
+                item.classList.remove("is-open");
+                item
+                  .querySelector<HTMLButtonElement>("[data-signal-toggle]")
+                  ?.setAttribute("aria-expanded", "false");
+              });
+          });
+
+          fetch(plannerToursUrl)
+            .then((response) => response.json() as Promise<PlannerTour[]>)
+            .then((tours) => {
+              plannerTours = tours;
+              updatePlanner();
+            })
+            .catch(() => {
+              if (count) count.textContent = "Tours could not be loaded";
+              if (summary) summary.textContent = "Please use the search button.";
+            });
+        });
+      </script>
+      <script>
+        const duelConcept = document.querySelector<HTMLElement>("[data-fresh-duel]");
+        if (duelConcept) {
+          const duelCount = duelConcept.querySelector<HTMLElement>("[data-duel-count]");
+          const duelMeter = duelConcept.querySelector<HTMLElement>(".duel-meter i");
+          const duelTitle = duelConcept.querySelector<HTMLElement>(".duel-stage h3");
+          const duelQuestions = [
+            "What are you craving first?",
+            "How much time do you have?",
+            "Which pace feels right?",
+          ];
+          let duelStep = 0;
+
+          const setDuelState = (button?: HTMLElement) => {
+            duelConcept.querySelectorAll("[data-duel-choice]").forEach((item) => {
+              item.classList.toggle("is-selected", item === button);
+            });
+            duelStep = (duelStep + 1) % duelQuestions.length;
+            if (duelTitle) duelTitle.textContent = duelQuestions[duelStep];
+            if (duelCount && button) {
+              const count = button.dataset.count || "4";
+              duelCount.textContent = `${count} ${count === "1" ? "tour" : "tours"} still in play`;
+            }
+            if (duelMeter) duelMeter.style.width = `${duelStep === 0 ? 62 : duelStep === 1 ? 76 : 88}%`;
+          };
+
+          duelConcept.querySelectorAll<HTMLElement>("[data-duel-choice]").forEach((button) => {
+            button.addEventListener("click", () => setDuelState(button));
+          });
+          duelConcept.querySelector<HTMLElement>("[data-duel-skip]")?.addEventListener("click", () => {
+            setDuelState();
+            if (duelCount) duelCount.textContent = "Skipped. 7 tours still in play";
+          });
+        }
+
+        const coverConcept = document.querySelector<HTMLElement>("[data-fresh-cover]");
+        if (coverConcept) {
+          const coverTitle = coverConcept.querySelector<HTMLElement>("h3");
+          const coverCount = coverConcept.querySelector<HTMLElement>("[data-cover-count]");
+          const coverNote = coverConcept.querySelector<HTMLElement>("[data-cover-note]");
+          coverConcept.querySelectorAll<HTMLElement>("[data-cover-tag]").forEach((button) => {
+            button.addEventListener("click", () => {
+              coverConcept.querySelectorAll("[data-cover-tag]").forEach((item) => {
+                item.classList.toggle("is-selected", item === button);
+              });
+              if (coverTitle) coverTitle.textContent = button.dataset.title || "Your Escape";
+              if (coverCount) coverCount.textContent = button.dataset.count || "7 routes available";
+              if (coverNote) coverNote.textContent = button.dataset.note || "Browse by changing the cover tags.";
+            });
+          });
+        }
+
+        const swipeConcept = document.querySelector<HTMLElement>("[data-fresh-swipe]");
+        if (swipeConcept) {
+          const cards = Array.from(swipeConcept.querySelectorAll<HTMLElement>("[data-swipe-card]"));
+          const note = swipeConcept.querySelector<HTMLElement>("[data-swipe-note]");
+          let activeCard = 0;
+
+          const showCard = (nextIndex: number, liked = false) => {
+            activeCard = (nextIndex + cards.length) % cards.length;
+            cards.forEach((card, index) => {
+              card.classList.toggle("is-active", index === activeCard);
+              card.style.setProperty("--deck-offset", `${index - activeCard}`);
+            });
+            const card = cards[activeCard];
+            if (note && card) {
+              const count = card.dataset.count || "1";
+              note.textContent = liked
+                ? `${card.dataset.title} saved. ${count} matching ${count === "1" ? "tour" : "tours"} ready.`
+                : `${card.dataset.title} is now on top.`;
+            }
+          };
+
+          swipeConcept.querySelector<HTMLElement>("[data-swipe-skip]")?.addEventListener("click", () => {
+            showCard(activeCard + 1);
+          });
+          swipeConcept.querySelector<HTMLElement>("[data-swipe-like]")?.addEventListener("click", () => {
+            showCard(activeCard, true);
+          });
+          showCard(0);
+        }
+
+        const mapConcept = document.querySelector<HTMLElement>("[data-fresh-map]");
+        if (mapConcept) {
+          const mapCount = mapConcept.querySelector<HTMLElement>("[data-map-count]");
+          mapConcept.querySelectorAll<HTMLElement>("[data-map-pin]").forEach((pin) => {
+            pin.addEventListener("click", () => {
+              mapConcept.querySelectorAll("[data-map-pin]").forEach((item) => {
+                item.classList.toggle("is-selected", item === pin);
+              });
+              const count = pin.dataset.count || "1";
+              if (mapCount) mapCount.textContent = `${pin.dataset.place} selected. ${count} ${count === "1" ? "route" : "routes"} ready`;
+            });
+          });
+          mapConcept.querySelectorAll<HTMLElement>("[data-map-filter]").forEach((filter) => {
+            filter.addEventListener("click", () => {
+              filter.classList.toggle("is-selected");
+              const selected = mapConcept.querySelectorAll("[data-map-filter].is-selected").length;
+              if (mapCount && selected) mapCount.textContent = `${selected} route clue${selected === 1 ? "" : "s"} selected`;
+            });
+          });
+        }
+      </script>
     </div>
   </section>
 
   <section class="section">
     <div class="container">
-      <TourSection title="Short Duration Tours" tours={shortTours} viewAllLink="/tours/?duration=short" carousel />
-      <TourSection title="Long Duration Tours" tours={longTours} viewAllLink="/tours/?duration=long" carousel />
+      <TourSection
+        title="Short Duration Tours"
+        tours={shortTours}
+        viewAllLink="/tours/?duration=short"
+        carousel
+      />
+      <TourSection
+        title="Long Duration Tours"
+        tours={longTours}
+        viewAllLink="/tours/?duration=long"
+        carousel
+      />
     </div>
   </section>
 
@@ -272,52 +1409,94 @@ const hasMultipleHotels = hotels.length > 1;
           <p class="eyebrow">Stay ideas</p>
           <h2>Hotels to pair with your route</h2>
         </div>
-        {hasMultipleHotels && (
-          <div class="hotel-controls" aria-label="Hotel carousel controls">
-            <button type="button" data-hotel-prev aria-label="Previous hotel">Prev</button>
-            <button type="button" data-hotel-next aria-label="Next hotel">Next</button>
-          </div>
-        )}
+        {
+          hasMultipleHotels && (
+            <div class="hotel-controls" aria-label="Hotel carousel controls">
+              <button type="button" data-hotel-prev aria-label="Previous hotel">
+                Prev
+              </button>
+              <button type="button" data-hotel-next aria-label="Next hotel">
+                Next
+              </button>
+            </div>
+          )
+        }
       </div>
       <div class="hotel-carousel" data-hotel-carousel>
         <div class="hotel-track">
-          {hotels.map((hotel, index) => (
-            <article class:list={['hotel-slide', { active: index === 0 }]} data-hotel-slide>
-              <div class="hotel-gallery" aria-label={`${hotel.data.name} images`}>
-                {hotel.data.images.map((image, imageIndex) => (
-                  <img class={`image-${imageIndex + 1}`} src={withBase(image)} alt="" loading="lazy" />
-                ))}
-              </div>
-              <div class="hotel-body">
-                <span>{hotel.data.place}</span>
-                <h3>{hotel.data.name}</h3>
-                <p>{hotel.data.note}</p>
-                <div class="hotel-meta">
-                  <strong>{formatInr(hotel.data.startingRoomPriceInr)}</strong>
-                  <small>starting room price / night</small>
+          {
+            hotels.map((hotel, index) => (
+              <article
+                class:list={["hotel-slide", { active: index === 0 }]}
+                data-hotel-slide
+              >
+                <div
+                  class="hotel-gallery"
+                  aria-label={`${hotel.data.name} images`}
+                >
+                  {hotel.data.images.map((image, imageIndex) => (
+                    <img
+                      class={`image-${imageIndex + 1}`}
+                      src={withBase(image)}
+                      alt=""
+                      loading="lazy"
+                    />
+                  ))}
                 </div>
-                {hotel.data.website ? <a href={hotel.data.website} target="_blank" rel="noreferrer">Visit website</a> : <em>Website coming soon</em>}
-              </div>
-            </article>
-          ))}
+                <div class="hotel-body">
+                  <span>{hotel.data.place}</span>
+                  <h3>{hotel.data.name}</h3>
+                  <p>{hotel.data.note}</p>
+                  <div class="hotel-meta">
+                    <strong>
+                      {formatInr(hotel.data.startingRoomPriceInr)}
+                    </strong>
+                    <small>starting room price / night</small>
+                  </div>
+                  {hotel.data.website ? (
+                    <a
+                      href={hotel.data.website}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Visit website
+                    </a>
+                  ) : (
+                    <em>Website coming soon</em>
+                  )}
+                </div>
+              </article>
+            ))
+          }
         </div>
-        {hasMultipleHotels && (
-          <div class="hotel-dots" aria-label="Hotel slides">
-            {hotels.map((hotel, index) => (
-              <button class:list={{ active: index === 0 }} type="button" data-hotel-dot aria-label={`Show ${hotel.data.name}`}></button>
-            ))}
-          </div>
-        )}
+        {
+          hasMultipleHotels && (
+            <div class="hotel-dots" aria-label="Hotel slides">
+              {hotels.map((hotel, index) => (
+                <button
+                  class:list={{ active: index === 0 }}
+                  type="button"
+                  data-hotel-dot
+                  aria-label={`Show ${hotel.data.name}`}
+                />
+              ))}
+            </div>
+          )
+        }
       </div>
     </div>
     <script>
-      const carousel = document.querySelector('[data-hotel-carousel]');
+      const carousel = document.querySelector("[data-hotel-carousel]");
 
       if (carousel) {
-        const slides = [...carousel.querySelectorAll<HTMLElement>('[data-hotel-slide]')];
-        const dots = [...carousel.querySelectorAll<HTMLButtonElement>('[data-hotel-dot]')];
-        const prev = document.querySelector('[data-hotel-prev]');
-        const next = document.querySelector('[data-hotel-next]');
+        const slides = [
+          ...carousel.querySelectorAll<HTMLElement>("[data-hotel-slide]"),
+        ];
+        const dots = [
+          ...carousel.querySelectorAll<HTMLButtonElement>("[data-hotel-dot]"),
+        ];
+        const prev = document.querySelector("[data-hotel-prev]");
+        const next = document.querySelector("[data-hotel-next]");
         let active = 0;
 
         const showSlide = (index: number) => {
@@ -325,18 +1504,20 @@ const hasMultipleHotels = hotels.length > 1;
 
           slides.forEach((slide: HTMLElement, slideIndex: number) => {
             const isActive = slideIndex === active;
-            slide.classList.toggle('active', isActive);
-            slide.setAttribute('aria-hidden', String(!isActive));
+            slide.classList.toggle("active", isActive);
+            slide.setAttribute("aria-hidden", String(!isActive));
           });
 
           dots.forEach((dot: HTMLButtonElement, dotIndex: number) => {
-            dot.classList.toggle('active', dotIndex === active);
+            dot.classList.toggle("active", dotIndex === active);
           });
         };
 
-        prev?.addEventListener('click', () => showSlide(active - 1));
-        next?.addEventListener('click', () => showSlide(active + 1));
-        dots.forEach((dot: HTMLButtonElement, index: number) => dot.addEventListener('click', () => showSlide(index)));
+        prev?.addEventListener("click", () => showSlide(active - 1));
+        next?.addEventListener("click", () => showSlide(active + 1));
+        dots.forEach((dot: HTMLButtonElement, index: number) =>
+          dot.addEventListener("click", () => showSlide(index)),
+        );
         showSlide(0);
       }
     </script>
@@ -347,11 +1528,94 @@ const hasMultipleHotels = hotels.length > 1;
       <div>
         <p class="eyebrow">Custom route</p>
         <h2>Need a private plan for your group?</h2>
-        <p>Tell us your dates, head count, budget, and travel style. We can shape a custom itinerary around family trips, pilgrimages, mountain breaks, or mixed destination plans.</p>
+        <p>
+          Tell us your dates, head count, budget, and travel style. We can shape
+          a custom itinerary around family trips, pilgrimages, mountain breaks,
+          or mixed destination plans.
+        </p>
       </div>
-      <a class="button" href={withBase('/contact/')}>Contact us</a>
+      <a class="button" href={withBase("/contact/")}>Contact us</a>
     </div>
   </section>
+  <script>
+    const hero = document.querySelector<HTMLElement>("[data-travel-hero]");
+    const clampProgress = (value: number, min = 0, max = 1) =>
+      Math.min(Math.max(value, min), max);
+
+    const cubicBezier =
+      (x1: number, y1: number, x2: number, y2: number) => (value: number) => {
+        const x = clampProgress(value);
+        let t = x;
+
+        for (let index = 0; index < 5; index++) {
+          const inv = 1 - t;
+          const estimate =
+            3 * inv * inv * t * x1 + 3 * inv * t * t * x2 + t * t * t;
+          const derivative =
+            3 * inv * inv * x1 + 6 * inv * t * (x2 - x1) + 3 * t * t * (1 - x2);
+          if (derivative === 0) break;
+          t = clampProgress(t - (estimate - x) / derivative);
+        }
+
+        const inv = 1 - t;
+        return 3 * inv * inv * t * y1 + 3 * inv * t * t * y2 + t * t * t;
+      };
+
+    const easeScroll = cubicBezier(0.15, 0.61, 0, 1);
+
+    const getSectionProgress = (element: HTMLElement) => {
+      const rect = element.getBoundingClientRect();
+      const distance = Math.max(rect.height - window.innerHeight, 1);
+      return clampProgress(-rect.top / distance);
+    };
+
+    const updateScrollMotion = () => {
+      if (hero) {
+        const progress = getSectionProgress(hero);
+        const cards = [
+          ...hero.querySelectorAll<HTMLElement>("[data-travel-image]"),
+        ];
+        const copy = [
+          ...hero.querySelectorAll<HTMLElement>("[data-travel-copy]"),
+        ];
+        const itemCount = cards.length + copy.length + 1;
+        const stagger = 0.08;
+        const total = 1 + stagger * Math.max(itemCount - 1, 0);
+        const maskProgress = easeScroll(clampProgress(progress * total));
+        const uiOpacity = 1 - clampProgress(progress / 0.18);
+
+        hero.style.setProperty("--progress", progress.toFixed(4));
+        hero.style.setProperty("--mask-progress", maskProgress.toFixed(4));
+        hero.style.setProperty("--ui-opacity", uiOpacity.toFixed(4));
+
+        cards.forEach((card, index) => {
+          const itemProgress = clampProgress(
+            progress * total - stagger * (index + 1),
+          );
+          card.style.setProperty(
+            "--image-progress",
+            easeScroll(itemProgress).toFixed(4),
+          );
+        });
+
+        copy.forEach((item, index) => {
+          const itemProgress = clampProgress(
+            progress * total - stagger * (cards.length + index + 1),
+          );
+          item.style.setProperty(
+            "--image-progress",
+            easeScroll(itemProgress).toFixed(4),
+          );
+        });
+      }
+
+    };
+
+    updateScrollMotion();
+    window.addEventListener("scroll", updateScrollMotion, { passive: true });
+    window.addEventListener("resize", updateScrollMotion);
+    window.addEventListener("travel-month-gallery-ready", updateScrollMotion);
+  </script>
 </BaseLayout>
 
 <style>
@@ -533,7 +1797,7 @@ const hasMultipleHotels = hotels.length > 1;
   :global(.month-place-heading) {
     margin: 0;
     color: var(--sun);
-    font-family: Fraunces, Georgia, serif;
+    font-family: var(--ff-head);
     font-size: 1.05rem;
     font-weight: 800;
     line-height: 1;
@@ -597,10 +1861,18 @@ const hasMultipleHotels = hotels.length > 1;
 
   .planner-band {
     padding: 70px 0;
-    background:
-      radial-gradient(circle at 12% 18%, rgba(243, 178, 58, 0.22), transparent 20rem),
-      radial-gradient(circle at 92% 20%, rgba(13, 117, 111, 0.16), transparent 22rem),
-      linear-gradient(135deg, #fff8e9 0%, #eef8f4 58%, #fffdf8 100%);
+    /* background:
+      radial-gradient(
+        circle at 12% 18%,
+        rgba(243, 178, 58, 0.22),
+        transparent 20rem
+      ),
+      radial-gradient(
+        circle at 92% 20%,
+        rgba(13, 117, 111, 0.16),
+        transparent 22rem
+      ),
+      linear-gradient(135deg, #fff8e9 0%, #eef8f4 58%, #fffdf8 100%); */
     position: relative;
     color: var(--ink);
   }
@@ -622,7 +1894,11 @@ const hasMultipleHotels = hotels.length > 1;
     min-height: 300px;
     padding: 34px;
     background:
-      radial-gradient(circle at 0% 0%, rgba(243, 178, 58, 0.16), transparent 18rem),
+      radial-gradient(
+        circle at 0% 0%,
+        rgba(243, 178, 58, 0.16),
+        transparent 18rem
+      ),
       #0b332d;
     color: #fff;
   }
@@ -701,6 +1977,268 @@ const hasMultipleHotels = hotels.length > 1;
     box-shadow: 0 16px 34px rgba(200, 77, 22, 0.22);
   }
 
+  .planner-live-results {
+    display: grid;
+    gap: 12px;
+    padding: 16px;
+    border: 1px solid rgba(232, 221, 201, 0.9);
+    background: var(--surface-strong);
+  }
+
+  .planner-live-results {
+    grid-column: 1 / -1;
+    grid-template-columns: minmax(180px, 0.35fr) minmax(0, 0.65fr);
+    align-items: center;
+    border-radius: 22px;
+  }
+
+  .planner-live-results p {
+    margin: 0 0 4px;
+    color: var(--ink);
+    font-size: 1.12rem;
+    font-weight: 900;
+  }
+
+  .planner-live-results small {
+    color: var(--muted);
+    font-weight: 800;
+  }
+
+  .planner-preview-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  :global(.planner-preview-card) {
+    position: relative;
+    overflow: hidden;
+    min-height: 116px;
+    border-radius: 14px;
+    color: #fff;
+    text-decoration: none;
+  }
+
+  :global(.planner-preview-card img) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  :global(.planner-preview-card::after) {
+    position: absolute;
+    inset: 0;
+    content: "";
+    background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.62));
+  }
+
+  :global(.planner-preview-card span) {
+    position: absolute;
+    z-index: 1;
+    right: 10px;
+    bottom: 10px;
+    left: 10px;
+  }
+
+  :global(.planner-preview-card b),
+  :global(.planner-preview-card small) {
+    display: block;
+  }
+
+  :global(.planner-preview-card b) {
+    font-size: 0.88rem;
+    line-height: 1.05;
+  }
+
+  :global(.planner-preview-card small) {
+    margin-top: 4px;
+    color: rgba(255, 255, 255, 0.82);
+    font-size: 0.72rem;
+    font-weight: 800;
+  }
+
+  .interactive-planner {
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .interactive-planner .planner-copy {
+    position: relative;
+    z-index: 3;
+    border-radius: 24px 0 0 24px;
+    box-shadow: 0 30px 80px rgba(7, 20, 17, 0.14);
+  }
+
+  .interactive-planner .planner-fields {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+    overflow: visible;
+    padding: 0;
+    align-content: center;
+    isolation: isolate;
+  }
+
+  .interactive-planner .planner-field,
+  .interactive-planner :global(label.planner-field) {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(180px, 0.58fr) minmax(180px, 0.42fr);
+    align-items: center;
+    min-height: 92px;
+    margin: -1px 0 0;
+    padding: 18px 28px;
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+    background: #dedede;
+    box-shadow: none;
+    color: var(--ink);
+    transition:
+      background 0.26s ease,
+      color 0.26s ease,
+      opacity 0.26s ease,
+      transform 0.26s ease,
+      z-index 0s linear 0.26s;
+    clip-path: polygon(0 0, calc(100% - 38px) 0, 100% 45%, 100% 100%, 0 100%);
+  }
+
+  .interactive-planner .planner-field:nth-of-type(odd),
+  .interactive-planner :global(label.planner-field:nth-of-type(odd)) {
+    background: #f2f2f0;
+  }
+
+  .interactive-planner .planner-field:nth-of-type(2),
+  .interactive-planner :global(label.planner-field:nth-of-type(2)) {
+    margin-left: clamp(22px, 4vw, 68px);
+  }
+
+  .interactive-planner .planner-field:nth-of-type(3),
+  .interactive-planner :global(label.planner-field:nth-of-type(3)) {
+    margin-right: clamp(28px, 8vw, 130px);
+  }
+
+  .interactive-planner .planner-field:nth-of-type(4),
+  .interactive-planner :global(label.planner-field:nth-of-type(4)) {
+    margin-left: clamp(58px, 10vw, 180px);
+  }
+
+  .interactive-planner .planner-field:nth-of-type(5),
+  .interactive-planner :global(label.planner-field:nth-of-type(5)) {
+    margin-right: clamp(14px, 5vw, 90px);
+  }
+
+  .interactive-planner .planner-fields:has(.planner-field:hover) .planner-field:not(:hover),
+  .interactive-planner .planner-fields:has(.planner-field:focus-within) .planner-field:not(:focus-within) {
+    color: rgba(23, 25, 19, 0.18);
+    opacity: 0.52;
+  }
+
+  .interactive-planner .planner-field:hover,
+  .interactive-planner .planner-field:focus-within,
+  .interactive-planner :global(label.planner-field:hover),
+  .interactive-planner :global(label.planner-field:focus-within) {
+    z-index: 7;
+    background: #b6b6b4;
+    color: var(--ink);
+    transform: translateX(-12px) scale(1.02);
+    transition-delay: 0s;
+  }
+
+  .interactive-planner .planner-field:nth-of-type(1):hover,
+  .interactive-planner .planner-field:nth-of-type(1):focus-within {
+    background: var(--sun);
+  }
+
+  .interactive-planner .planner-title,
+  .interactive-planner :global(label.planner-field > .planner-title) {
+    color: currentColor;
+    font-family: var(--display-font);
+    font-size: clamp(1.9rem, 3.15vw, 3.45rem);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+
+  .interactive-planner .planner-field select,
+  .interactive-planner :global(label.planner-field select) {
+    position: relative;
+    z-index: 3;
+    min-height: 46px;
+    padding: 0 14px;
+    border: 1px solid rgba(23, 25, 19, 0.12);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.66);
+    color: var(--ink);
+    font-weight: 900;
+  }
+
+  .interactive-planner .planner-media {
+    position: absolute;
+    z-index: -1;
+    top: -74px;
+    right: calc(100% + clamp(18px, 3vw, 54px));
+    display: flex;
+    align-items: end;
+    width: min(30vw, 300px);
+    height: 120px;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(14px) rotate(-2deg);
+    transition:
+      opacity 0.28s ease,
+      transform 0.36s cubic-bezier(0.2, 0.75, 0.25, 1);
+  }
+
+  .interactive-planner .planner-media img {
+    width: 33%;
+    height: 90px;
+    margin-left: -26px;
+    border-radius: 4px;
+    object-fit: cover;
+    box-shadow: 0 18px 34px rgba(7, 20, 17, 0.18);
+  }
+
+  .interactive-planner .planner-media img:nth-child(1) {
+    transform: rotate(-10deg) translateY(14px);
+  }
+
+  .interactive-planner .planner-media img:nth-child(2) {
+    transform: rotate(5deg) translateY(-6px);
+  }
+
+  .interactive-planner .planner-media img:nth-child(3) {
+    transform: rotate(12deg) translateY(18px);
+  }
+
+  .interactive-planner .planner-field:hover .planner-media,
+  .interactive-planner .planner-field:focus-within .planner-media {
+    opacity: 0.72;
+    transform: translateY(0) rotate(0deg);
+  }
+
+  .interactive-planner .planner-live-results {
+    position: relative;
+    z-index: 6;
+    margin-top: 18px;
+    border-radius: 18px;
+    background: rgba(255, 253, 248, 0.94);
+    box-shadow: 0 22px 58px rgba(7, 20, 17, 0.12);
+  }
+
+  .interactive-planner [data-planner-submit] {
+    position: relative;
+    z-index: 6;
+    margin-top: 14px;
+  }
+
   .split {
     display: flex;
     align-items: center;
@@ -719,12 +2257,16 @@ const hasMultipleHotels = hotels.length > 1;
     font-size: clamp(1.9rem, 4vw, 3rem);
     line-height: 1.08;
   }
-
+/* 
   .hotels-section {
     background:
-      radial-gradient(circle at 85% 5%, rgba(243, 178, 58, 0.14), transparent 18rem),
+      radial-gradient(
+        circle at 85% 5%,
+        rgba(243, 178, 58, 0.14),
+        transparent 18rem
+      ),
       linear-gradient(180deg, #fffdf8 0%, #f7efe1 100%);
-  }
+  } */
 
   .hotel-head {
     display: flex;
@@ -823,7 +2365,11 @@ const hasMultipleHotels = hotels.length > 1;
     gap: 14px;
     padding: 42px;
     background:
-      radial-gradient(circle at 100% 0%, rgba(246, 183, 60, 0.14), transparent 16rem),
+      radial-gradient(
+        circle at 100% 0%,
+        rgba(246, 183, 60, 0.14),
+        transparent 16rem
+      ),
       var(--surface-strong);
   }
 
@@ -842,7 +2388,7 @@ const hasMultipleHotels = hotels.length > 1;
 
   .hotel-body h3 {
     margin: 0;
-    font-family: Fraunces, Georgia, serif;
+    font-family: var(--ff-head);
     font-size: clamp(1.8rem, 4vw, 3.2rem);
     line-height: 1;
   }
@@ -895,7 +2441,9 @@ const hasMultipleHotels = hotels.length > 1;
     border-radius: 999px;
     background: rgba(20, 116, 91, 0.22);
     cursor: pointer;
-    transition: width 180ms ease, background 180ms ease;
+    transition:
+      width 180ms ease,
+      background 180ms ease;
   }
 
   .hotel-dots button.active {
@@ -923,7 +2471,11 @@ const hasMultipleHotels = hotels.length > 1;
   .custom-hero {
     padding: 74px 0;
     background:
-      radial-gradient(circle at 82% 20%, rgba(243, 178, 58, 0.14), transparent 20rem),
+      radial-gradient(
+        circle at 82% 20%,
+        rgba(243, 178, 58, 0.14),
+        transparent 20rem
+      ),
       linear-gradient(135deg, #071411, #123f37);
     color: #fff;
   }
@@ -1062,4 +2614,3871 @@ const hasMultipleHotels = hotels.length > 1;
     }
   }
 
+  /* Scroll-gallery home hero */
+  .travel-hero {
+    --progress: 0;
+    --mask-progress: 0;
+    --ui-opacity: 1;
+    --gap: clamp(14px, 1.15vw, 22px);
+    --mask-radius: 18px;
+    --center-width: min(24vw, 370px);
+    --center-left: calc((100vw - var(--center-width)) / 2);
+    --center-right: calc((100vw - var(--center-width)) / 2);
+    position: relative;
+    min-height: calc(285svh - 20px);
+    /* background:
+      radial-gradient(
+        circle at 12% 14%,
+        rgba(243, 178, 58, 0.18),
+        transparent 24rem
+      ),
+      radial-gradient(
+        circle at 92% 8%,
+        rgba(13, 117, 111, 0.16),
+        transparent 26rem
+      ),
+      var(--bg); */
+    color: #fff;
+    margin: 10px;
+    border-radius: 0.65rem;
+    overflow: clip;
+  }
+
+  .travel-hero__sticky {
+    position: sticky;
+    top: 10px;
+    height: calc(100svh - 20px);
+    overflow: hidden;
+    border-radius: inherit;
+    /* background:
+      radial-gradient(
+        circle at 12% 14%,
+        rgba(243, 178, 58, 0.14),
+        transparent 24rem
+      ),
+      radial-gradient(
+        circle at 92% 8%,
+        rgba(13, 117, 111, 0.14),
+        transparent 26rem
+      ),
+      var(--bg); */
+  }
+
+  .travel-hero__mask {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    overflow: hidden;
+    border-radius: calc(var(--mask-progress) * var(--mask-radius));
+    clip-path: inset(
+      calc(var(--mask-progress) * 18px)
+        calc(var(--mask-progress) * var(--center-right))
+        calc(var(--mask-progress) * 18px)
+        calc(var(--mask-progress) * var(--center-left)) round
+        calc(var(--mask-progress) * var(--mask-radius))
+    );
+  }
+
+  .travel-hero__mask::after {
+    position: absolute;
+    inset: 0;
+    content: "";
+    background:
+      radial-gradient(
+        circle at 82% 68%,
+        rgba(243, 178, 58, 0.16),
+        transparent 24rem
+      ),
+      linear-gradient(
+        90deg,
+        rgba(7, 20, 17, 0.22),
+        rgba(7, 20, 17, 0.04) 46%,
+        rgba(7, 20, 17, 0.34)
+      ),
+      linear-gradient(180deg, rgba(7, 20, 17, 0.02), rgba(7, 20, 17, 0.28));
+    opacity: calc(0.88 - var(--mask-progress) * 0.22);
+    pointer-events: none;
+  }
+
+  .travel-hero__mask img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: calc(50% - var(--mask-progress) * 21%) center;
+    transform: translateX(calc(var(--mask-progress) * 14%))
+      scale(calc(1.04 - var(--mask-progress) * 0.02));
+    filter: saturate(1.04) contrast(1.02);
+  }
+
+  .travel-hero__gallery {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+
+  .travel-hero__sticky > .container {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    display: grid;
+    align-items: end;
+    justify-items: end;
+    padding-bottom: clamp(2rem, 9vh, 4rem);
+  }
+
+  :global(.travel-card) {
+    --image-progress: 0;
+    --from-x: 0px;
+    --from-y: 0px;
+    position: absolute;
+    display: block;
+    overflow: hidden;
+    border-radius: 14px;
+    background: #071411;
+    color: #fff;
+    text-decoration: none;
+    box-shadow: none;
+    opacity: var(--image-progress);
+    transform: translate3d(
+        calc(var(--from-x) * (1 - var(--image-progress))),
+        calc(var(--from-y) * (1 - var(--image-progress))),
+        0
+      )
+      scale(calc(0.985 + var(--image-progress) * 0.015));
+  }
+
+  :global(.travel-card img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scale(1.02);
+    filter: saturate(1.04) contrast(1.02);
+  }
+
+  :global(.travel-card::after) {
+    position: absolute;
+    inset: 0;
+    content: "";
+    background:
+      linear-gradient(180deg, transparent 35%, rgba(7, 20, 17, 0.64)),
+      linear-gradient(90deg, rgba(7, 20, 17, 0.2), transparent 64%);
+    opacity: 0.7;
+    pointer-events: none;
+  }
+
+  :global(.travel-card span) {
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    bottom: 10px;
+    z-index: 1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  :global(.travel-card b) {
+    color: var(--sun);
+    font-size: clamp(0.68rem, 0.82vw, 0.82rem);
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  :global(.travel-card small) {
+    padding: 5px 8px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.16);
+    color: rgba(255, 255, 255, 0.9);
+    font-size: clamp(0.58rem, 0.68vw, 0.68rem);
+    font-weight: 900;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  :global(.travel-card em) {
+    position: absolute;
+    left: 12px;
+    top: 12px;
+    z-index: 1;
+    max-width: calc(100% - 24px);
+    padding: 6px 9px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.18);
+    color: rgba(255, 255, 255, 0.9);
+    font-size: clamp(0.58rem, 0.68vw, 0.7rem);
+    font-style: normal;
+    font-weight: 900;
+    line-height: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    backdrop-filter: blur(10px);
+  }
+
+  :global(.card-mountain) {
+    left: max(3vw, calc(var(--center-left) - 34vw - var(--gap)));
+    top: 6svh;
+    width: min(32vw, calc(var(--center-left) - 5vw - var(--gap)));
+    height: 30svh;
+    --from-x: -30vw;
+    --from-y: -16svh;
+  }
+
+  :global(.card-temple) {
+    left: max(10vw, calc(var(--center-left) - 26vw - var(--gap)));
+    top: 40svh;
+    width: min(25vw, calc(var(--center-left) - 12vw - var(--gap)));
+    height: 30svh;
+    --from-x: -22vw;
+    --from-y: 18svh;
+  }
+
+  :global(.card-nature) {
+    left: max(16vw, calc(var(--center-left) - 21vw - var(--gap)));
+    top: 73svh;
+    width: min(21vw, calc(var(--center-left) - 18vw - var(--gap)));
+    height: 20svh;
+    --from-x: -18vw;
+    --from-y: 24svh;
+  }
+
+  :global(.card-backwater) {
+    left: auto;
+    right: max(11vw, calc(var(--center-right) - 25vw - var(--gap)));
+    top: 15svh;
+    width: min(24vw, calc(var(--center-right) - 12vw - var(--gap)));
+    height: 25svh;
+    --from-x: 24vw;
+    --from-y: -18svh;
+  }
+
+  :global(.card-sea) {
+    left: auto;
+    right: max(3vw, calc(var(--center-right) - 34vw - var(--gap)));
+    top: 44svh;
+    width: min(32vw, calc(var(--center-right) - 5vw - var(--gap)));
+    height: 28svh;
+    --from-x: 26vw;
+    --from-y: 10svh;
+  }
+
+  :global(.card-peak) {
+    left: auto;
+    right: max(17vw, calc(var(--center-right) - 22vw - var(--gap)));
+    top: 78svh;
+    width: min(21vw, calc(var(--center-right) - 18vw - var(--gap)));
+    height: 18svh;
+    --from-x: 18vw;
+    --from-y: 22svh;
+  }
+
+  .travel-hero__content {
+    transform: translateY(calc((1 - var(--ui-opacity)) * -28px));
+    opacity: var(--ui-opacity);
+    width: min(100%, 600px);
+    margin-left: auto;
+  }
+
+  .travel-hero__content h1 {
+    text-wrap: balance;
+    margin: 0 0 20px;
+    color: #fff;
+    font-size: clamp(3rem, 6vw, 5rem);
+    line-height: 0.84;
+    text-align: left;
+    text-shadow: 0 18px 64px rgba(0, 0, 0, 0.26);
+  }
+
+  .travel-hero__content p:not(.eyebrow) {
+    margin: 0 0 28px;
+    color: rgba(255, 255, 255, 0.88);
+    font-size: clamp(1.05rem, 1.7vw, 1.35rem);
+  }
+  .travel-hero__content .button,
+  .travel-hero__content .ghost-button {
+    width: auto;
+    min-height: 54px;
+    padding-inline: 24px;
+    border-radius: 999px;
+  }
+
+  .travel-hero__month-copy {
+    position: absolute;
+    z-index: 4;
+    left: 50%;
+    top: 58svh;
+    color: var(--sun);
+    font-family: var(--ff-head);
+    max-width: min(52vw, 880px);
+    font-size: clamp(40px, 4.5vw, 66px);
+    font-weight: 900;
+    line-height: 0.95;
+    white-space: normal;
+    opacity: var(--image-progress, 0);
+    transform: translateX(-50%)
+      translateY(calc((1 - var(--image-progress, 0)) * 34px));
+    text-align: center;
+  }
+
+  .travel-hero__address {
+    position: absolute;
+    z-index: 4;
+    left: auto;
+    right: calc(var(--center-right) - 24vw);
+    top: 61svh;
+    max-width: 220px;
+    margin: 0;
+    color: rgba(23, 25, 19, 0.72);
+    font-size: 1.05rem;
+    font-weight: 900;
+    line-height: 1.15;
+    opacity: var(--image-progress, 0);
+    transform: translateY(calc((1 - var(--image-progress, 0)) * 28px));
+  }
+
+  .travel-hero__address b {
+    font-size: 1.65rem;
+  }
+
+  .travel-hero__address span {
+    display: block;
+    color: rgba(23, 25, 19, 0.45);
+    font-weight: 800;
+  }
+
+  .brand-reveal {
+    position: relative;
+    z-index: 5;
+    overflow: hidden;
+    margin: 0;
+    padding: clamp(64px, 8vw, 108px) 0 clamp(28px, 4vw, 52px);
+    background: transparent;
+    color: var(--ink);
+  }
+
+  .brand-reveal__inner {
+    width: min(100% - 40px, 1180px);
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .brand-reveal .eyebrow {
+    margin-bottom: 22px;
+  }
+
+  .brand-reveal__copy {
+    max-width: 1100px;
+    margin-inline: auto;
+    font-family: inherit;
+    font-size: clamp(1.5rem, 4vw, 4.5rem);
+    font-weight: 700;
+    line-height: 0.95;
+    letter-spacing: 0;
+    text-wrap: balance;
+  }
+
+  :global(.brand-word) {
+    position: relative;
+    display: inline-block;
+    margin: 0 0.12em 0.16em 0;
+    color: transparent;
+    transform: translateY(10px);
+    opacity: 1;
+    transition:
+      color 0.18s ease,
+      opacity 0.42s ease,
+      transform 0.42s cubic-bezier(0.2, 0.75, 0.25, 1);
+  }
+
+  :global(.brand-word::before) {
+    position: absolute;
+    inset: 0.13em -0.02em 0.08em;
+    content: "";
+    border-radius: 999px;
+    background: rgba(10, 20, 17, 0.12);
+    transform-origin: left center;
+    transition:
+      opacity 0.34s ease,
+      transform 0.46s cubic-bezier(0.2, 0.75, 0.25, 1);
+  }
+
+  :global(.brand-word.is-visible) {
+    color: var(--ink);
+    /* transform: translateY(0); */
+    opacity: 1;
+  }
+
+  :global(.brand-word.is-visible:nth-child(1)),
+  :global(.brand-word.is-visible:nth-child(7)),
+  :global(.brand-word.is-visible:nth-child(13)) {
+    color: var(--sun);
+  }
+
+  :global(.brand-word.is-visible::before) {
+    opacity: 0;
+    /* transform: scaleX(0.08); */
+  }
+
+  .brand-marquee {
+    width: 100%;
+    margin-top: clamp(46px, 8vw, 104px);
+    white-space: nowrap;
+    transform: translateX(-1.5vw);
+  }
+
+  .brand-marquee span {
+    display: block;
+    color: rgba(10, 20, 17, 0.96);
+    font-family: var(--display-font);
+    font-size: clamp(4.4rem, 15vw, 16rem);
+    font-weight: 900;
+    line-height: 0.78;
+    letter-spacing: 0;
+  }
+
+  .month-section {
+    position: relative;
+    z-index: 4;
+    margin-top: 0;
+    padding: clamp(56px, 8vw, 104px) 0 96px;
+    background: transparent;
+  }
+
+  .client-month-tours {
+    padding: 24px;
+    border-radius: 24px;
+    background:
+      linear-gradient(
+        135deg,
+        rgba(255, 253, 248, 0.92),
+        rgba(246, 241, 231, 0.84)
+      ),
+      rgba(246, 241, 231, 0.88);
+    box-shadow: 0 34px 110px rgba(7, 20, 17, 0.16);
+    backdrop-filter: blur(18px);
+  }
+
+  .client-month-tours .section-head {
+    align-items: center;
+    margin-bottom: 22px;
+    padding-inline: 4px;
+  }
+
+  .client-month-tours .section-head h2 {
+    max-width: 760px;
+    font-size: clamp(2.2rem, 5vw, 4.6rem);
+    line-height: 0.92;
+  }
+
+  .client-month-tours .tour-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  :global(.month-tour-card) {
+    min-height: 500px;
+    box-shadow: 0 22px 70px rgba(7, 20, 17, 0.16);
+  }
+
+  :global(.month-tour-card:nth-child(2)) {
+    --float-y: 34px;
+    transform: translateY(var(--float-y));
+  }
+
+  :global(.month-tour-card:nth-child(3)) {
+    --float-y: 72px;
+    transform: translateY(var(--float-y));
+  }
+
+  :global(.month-tour-card:nth-child(n + 4)) {
+    margin-top: 72px;
+  }
+
+  :global(.month-tour-card:hover) {
+    transform: translateY(calc(var(--float-y, 0) - 6px)) scale(1);
+  }
+
+  :global(.month-image-link::after) {
+    background:
+      linear-gradient(180deg, rgba(7, 20, 17, 0), rgba(7, 20, 17, 0.46)),
+      linear-gradient(90deg, rgba(7, 20, 17, 0.16), transparent 62%);
+  }
+
+  :global(.month-card-body) {
+    padding: 22px;
+  }
+
+  :global(.month-card-body h3) {
+    max-width: 92%;
+    font-size: clamp(1.28rem, 2vw, 1.75rem);
+  }
+
+  .planner-band {
+    padding: 108px 0;
+  }
+
+  .trip-planner {
+    grid-template-columns: minmax(270px, 0.56fr) minmax(0, 1.44fr);
+    border: 0;
+    border-radius: 24px;
+    box-shadow: 0 34px 110px rgba(7, 20, 17, 0.18);
+  }
+
+  .planner-copy {
+    min-height: 410px;
+    padding: 42px;
+    background: #071411;
+  }
+
+  .planner-copy h2 {
+    font-size: clamp(2.2rem, 5vw, 4.6rem);
+    line-height: 0.92;
+  }
+
+  .planner-fields {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0;
+    padding: 0;
+  }
+
+  .planner-field,
+  .trip-planner :global(label.planner-field) {
+    min-height: 136px;
+    align-content: center;
+    border: 0;
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .planner-field.wide {
+    grid-column: span 2;
+  }
+
+  .trip-planner button,
+  .trip-planner :global(.planner-fields > button) {
+    min-height: 136px;
+    border-radius: 0;
+  }
+
+
+  .hotels-section {
+    padding: 108px 0;
+  }
+
+  .hotel-head {
+    margin-bottom: 34px;
+  }
+
+  .hotel-head h2 {
+    max-width: 860px;
+    font-size: clamp(2.6rem, 7vw, 6.2rem);
+    line-height: 0.9;
+  }
+
+  .hotel-slide {
+    border: 0;
+    border-radius: 24px;
+    box-shadow: 0 34px 110px rgba(7, 20, 17, 0.14);
+  }
+
+  .hotel-gallery {
+    min-height: 560px;
+  }
+
+  .custom-hero {
+    min-height: 70svh;
+    display: grid;
+    align-items: center;
+    padding: 96px 0;
+  }
+
+  .custom-hero h2 {
+    max-width: 850px;
+    font-size: clamp(2.8rem, 8vw, 6.8rem);
+    line-height: 0.9;
+  }
+
+  @media (max-width: 1100px) and (min-width: 761px) {
+    .travel-hero {
+      --center-width: 38vw;
+      --gap: clamp(10px, 1.1vw, 16px);
+    }
+
+    :global(.travel-card) {
+      border-radius: 12px;
+    }
+
+    :global(.travel-card span) {
+      left: 10px;
+      right: 10px;
+      bottom: 9px;
+      gap: 8px;
+    }
+
+    :global(.travel-card em) {
+      left: 10px;
+      top: 10px;
+      max-width: calc(100% - 20px);
+    }
+
+    :global(.travel-card b) {
+      font-size: clamp(0.62rem, 1.05vw, 0.74rem);
+    }
+
+    :global(.travel-card small) {
+      padding: 4px 7px;
+      font-size: clamp(0.54rem, 0.9vw, 0.64rem);
+    }
+
+    :global(.card-mountain),
+    :global(.card-temple),
+    :global(.card-nature),
+    :global(.card-backwater),
+    :global(.card-sea),
+    :global(.card-peak) {
+      width: min(27vw, calc(var(--center-left) - 7vw - var(--gap)));
+      height: 19svh;
+    }
+
+    :global(.card-mountain) {
+      left: 4vw;
+      top: 8svh;
+      width: min(30vw, calc(var(--center-left) - 6vw - var(--gap)));
+      height: 24svh;
+    }
+
+    :global(.card-temple) {
+      left: 8vw;
+      top: 38svh;
+      width: min(25vw, calc(var(--center-left) - 10vw - var(--gap)));
+      height: 25svh;
+    }
+
+    :global(.card-nature) {
+      left: 12vw;
+      top: 69svh;
+      width: min(22vw, calc(var(--center-left) - 14vw - var(--gap)));
+      height: 19svh;
+    }
+
+    :global(.card-backwater) {
+      right: 8vw;
+      top: 12svh;
+      width: min(25vw, calc(var(--center-right) - 10vw - var(--gap)));
+      height: 23svh;
+    }
+
+    :global(.card-sea) {
+      right: 4vw;
+      top: 42svh;
+      width: min(30vw, calc(var(--center-right) - 6vw - var(--gap)));
+      height: 25svh;
+    }
+
+    :global(.card-peak) {
+      right: 12vw;
+      top: 73svh;
+      width: min(22vw, calc(var(--center-right) - 14vw - var(--gap)));
+      height: 17svh;
+    }
+
+    .travel-hero__month-copy {
+      top: 59svh;
+      max-width: 60vw;
+      font-size: clamp(34px, 5vw, 56px);
+      white-space: normal;
+    }
+
+    .travel-hero__address {
+      display: none;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .travel-hero {
+      --center-width: 66vw;
+      min-height: calc(205svh - 20px);
+      margin: 10px;
+      border-radius: 0.75rem;
+    }
+
+    .travel-hero__sticky {
+      top: 10px;
+      height: calc(100svh - 20px);
+    }
+
+    .travel-hero__sticky > .container {
+      justify-items: start;
+      padding-bottom: 108px;
+    }
+
+    :global(.travel-card) {
+      display: none;
+    }
+
+    :global(.card-mountain),
+    :global(.card-backwater) {
+      display: block;
+      width: clamp(132px, 39vw, 190px);
+      height: clamp(104px, 17svh, 150px);
+    }
+
+    :global(.card-mountain) {
+      left: 5vw;
+      top: 66svh;
+    }
+
+    :global(.card-backwater) {
+      left: auto;
+      right: 5vw;
+      top: 70svh;
+    }
+
+    .travel-hero__content {
+      justify-items: start;
+    }
+
+    .travel-hero__content h1 {
+      max-width: 96%;
+      font-size: clamp(3.55rem, 16vw, 5.2rem);
+      line-height: 0.88;
+    }
+
+    .travel-hero__content p:not(.eyebrow) {
+      max-width: 94%;
+      margin-bottom: 20px;
+      font-size: 1rem;
+    }
+
+    .travel-hero__content .hero-actions {
+      grid-template-columns: 1fr;
+      max-width: 260px;
+    }
+
+    .travel-hero__content .button,
+    .travel-hero__content .ghost-button {
+      width: 100%;
+      border-radius: 16px;
+    }
+
+    .travel-hero__month-copy,
+    .travel-hero__address {
+      display: none;
+    }
+
+    .brand-reveal {
+      padding: 48px 0 24px;
+    }
+
+    .brand-reveal__inner {
+      width: min(100% - 28px, 1180px);
+    }
+
+    :global(.brand-word) {
+      margin-right: 0.08em;
+    }
+
+    .brand-marquee {
+      margin-top: 44px;
+      transform: translateX(-2.5vw);
+    }
+
+    .brand-marquee span {
+      font-size: clamp(3.55rem, 19vw, 6.6rem);
+    }
+
+    .month-section {
+      margin-top: 0;
+      padding-top: 48px;
+      padding-bottom: 68px;
+    }
+
+    .client-month-tours {
+      width: min(100% - 18px, var(--max));
+      padding: 12px;
+      border-radius: 22px;
+    }
+
+    .client-month-tours .section-head {
+      align-items: flex-start;
+      flex-direction: column;
+      padding: 8px 2px 4px;
+    }
+
+    .client-month-tours .tour-grid {
+      display: grid;
+      grid-auto-columns: minmax(280px, 84%);
+      grid-auto-flow: column;
+      grid-template-columns: none;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      scroll-snap-type: x proximity;
+    }
+
+    :global(.month-tour-card),
+    :global(.month-tour-card:nth-child(2)),
+    :global(.month-tour-card:nth-child(3)),
+    :global(.month-tour-card:nth-child(n + 4)) {
+      min-height: 460px;
+      margin-top: 0;
+      transform: none;
+      scroll-snap-align: start;
+      opacity: 1;
+    }
+
+    :global(.month-tour-card:hover) {
+      transform: none;
+    }
+
+    .planner-band {
+      margin-inline: 0;
+      padding: 72px 0;
+      background: #071411;
+      border-radius: 0;
+    }
+
+    .trip-planner {
+      grid-template-columns: 1fr;
+      border-radius: 22px;
+    }
+
+    .planner-copy {
+      min-height: 250px;
+      padding: 26px;
+    }
+
+    .planner-fields {
+      grid-template-columns: 1fr;
+    }
+
+    .planner-field,
+    .planner-field.wide,
+    .trip-planner :global(label.planner-field),
+    .trip-planner button,
+    .trip-planner :global(.planner-fields > button) {
+      grid-column: auto;
+      min-height: 92px;
+    }
+
+    .hotels-section {
+      padding: 72px 0;
+    }
+
+    .hotel-gallery {
+      min-height: 420px;
+    }
+
+    .custom-hero {
+      min-height: 60svh;
+      margin-inline: 0;
+      border-radius: 0;
+    }
+  }
+
+  .interactive-planner {
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .interactive-planner .planner-fields {
+    grid-template-columns: 1fr;
+    gap: 0;
+    overflow: visible;
+    padding: 0;
+  }
+
+  .interactive-planner .planner-field,
+  .interactive-planner .planner-field.wide,
+  .interactive-planner :global(label.planner-field) {
+    position: relative;
+    display: grid;
+    grid-column: auto;
+    grid-template-columns: minmax(180px, 0.58fr) minmax(180px, 0.42fr);
+    align-items: center;
+    min-height: 92px;
+    margin: -1px 0 0;
+    align-content: initial;
+    padding: 18px 28px;
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+    border-right: 0;
+    border-bottom: 0;
+    background: #dedede;
+    box-shadow: none;
+    color: var(--ink);
+    clip-path: polygon(0 0, calc(100% - 38px) 0, 100% 45%, 100% 100%, 0 100%);
+  }
+
+  .interactive-planner .planner-field:nth-of-type(odd),
+  .interactive-planner :global(label.planner-field:nth-of-type(odd)) {
+    background: #f2f2f0;
+  }
+
+  .interactive-planner .planner-field:nth-of-type(2),
+  .interactive-planner :global(label.planner-field:nth-of-type(2)) {
+    margin-left: clamp(22px, 4vw, 68px);
+  }
+
+  .interactive-planner .planner-field:nth-of-type(3),
+  .interactive-planner :global(label.planner-field:nth-of-type(3)) {
+    margin-right: clamp(28px, 8vw, 130px);
+  }
+
+  .interactive-planner .planner-field:nth-of-type(4),
+  .interactive-planner :global(label.planner-field:nth-of-type(4)) {
+    margin-left: clamp(58px, 10vw, 180px);
+  }
+
+  .interactive-planner .planner-field:nth-of-type(5),
+  .interactive-planner :global(label.planner-field:nth-of-type(5)) {
+    margin-right: clamp(14px, 5vw, 90px);
+  }
+
+  .interactive-planner [data-planner-submit],
+  .interactive-planner :global(.planner-fields > button) {
+    min-height: 58px;
+    border-radius: 999px;
+  }
+
+  .interactive-planner .planner-live-results {
+    grid-column: 1 / -1;
+  }
+
+  @media (max-width: 760px) {
+    .interactive-planner .planner-fields {
+      gap: 8px;
+      padding: 0;
+    }
+
+    .interactive-planner .planner-field,
+    .interactive-planner .planner-field.wide,
+    .interactive-planner :global(label.planner-field) {
+      grid-template-columns: minmax(0, 1fr);
+      min-height: 118px;
+      margin: 0;
+      padding: 16px;
+      border-radius: 18px;
+      clip-path: none;
+    }
+
+    .interactive-planner .planner-title,
+    .interactive-planner :global(label.planner-field > .planner-title) {
+      font-size: clamp(1.65rem, 8vw, 2.6rem);
+    }
+
+    .interactive-planner .planner-field select,
+    .interactive-planner :global(label.planner-field select) {
+      grid-column: auto;
+    }
+
+    .interactive-planner .planner-field:hover,
+    .interactive-planner .planner-field:focus-within,
+    .interactive-planner :global(label.planner-field:hover),
+    .interactive-planner :global(label.planner-field:focus-within) {
+      transform: none;
+    }
+
+    .interactive-planner .planner-media {
+      top: -20px;
+      right: 12px;
+      width: 150px;
+      height: 70px;
+      opacity: 0.18;
+      transform: none;
+    }
+
+    .interactive-planner .planner-field:hover .planner-media,
+    .interactive-planner .planner-field:focus-within .planner-media {
+      opacity: 0.58;
+    }
+
+    .interactive-planner .planner-media img {
+      height: 62px;
+      margin-left: -28px;
+    }
+
+    .interactive-planner .planner-live-results,
+    .interactive-planner .planner-preview-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .interactive-planner .planner-preview-grid {
+      display: grid;
+      max-height: 270px;
+      overflow-y: auto;
+    }
+
+    :global(.planner-preview-card) {
+      min-height: 132px;
+    }
+  }
+
+  /* Final planner pass: compact travel console. This intentionally overrides the older strip experiment above. */
+  .interactive-planner {
+    grid-template-columns: minmax(280px, 0.42fr) minmax(0, 1fr);
+    overflow: hidden;
+    border-radius: 28px;
+    background:
+      linear-gradient(135deg, rgba(255, 253, 248, 0.94), rgba(239, 248, 244, 0.9)),
+      #fffdf8;
+    box-shadow: 0 34px 100px rgba(7, 20, 17, 0.14);
+  }
+
+  .interactive-planner .planner-copy {
+    min-height: 0;
+    padding: clamp(28px, 4vw, 46px);
+    border-radius: 28px 0 0 28px;
+    background:
+      linear-gradient(160deg, rgba(11, 51, 45, 0.94), rgba(7, 20, 17, 0.98)),
+      #071411;
+    box-shadow: none;
+  }
+
+  .interactive-planner .planner-copy h2 {
+    max-width: 7.5em;
+    font-size: clamp(2rem, 3.35vw, 3.35rem);
+    line-height: 1;
+  }
+
+  .interactive-planner .planner-copy p:not(.eyebrow) {
+    max-width: 34ch;
+    font-size: 0.98rem;
+  }
+
+  .interactive-planner .planner-fields {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(260px, 0.38fr);
+    gap: 14px;
+    overflow: hidden;
+    padding: clamp(14px, 2vw, 20px);
+    border-radius: 0 28px 28px 0;
+    background: transparent;
+  }
+
+  .interactive-planner .planner-native-fields {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .journey-board {
+    display: grid;
+    grid-column: 1 / -1;
+    gap: 8px;
+  }
+
+  .journey-lane {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(7, 20, 17, 0.1);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.72);
+    transition:
+      background 0.24s ease,
+      border-color 0.24s ease,
+      transform 0.24s ease;
+  }
+
+  .journey-lane::before {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 5px;
+    content: "";
+    background: var(--accent);
+    opacity: 0;
+    transition: opacity 0.24s ease;
+  }
+
+  .journey-lane:hover,
+  .journey-lane.is-open {
+    border-color: rgba(239, 111, 47, 0.34);
+    background:
+      linear-gradient(135deg, rgba(255, 244, 234, 0.94), rgba(238, 248, 244, 0.92)),
+      #fffdf8;
+    transform: translateY(-1px);
+  }
+
+  .journey-lane.is-open::before {
+    opacity: 1;
+  }
+
+  .journey-lane__head {
+    display: grid;
+    grid-template-columns: minmax(120px, 0.36fr) minmax(0, 1fr);
+    gap: 16px;
+    align-items: center;
+    width: 100%;
+    min-height: 68px;
+    padding: 14px 18px 14px 22px;
+    border: 0;
+    background: transparent;
+    color: var(--ink);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .journey-lane__head span {
+    color: rgba(7, 20, 17, 0.56);
+    font-size: 0.7rem;
+    font-weight: 900;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+  }
+
+  .journey-lane__head strong {
+    overflow: hidden;
+    color: var(--ink);
+    font-size: clamp(1.1rem, 2vw, 1.6rem);
+    font-weight: 950;
+    line-height: 1;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .journey-lane__head::after {
+    justify-self: end;
+    grid-column: 2;
+    content: "+";
+    width: 28px;
+    height: 28px;
+    margin-top: -28px;
+    border-radius: 999px;
+    background: rgba(7, 20, 17, 0.08);
+    color: var(--ink);
+    display: grid;
+    place-items: center;
+    font-weight: 900;
+    transition: transform 0.24s ease;
+  }
+
+  .journey-lane.is-open .journey-lane__head::after {
+    transform: rotate(45deg);
+  }
+
+  .journey-options {
+    display: flex;
+    gap: 8px;
+    max-height: 0;
+    padding: 0 16px;
+    overflow: hidden;
+    opacity: 0;
+    transition:
+      max-height 0.34s ease,
+      padding 0.34s ease,
+      opacity 0.2s ease;
+  }
+
+  .journey-lane.is-open .journey-options {
+    max-height: 170px;
+    padding: 0 16px 16px;
+    overflow-x: auto;
+    opacity: 1;
+  }
+
+  .journey-options button {
+    flex: 0 0 auto;
+    min-height: 38px;
+    padding: 0 14px;
+    border: 1px solid rgba(7, 20, 17, 0.1);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.72);
+    color: var(--ink);
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: 850;
+    cursor: pointer;
+    transition:
+      background 0.2s ease,
+      color 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .journey-options button:hover,
+  .journey-options button.is-selected {
+    background: var(--ink);
+    color: #fff;
+  }
+
+  .journey-options button:active {
+    transform: translateY(1px);
+  }
+
+  .interactive-planner .planner-live-results {
+    grid-column: 1;
+    display: grid;
+    grid-template-columns: minmax(180px, 0.38fr) minmax(0, 0.62fr);
+    gap: 14px;
+    align-items: center;
+    min-height: 116px;
+    margin: 0;
+    padding: 16px;
+    border: 1px solid rgba(7, 20, 17, 0.08);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.74);
+    box-shadow: none;
+  }
+
+  .interactive-planner [data-planner-submit],
+  .interactive-planner :global(.planner-fields > button) {
+    grid-column: 2;
+    min-height: 116px;
+    margin: 0;
+    border-radius: 18px;
+    box-shadow: none;
+  }
+
+  .interactive-planner [data-planner-submit]:active {
+    transform: translateY(1px);
+  }
+
+  @media (max-width: 980px) {
+    .interactive-planner {
+      grid-template-columns: 1fr;
+    }
+
+    .interactive-planner .planner-copy {
+      border-radius: 28px 28px 0 0;
+    }
+
+    .interactive-planner .planner-copy h2 {
+      max-width: 12em;
+    }
+
+    .interactive-planner .planner-fields {
+      grid-template-columns: 1fr;
+      border-radius: 0 0 28px 28px;
+    }
+
+    .interactive-planner .planner-live-results,
+    .interactive-planner [data-planner-submit],
+    .interactive-planner :global(.planner-fields > button) {
+      grid-column: 1;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .interactive-planner {
+      border-radius: 24px;
+    }
+
+    .interactive-planner .planner-fields {
+      grid-template-columns: 1fr;
+      gap: 10px;
+      padding: 10px;
+    }
+
+    .journey-board {
+      gap: 7px;
+    }
+
+    .journey-lane {
+      border-radius: 16px;
+    }
+
+    .journey-lane__head {
+      grid-template-columns: 1fr;
+      gap: 8px;
+      min-height: 76px;
+      padding: 14px 16px;
+    }
+
+    .journey-lane__head strong {
+      max-width: calc(100% - 38px);
+      font-size: 1.28rem;
+    }
+
+    .journey-lane__head::after {
+      position: absolute;
+      top: 18px;
+      right: 14px;
+      margin: 0;
+    }
+
+    .journey-lane.is-open .journey-options {
+      padding-inline: 14px;
+      padding-bottom: 14px;
+    }
+
+    .interactive-planner .planner-live-results,
+    .interactive-planner [data-planner-submit],
+    .interactive-planner :global(.planner-fields > button) {
+      grid-column: 1 / -1;
+      min-height: 58px;
+      border-radius: 999px;
+    }
+
+    .interactive-planner .planner-live-results {
+      grid-template-columns: 1fr;
+      border-radius: 16px;
+    }
+  }
+
+  /* Sentence planner: final visual layer that matches the hero and text-reveal sections. */
+  .planner-band {
+    padding: clamp(72px, 10vw, 132px) 0;
+  }
+
+  .interactive-planner {
+    position: relative;
+    display: block;
+    overflow: visible;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .interactive-planner .planner-copy {
+    display: block;
+    max-width: 860px;
+    min-height: 0;
+    padding: 0 0 clamp(26px, 4vw, 48px);
+    border-radius: 0;
+    background: transparent;
+    color: var(--ink);
+  }
+
+  .interactive-planner .planner-copy .eyebrow {
+    color: var(--accent);
+  }
+
+  .interactive-planner .planner-copy h2 {
+    max-width: 780px;
+    margin: 0;
+    color: var(--ink);
+    font-size: clamp(2.45rem, 5.8vw, 5.7rem);
+    line-height: 0.92;
+    text-wrap: balance;
+  }
+
+  .interactive-planner .planner-copy p:not(.eyebrow) {
+    max-width: 42ch;
+    margin-top: 18px;
+    color: rgba(7, 20, 17, 0.64);
+    font-size: clamp(1rem, 1.35vw, 1.18rem);
+  }
+
+  .interactive-planner .planner-fields {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(250px, 0.32fr);
+    gap: 18px;
+    overflow: visible;
+    padding: 0;
+    border-radius: 0;
+  }
+
+  .sentence-planner {
+    grid-column: 1 / -1;
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 0.68fr) minmax(280px, 0.32fr);
+    gap: clamp(24px, 4vw, 56px);
+    align-items: center;
+    padding: clamp(26px, 4vw, 52px);
+    overflow: visible;
+    border: 1px solid rgba(7, 20, 17, 0.1);
+    border-radius: 28px;
+    background:
+      radial-gradient(circle at 78% 16%, rgba(255, 190, 47, 0.28), transparent 24rem),
+      radial-gradient(circle at 12% 100%, rgba(239, 111, 47, 0.14), transparent 22rem),
+      linear-gradient(135deg, rgba(239, 248, 244, 0.98), rgba(255, 250, 238, 0.94));
+  }
+
+  .sentence-planner__copy {
+    position: relative;
+    z-index: 3;
+  }
+
+  .sentence-planner__kicker {
+    margin: 0 0 16px;
+    color: var(--accent);
+    font-size: 0.72rem;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .travel-sentence {
+    max-width: 1160px;
+    color: rgba(7, 20, 17, 0.9);
+    font-family: var(--display-font);
+    font-size: clamp(2rem, 4.15vw, 4.85rem);
+    font-weight: 900;
+    line-height: 1.08;
+    letter-spacing: 0;
+  }
+
+  .travel-sentence > span {
+    display: inline;
+  }
+
+  .signal {
+    position: relative;
+    display: inline-block;
+    margin: 0 0.06em 0.18em;
+    vertical-align: baseline;
+  }
+
+  .signal > button {
+    position: relative;
+    display: inline-flex;
+    align-items: baseline;
+    max-width: min(100%, 9.5em);
+    padding: 0 0.12em 0.04em;
+    border: 0;
+    border-radius: 0.08em;
+    background:
+      linear-gradient(transparent 58%, rgba(255, 190, 47, 0.62) 58%),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0));
+    color: var(--ink);
+    font: inherit;
+    line-height: inherit;
+    cursor: pointer;
+    box-shadow: 0 10px 40px rgba(239, 111, 47, 0.08);
+    transition:
+      transform 0.22s ease,
+      background 0.22s ease,
+      color 0.22s ease;
+  }
+
+  .signal:hover > button,
+  .signal.is-open > button {
+    color: #071411;
+    transform: translateY(-0.03em) rotate(-0.4deg);
+    background:
+      linear-gradient(transparent 48%, rgba(255, 190, 47, 0.86) 48%),
+      rgba(255, 255, 255, 0.48);
+  }
+
+  .signal > button strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .signal > button::after {
+    content: "";
+    position: absolute;
+    right: 0.02em;
+    bottom: 0.08em;
+    width: 0.18em;
+    height: 0.18em;
+    border-radius: 999px;
+    background: var(--accent);
+    transform: scale(0.8);
+    transition: transform 0.2s ease;
+  }
+
+  .signal:hover > button::after,
+  .signal.is-open > button::after {
+    transform: scale(1.25);
+  }
+
+  .signal-options {
+    position: absolute;
+    z-index: 30;
+    left: 50%;
+    top: calc(100% + 12px);
+    bottom: auto;
+    display: none;
+    gap: 8px;
+    width: max-content;
+    max-width: min(72vw, 680px);
+    max-height: none;
+    padding: 12px;
+    overflow-x: auto;
+    border: 1px solid rgba(7, 20, 17, 0.1);
+    border-radius: 22px;
+    background:
+      linear-gradient(135deg, rgba(255, 253, 248, 0.96), rgba(239, 248, 244, 0.94)),
+      rgba(255, 253, 248, 0.92);
+    box-shadow: 0 24px 70px rgba(7, 20, 17, 0.16);
+    opacity: 1;
+    transform: translateX(-50%) translateY(8px) scale(0.98);
+    backdrop-filter: blur(14px);
+    transition:
+      opacity 0.22s ease,
+      transform 0.28s ease;
+  }
+
+  .signal.is-open {
+    z-index: 35;
+  }
+
+  .signal.is-open .signal-options {
+    display: flex;
+    animation: signal-pop 0.24s cubic-bezier(0.2, 0.75, 0.25, 1) both;
+  }
+
+  .signal-options button {
+    position: relative;
+    flex: 0 0 auto;
+    min-height: 48px;
+    padding: 0 46px 0 16px;
+    border: 1px solid rgba(7, 20, 17, 0.12);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.82);
+    color: var(--ink);
+    font-family: var(--body-font);
+    font-size: 0.92rem;
+    font-weight: 900;
+    box-shadow: 0 18px 44px rgba(7, 20, 17, 0.1);
+    cursor: pointer;
+  }
+
+  .signal-options button::after {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    min-width: 26px;
+    padding: 4px 7px;
+    border-radius: 999px;
+    background: rgba(255, 190, 47, 0.28);
+    color: var(--ink);
+    content: attr(data-count);
+    font-size: 0.72rem;
+    font-weight: 950;
+    line-height: 1;
+    transform: translateY(-50%);
+  }
+
+  .signal-options button:hover,
+  .signal-options button.is-selected {
+    border-color: #071411;
+    background: #071411;
+    color: #fff;
+  }
+
+  .signal-options button:hover::after,
+  .signal-options button.is-selected::after {
+    background: rgba(255, 255, 255, 0.16);
+    color: #fff;
+  }
+
+  @keyframes signal-pop {
+    from {
+      opacity: 0;
+      transform: translateX(-50%) translateY(14px) scale(0.96);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0) scale(1);
+    }
+  }
+
+  .planner-visual {
+    position: relative;
+    min-height: clamp(300px, 36vw, 520px);
+    border-radius: 22px;
+    overflow: hidden;
+    background: #071411;
+    box-shadow: 0 30px 80px rgba(7, 20, 17, 0.18);
+    transform: rotate(1.5deg);
+  }
+
+  .planner-visual::before {
+    position: absolute;
+    inset: 14px;
+    z-index: 4;
+    content: "";
+    border: 1px solid rgba(255, 255, 255, 0.34);
+    border-radius: 16px;
+    pointer-events: none;
+  }
+
+  .planner-visual img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transform: scale(1.08) rotate(-1deg);
+    transition:
+      opacity 0.34s ease,
+      transform 0.7s cubic-bezier(0.2, 0.75, 0.25, 1);
+  }
+
+  .planner-visual img.is-active {
+    opacity: 1;
+    transform: scale(1.01) rotate(0deg);
+  }
+
+  .planner-visual img.is-active + img {
+    transform: scale(1.06) rotate(1deg);
+  }
+
+  .planner-visual::after {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    content: "";
+    background:
+      linear-gradient(180deg, transparent 30%, rgba(7, 20, 17, 0.62)),
+      linear-gradient(90deg, rgba(7, 20, 17, 0.18), transparent 62%);
+  }
+
+  .planner-visual span {
+    position: absolute;
+    z-index: 5;
+    left: 24px;
+    right: 24px;
+    bottom: 22px;
+    color: #fff;
+    font-size: clamp(1.05rem, 1.6vw, 1.35rem);
+    font-weight: 900;
+    line-height: 1.05;
+  }
+
+  .planner-visual span::before {
+    display: block;
+    width: 44px;
+    height: 5px;
+    margin-bottom: 12px;
+    border-radius: 999px;
+    background: var(--sun);
+    content: "";
+  }
+
+  .interactive-planner.has-signals .planner-live-results {
+    border-color: rgba(239, 111, 47, 0.24);
+    background: rgba(255, 244, 234, 0.72);
+  }
+
+  .interactive-planner .planner-live-results {
+    grid-column: 1;
+    display: grid;
+    grid-template-columns: minmax(180px, 0.34fr) minmax(0, 0.66fr);
+    gap: 16px;
+    min-height: 118px;
+    margin-top: 0;
+    padding: 16px;
+    border: 1px solid rgba(7, 20, 17, 0.1);
+    border-radius: 18px;
+    background: rgba(255, 253, 248, 0.78);
+    box-shadow: none;
+  }
+
+  .interactive-planner [data-planner-submit],
+  .interactive-planner :global(.planner-fields > button) {
+    grid-column: 2;
+    min-height: 118px;
+    margin-top: 0;
+    border-radius: 18px;
+    box-shadow: none;
+  }
+
+  @media (max-width: 900px) {
+    .interactive-planner .planner-fields {
+      grid-template-columns: 1fr;
+    }
+
+    .sentence-planner {
+      grid-template-columns: 1fr;
+    }
+
+    .planner-visual {
+      min-height: 320px;
+      transform: rotate(0deg);
+    }
+
+    .interactive-planner .planner-live-results,
+    .interactive-planner [data-planner-submit],
+    .interactive-planner :global(.planner-fields > button) {
+      grid-column: 1;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .planner-band {
+      padding: 64px 0;
+      background: transparent;
+    }
+
+    .interactive-planner .planner-copy {
+      padding-bottom: 24px;
+    }
+
+    .interactive-planner .planner-copy h2 {
+      font-size: clamp(2.45rem, 12vw, 4rem);
+    }
+
+    .travel-sentence {
+      font-size: clamp(1.72rem, 8.6vw, 3rem);
+      line-height: 1.15;
+    }
+
+    .signal {
+      position: relative;
+    }
+
+    .signal-options {
+      left: 0;
+      right: auto;
+      top: calc(100% + 8px);
+      bottom: auto;
+      width: max-content;
+      max-width: calc(100vw - 34px);
+      border-radius: 18px;
+      transform: translateY(8px) scale(0.98);
+    }
+
+    .signal.is-open .signal-options {
+      animation-name: signal-pop-mobile;
+    }
+
+    .sentence-planner {
+      gap: 22px;
+      padding: 20px;
+      padding-bottom: 34px;
+    }
+
+    .planner-visual {
+      min-height: 260px;
+      border-radius: 18px;
+    }
+
+    .planner-visual span {
+      left: 18px;
+      right: 18px;
+      bottom: 18px;
+    }
+
+    .interactive-planner .planner-live-results {
+      grid-template-columns: 1fr;
+      min-height: auto;
+      border-radius: 16px;
+    }
+
+    .interactive-planner [data-planner-submit],
+    .interactive-planner :global(.planner-fields > button) {
+      min-height: 58px;
+      border-radius: 999px;
+    }
+  }
+
+  @keyframes signal-pop-mobile {
+    from {
+      opacity: 0;
+      transform: translateY(14px) scale(0.96);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  /* Planner repair: compact signal selector. This wins over the older sentence experiments above. */
+  .planner-band {
+    padding: clamp(70px, 9vw, 118px) 0;
+  }
+
+  .interactive-planner .planner-copy {
+    max-width: 760px;
+    padding-bottom: clamp(22px, 3vw, 34px);
+  }
+
+  .interactive-planner .planner-copy h2 {
+    max-width: 620px;
+    font-size: clamp(2.4rem, 5vw, 4.8rem);
+  }
+
+  .sentence-planner {
+    grid-template-columns: minmax(0, 0.62fr) minmax(280px, 0.38fr);
+    gap: clamp(22px, 3vw, 42px);
+    align-items: stretch;
+    padding: clamp(18px, 2.6vw, 34px);
+    border-radius: 24px;
+    background:
+      radial-gradient(circle at 86% 10%, rgba(255, 190, 47, 0.28), transparent 22rem),
+      linear-gradient(135deg, rgba(255, 253, 248, 0.98), rgba(238, 248, 244, 0.94));
+  }
+
+  .sentence-planner__copy {
+    display: grid;
+    align-content: center;
+    min-width: 0;
+  }
+
+  .sentence-planner__kicker {
+    margin-bottom: 18px;
+  }
+
+  .travel-sentence {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: clamp(8px, 1vw, 13px);
+    max-width: 760px;
+    font-family: var(--body-font);
+    font-size: clamp(1.12rem, 2vw, 1.65rem);
+    font-weight: 850;
+    line-height: 1.25;
+  }
+
+  .travel-sentence > span:not(.signal) {
+    color: rgba(7, 20, 17, 0.72);
+  }
+
+  .signal {
+    position: relative;
+    display: inline-flex;
+    margin: 0;
+  }
+
+  .signal > button,
+  .trip-planner .signal > button,
+  .interactive-planner .signal > button {
+    min-height: 0;
+    max-width: min(74vw, 260px);
+    padding: 10px 42px 10px 15px;
+    border: 1px solid rgba(7, 20, 17, 0.12);
+    border-radius: 999px;
+    background:
+      linear-gradient(135deg, rgba(255, 190, 47, 0.42), rgba(255, 244, 234, 0.76)),
+      #fffdf8;
+    box-shadow: none;
+    font-family: var(--body-font);
+    font-size: clamp(1rem, 1.45vw, 1.2rem);
+    font-weight: 950;
+    line-height: 1;
+  }
+
+  .signal:hover > button,
+  .signal.is-open > button {
+    transform: translateY(-2px);
+    border-color: rgba(7, 20, 17, 0.28);
+    background: #071411;
+    color: #fff;
+  }
+
+  .signal > button strong {
+    display: block;
+    max-width: 180px;
+  }
+
+  .signal > button::after {
+    right: 14px;
+    bottom: auto;
+    top: 50%;
+    width: 9px;
+    height: 9px;
+    background: var(--accent);
+    transform: translateY(-50%);
+  }
+
+  .signal:hover > button::after,
+  .signal.is-open > button::after {
+    background: var(--sun);
+    transform: translateY(-50%) scale(1.2);
+  }
+
+  .signal-options {
+    left: 0;
+    top: calc(100% + 10px);
+    width: min(360px, calc(100vw - 42px));
+    max-width: min(360px, calc(100vw - 42px));
+    max-height: 230px;
+    grid-template-columns: 1fr;
+    gap: 7px;
+    overflow: auto;
+    border-radius: 18px;
+    box-shadow: 0 22px 58px rgba(7, 20, 17, 0.18);
+    transform: translateY(8px) scale(0.98);
+  }
+
+  .signal.is-open .signal-options {
+    display: grid;
+    animation-name: signal-menu-pop;
+  }
+
+  .signal-options button,
+  .trip-planner .signal-options button,
+  .interactive-planner .signal-options button {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 42px;
+    padding: 9px 12px 9px 14px;
+    border-radius: 13px;
+    box-shadow: none;
+    text-align: left;
+  }
+
+  .signal-options button::after {
+    position: static;
+    margin-left: 16px;
+    transform: none;
+  }
+
+  .planner-visual {
+    min-height: clamp(360px, 40vw, 540px);
+    border-radius: 24px;
+    box-shadow: none;
+    transform: none;
+  }
+
+  .planner-visual span {
+    font-size: clamp(1.1rem, 1.5vw, 1.42rem);
+  }
+
+  .interactive-planner .planner-live-results {
+    grid-column: 1 / -1;
+    margin-top: 0;
+    border-radius: 20px;
+  }
+
+  .interactive-planner [data-planner-submit],
+  .interactive-planner :global(.planner-fields > button) {
+    grid-column: 1 / -1;
+    min-height: 62px;
+    border-radius: 999px;
+  }
+
+  @keyframes signal-menu-pop {
+    from {
+      opacity: 0;
+      transform: translateY(12px) scale(0.97);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @media (max-width: 980px) {
+    .sentence-planner {
+      grid-template-columns: 1fr;
+    }
+
+    .planner-visual {
+      min-height: 320px;
+      order: -1;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .sentence-planner {
+      padding: 16px;
+      border-radius: 22px;
+    }
+
+    .travel-sentence {
+      gap: 7px;
+      font-size: 1.05rem;
+    }
+
+    .signal > button,
+    .trip-planner .signal > button,
+    .interactive-planner .signal > button {
+      max-width: calc(100vw - 52px);
+      padding: 9px 34px 9px 12px;
+      font-size: 0.98rem;
+    }
+
+    .signal > button strong {
+      max-width: 150px;
+    }
+
+    .signal-options {
+      width: min(310px, calc(100vw - 34px));
+      max-width: min(310px, calc(100vw - 34px));
+      max-height: 210px;
+    }
+
+    .planner-visual {
+      min-height: 280px;
+      border-radius: 18px;
+    }
+  }
+
+  /* Planner image-count version. */
+  .sentence-planner__copy {
+    align-content: center;
+  }
+
+  .planner-sentence-submit,
+  .interactive-planner .planner-sentence-submit,
+  .trip-planner .planner-sentence-submit,
+  .interactive-planner [data-planner-submit].planner-sentence-submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    min-width: 210px;
+    min-height: 56px;
+    margin-top: clamp(20px, 3vw, 32px);
+    padding: 0 26px;
+    border: 0;
+    border-radius: 999px;
+    background: var(--accent);
+    color: #fff;
+    font-family: var(--body-font);
+    font-size: 1rem;
+    font-weight: 950;
+    box-shadow: none;
+    cursor: pointer;
+  }
+
+  .planner-sentence-submit:hover,
+  .interactive-planner .planner-sentence-submit:hover {
+    background: #d9551f;
+    transform: translateY(-2px);
+  }
+
+  .planner-sentence-submit:active,
+  .interactive-planner .planner-sentence-submit:active {
+    transform: translateY(1px);
+  }
+
+  .planner-visual__content {
+    position: absolute;
+    z-index: 5;
+    left: 22px;
+    right: 22px;
+    bottom: 22px;
+    display: grid;
+    gap: 10px;
+  }
+
+  .planner-visual__content p {
+    width: fit-content;
+    margin: 0;
+    padding: 9px 13px;
+    border-radius: 999px;
+    background: rgba(255, 190, 47, 0.94);
+    color: #071411;
+    font-size: clamp(0.92rem, 1.2vw, 1rem);
+    font-weight: 950;
+    line-height: 1;
+  }
+
+  .planner-visual__content span,
+  .planner-visual span[data-visual-caption] {
+    position: static;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    color: #fff;
+    font-size: clamp(1.18rem, 1.6vw, 1.48rem);
+    font-weight: 950;
+    line-height: 1.05;
+  }
+
+  .planner-visual__content span::before,
+  .planner-visual span[data-visual-caption]::before {
+    display: none;
+  }
+
+  @media (max-width: 760px) {
+    .planner-sentence-submit,
+    .interactive-planner .planner-sentence-submit,
+    .trip-planner .planner-sentence-submit,
+    .interactive-planner [data-planner-submit].planner-sentence-submit {
+      width: 100%;
+      min-height: 54px;
+      margin-top: 18px;
+    }
+
+    .planner-visual__content {
+      left: 16px;
+      right: 16px;
+      bottom: 16px;
+    }
+  }
+
+  /* Form2: Route Passport variant. */
+  .route-passport-planner {
+    display: grid;
+    grid-template-columns: minmax(320px, 0.48fr) minmax(0, 0.52fr);
+    gap: clamp(18px, 2.4vw, 32px);
+    align-items: stretch;
+    margin-top: clamp(26px, 4vw, 46px);
+    padding: clamp(14px, 1.6vw, 18px);
+    overflow: visible;
+    border: 1px solid rgba(7, 20, 17, 0.1);
+    border-radius: 28px;
+    background:
+      linear-gradient(135deg, rgba(255, 253, 248, 0.98), rgba(239, 248, 244, 0.94)),
+      #fffdf8;
+    box-shadow: none;
+  }
+
+  .route-passport-planner .planner-native-fields {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .passport-visual {
+    position: relative;
+    min-height: clamp(430px, 48vw, 620px);
+    overflow: hidden;
+    border-radius: 22px;
+    background: #071411;
+  }
+
+  .passport-visual::before {
+    position: absolute;
+    inset: 14px;
+    z-index: 4;
+    border: 1px solid rgba(255, 255, 255, 0.26);
+    border-radius: 16px;
+    content: "";
+    pointer-events: none;
+  }
+
+  .passport-visual::after {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    content: "";
+    background:
+      linear-gradient(180deg, transparent 22%, rgba(7, 20, 17, 0.72)),
+      linear-gradient(90deg, rgba(7, 20, 17, 0.18), transparent 60%);
+  }
+
+  .passport-visual img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transform: scale(1.08);
+    transition:
+      opacity 0.34s ease,
+      transform 0.7s cubic-bezier(0.2, 0.75, 0.25, 1);
+  }
+
+  .passport-visual img.is-active {
+    opacity: 1;
+    transform: scale(1.01);
+  }
+
+  .passport-visual__content {
+    position: absolute;
+    z-index: 5;
+    left: clamp(22px, 3vw, 34px);
+    right: clamp(22px, 3vw, 34px);
+    bottom: clamp(22px, 3vw, 34px);
+    display: grid;
+    gap: 12px;
+  }
+
+  .passport-visual__content p {
+    width: fit-content;
+    margin: 0;
+    padding: 9px 13px;
+    border-radius: 999px;
+    background: rgba(255, 190, 47, 0.94);
+    color: #071411;
+    font-size: 0.95rem;
+    font-weight: 950;
+    line-height: 1;
+  }
+
+  .passport-visual__content span {
+    max-width: 13em;
+    color: #fff;
+    font-size: clamp(2.3rem, 4.8vw, 4.9rem);
+    font-family: var(--display-font);
+    font-weight: 950;
+    line-height: 0.92;
+    letter-spacing: 0;
+  }
+
+  .passport-panel {
+    position: relative;
+    display: grid;
+    align-content: center;
+    padding: clamp(18px, 3.2vw, 42px);
+    border-radius: 22px;
+    background:
+      radial-gradient(circle at 100% 0%, rgba(255, 190, 47, 0.24), transparent 18rem),
+      rgba(255, 255, 255, 0.7);
+  }
+
+  .passport-kicker {
+    margin: 0 0 14px;
+    color: var(--accent);
+    font-size: 0.72rem;
+    font-weight: 950;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .passport-panel h3 {
+    margin: 0;
+    max-width: 8em;
+    color: var(--ink);
+    font-size: clamp(2.4rem, 5vw, 5rem);
+    line-height: 0.92;
+  }
+
+  .passport-panel > p:not(.passport-kicker) {
+    max-width: 36ch;
+    margin: 16px 0 24px;
+    color: rgba(7, 20, 17, 0.62);
+    font-size: 1rem;
+    font-weight: 800;
+  }
+
+  .passport-stamps {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .passport-stamp {
+    position: relative;
+    display: block;
+  }
+
+  .passport-stamp.wide {
+    grid-column: 1 / -1;
+  }
+
+  .passport-stamp > button,
+  .route-passport-planner .passport-stamp > button,
+  .trip-planner .passport-stamp > button {
+    display: grid;
+    gap: 8px;
+    width: 100%;
+    min-height: 92px;
+    padding: 15px;
+    border: 1px solid rgba(7, 20, 17, 0.12);
+    border-radius: 17px;
+    background: #fffdf8;
+    color: var(--ink);
+    box-shadow: none;
+    text-align: left;
+    cursor: pointer;
+    transform: rotate(var(--stamp-tilt, -1deg));
+    transition:
+      transform 0.24s ease,
+      border-color 0.24s ease,
+      background 0.24s ease;
+  }
+
+  .passport-stamp:nth-child(2n) > button {
+    --stamp-tilt: 1deg;
+  }
+
+  .passport-stamp:hover > button,
+  .passport-stamp.is-open > button {
+    border-color: rgba(239, 111, 47, 0.36);
+    background:
+      linear-gradient(135deg, rgba(255, 244, 234, 0.94), rgba(255, 253, 248, 0.96));
+    transform: translateY(-2px) rotate(0deg);
+  }
+
+  .passport-stamp > button span {
+    color: rgba(7, 20, 17, 0.52);
+    font-size: 0.68rem;
+    font-weight: 950;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+  }
+
+  .passport-stamp > button strong {
+    overflow: hidden;
+    color: var(--ink);
+    font-size: clamp(1.05rem, 1.5vw, 1.22rem);
+    font-weight: 950;
+    line-height: 1;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .passport-options {
+    left: 0;
+    top: calc(100% + 9px);
+    width: min(340px, calc(100vw - 42px));
+    max-width: min(340px, calc(100vw - 42px));
+  }
+
+  .passport-submit,
+  .route-passport-planner .passport-submit,
+  .trip-planner .passport-submit,
+  .route-passport-planner [data-planner-submit].passport-submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 58px;
+    margin-top: 16px;
+    border: 0;
+    border-radius: 999px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 950;
+    box-shadow: none;
+    cursor: pointer;
+  }
+
+  .passport-submit:hover,
+  .route-passport-planner .passport-submit:hover {
+    background: #d9551f;
+    transform: translateY(-2px);
+  }
+
+  @media (max-width: 980px) {
+    .route-passport-planner {
+      grid-template-columns: 1fr;
+    }
+
+    .passport-visual {
+      min-height: 360px;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .route-passport-planner {
+      gap: 10px;
+      margin-top: 22px;
+      padding: 10px;
+      border-radius: 22px;
+    }
+
+    .passport-visual {
+      min-height: 300px;
+      border-radius: 18px;
+    }
+
+    .passport-visual__content span {
+      max-width: 11em;
+      font-size: clamp(2rem, 10vw, 3.4rem);
+    }
+
+    .passport-panel {
+      padding: 16px;
+      border-radius: 18px;
+    }
+
+    .passport-panel h3 {
+      font-size: clamp(2.2rem, 12vw, 3.5rem);
+    }
+
+    .passport-stamps {
+      display: flex;
+      gap: 9px;
+      margin-inline: -16px;
+      padding: 2px 16px 8px;
+      overflow-x: auto;
+      scroll-snap-type: x proximity;
+    }
+
+    .passport-stamp,
+    .passport-stamp.wide {
+      flex: 0 0 min(210px, 72vw);
+      grid-column: auto;
+      scroll-snap-align: start;
+    }
+
+    .passport-stamp > button,
+    .route-passport-planner .passport-stamp > button,
+    .trip-planner .passport-stamp > button {
+      min-height: 86px;
+      transform: none;
+    }
+
+    .passport-options {
+      width: min(300px, calc(100vw - 34px));
+      max-width: min(300px, calc(100vw - 34px));
+    }
+  }
+
+  /* Form comparison variants after form2. */
+  .planner-variant {
+    display: block;
+    margin-top: clamp(26px, 4vw, 46px);
+    overflow: visible;
+    border: 1px solid rgba(7, 20, 17, 0.1);
+    border-radius: 28px;
+    background: #fffdf8;
+    box-shadow: none;
+  }
+
+  .planner-variant > *:not(.planner-native-fields) {
+    width: 100%;
+  }
+
+  .planner-variant .planner-native-fields {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .variant-kicker {
+    margin: 0 0 12px;
+    color: var(--accent);
+    font-size: 0.72rem;
+    font-weight: 950;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .planner-variant h3 {
+    margin: 0;
+    color: var(--ink);
+    font-size: clamp(2.2rem, 4.7vw, 4.8rem);
+    line-height: 0.92;
+  }
+
+  .planner-variant [data-planner-submit] {
+    border: 0;
+    border-radius: 999px;
+    background: var(--accent);
+    color: #fff;
+    font-weight: 950;
+    cursor: pointer;
+    box-shadow: none;
+  }
+
+  .planner-variant [data-planner-submit]:hover {
+    background: #d9551f;
+    transform: translateY(-2px);
+  }
+
+  .planner-variant [data-planner-visual] img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transform: scale(1.08);
+    transition:
+      opacity 0.34s ease,
+      transform 0.7s cubic-bezier(0.2, 0.75, 0.25, 1);
+  }
+
+  .planner-variant [data-planner-visual] img.is-active {
+    opacity: 1;
+    transform: scale(1.01);
+  }
+
+  .boarding-ticket {
+    display: grid;
+    grid-template-columns: minmax(260px, 0.34fr) minmax(0, 0.46fr) minmax(150px, 0.2fr);
+    min-height: 460px;
+    overflow: hidden;
+    border-radius: inherit;
+  }
+
+  .boarding-photo {
+    position: relative;
+    min-height: 460px;
+    overflow: hidden;
+    background: #071411;
+  }
+
+  .boarding-main {
+    position: relative;
+    display: grid;
+    align-content: center;
+    padding: clamp(24px, 4vw, 52px);
+  }
+
+  .boarding-main::after {
+    position: absolute;
+    top: 0;
+    right: -1px;
+    bottom: 0;
+    border-right: 2px dashed rgba(7, 20, 17, 0.18);
+    content: "";
+  }
+
+  .boarding-main > p:not(.variant-kicker) {
+    margin: 14px 0 24px;
+    color: rgba(7, 20, 17, 0.6);
+    font-weight: 800;
+  }
+
+  .boarding-fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .boarding-field.wide {
+    grid-column: 1 / -1;
+  }
+
+  .boarding-field > button,
+  .boarding-pass-planner .boarding-field > button {
+    display: grid;
+    gap: 6px;
+    width: 100%;
+    min-height: 76px;
+    padding: 12px 14px;
+    border: 1px solid rgba(7, 20, 17, 0.12);
+    border-radius: 14px;
+    background: rgba(239, 248, 244, 0.72);
+    color: var(--ink);
+    box-shadow: none;
+    text-align: left;
+  }
+
+  .boarding-field > button span,
+  .clue-chip > button span,
+  .route-stop > button span,
+  .mood-pill > button span {
+    color: rgba(7, 20, 17, 0.5);
+    font-size: 0.68rem;
+    font-weight: 950;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .boarding-field > button strong,
+  .clue-chip > button strong,
+  .route-stop > button strong,
+  .mood-pill > button strong {
+    overflow: hidden;
+    color: var(--ink);
+    font-size: 1.02rem;
+    font-weight: 950;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .boarding-stub {
+    display: grid;
+    align-content: center;
+    gap: 18px;
+    padding: 24px;
+    background:
+      radial-gradient(circle at 50% 18%, rgba(255, 190, 47, 0.36), transparent 9rem),
+      rgba(239, 248, 244, 0.82);
+    text-align: center;
+  }
+
+  .boarding-stub > span {
+    color: rgba(7, 20, 17, 0.5);
+    font-size: 0.7rem;
+    font-weight: 950;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .boarding-stub strong {
+    color: var(--ink);
+    font-size: clamp(1.7rem, 2.7vw, 2.6rem);
+    line-height: 0.95;
+  }
+
+  .boarding-stub button {
+    min-height: 52px;
+    padding-inline: 18px;
+  }
+
+  .concierge-board {
+    display: grid;
+    grid-template-columns: minmax(250px, 0.32fr) minmax(0, 0.36fr) minmax(250px, 0.32fr);
+    gap: 18px;
+    padding: clamp(14px, 1.6vw, 18px);
+  }
+
+  .concierge-copy,
+  .concierge-signals {
+    display: grid;
+    align-content: center;
+    border-radius: 22px;
+    background:
+      linear-gradient(135deg, rgba(255, 244, 234, 0.86), rgba(255, 253, 248, 0.94));
+  }
+
+  .concierge-copy {
+    padding: clamp(24px, 3vw, 38px);
+  }
+
+  .concierge-copy > p:not(.variant-kicker) {
+    color: rgba(7, 20, 17, 0.62);
+    font-weight: 800;
+  }
+
+  .concierge-copy strong {
+    margin: 14px 0;
+    color: var(--ink);
+    font-size: 1.3rem;
+  }
+
+  .concierge-copy button {
+    min-height: 54px;
+    padding-inline: 20px;
+  }
+
+  .concierge-signals {
+    gap: 10px;
+    padding: clamp(16px, 2vw, 24px);
+  }
+
+  .clue-chip > button,
+  .concierge-planner .clue-chip > button {
+    display: grid;
+    gap: 4px;
+    width: 100%;
+    min-height: 70px;
+    padding: 12px 14px;
+    border: 1px solid rgba(7, 20, 17, 0.12);
+    border-radius: 999px;
+    background: #fffdf8;
+    box-shadow: none;
+    text-align: left;
+  }
+
+  .concierge-photo,
+  .route-map-photo,
+  .mood-cards {
+    position: relative;
+    overflow: hidden;
+    border-radius: 22px;
+    background: #071411;
+  }
+
+  .concierge-photo {
+    min-height: 500px;
+  }
+
+  .route-map-board {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(250px, 0.3fr) minmax(0, 0.42fr) minmax(250px, 0.28fr);
+    gap: 18px;
+    min-height: 520px;
+    padding: clamp(14px, 1.6vw, 18px);
+    overflow: hidden;
+  }
+
+  .route-map-copy {
+    display: grid;
+    align-content: center;
+    padding: clamp(22px, 3vw, 38px);
+  }
+
+  .route-map-copy p:not(.variant-kicker) {
+    color: rgba(7, 20, 17, 0.62);
+    font-weight: 800;
+  }
+
+  .route-map-copy strong {
+    margin-top: 14px;
+    color: var(--ink);
+    font-size: 1.4rem;
+  }
+
+  .route-line {
+    position: relative;
+    display: grid;
+    align-content: center;
+    gap: 18px;
+    padding: 28px 0;
+  }
+
+  .route-line::before {
+    position: absolute;
+    top: 9%;
+    bottom: 9%;
+    left: 22px;
+    width: 2px;
+    background: linear-gradient(var(--accent), rgba(7, 20, 17, 0.16));
+    content: "";
+  }
+
+  .route-stop {
+    position: relative;
+    padding-left: 46px;
+  }
+
+  .route-stop::before {
+    position: absolute;
+    left: 11px;
+    top: 28px;
+    z-index: 2;
+    width: 22px;
+    height: 22px;
+    border: 5px solid #fffdf8;
+    border-radius: 999px;
+    background: var(--accent);
+    content: "";
+  }
+
+  .route-stop > button,
+  .route-map-planner .route-stop > button {
+    display: grid;
+    gap: 4px;
+    width: 100%;
+    min-height: 76px;
+    padding: 12px 14px;
+    border: 1px solid rgba(7, 20, 17, 0.12);
+    border-radius: 16px;
+    background: #fffdf8;
+    box-shadow: none;
+    text-align: left;
+  }
+
+  .route-map-photo {
+    min-height: 484px;
+  }
+
+  .route-map-photo button {
+    position: absolute;
+    z-index: 5;
+    left: 18px;
+    right: 18px;
+    bottom: 18px;
+    min-height: 54px;
+  }
+
+  .route-map-photo::after,
+  .mood-cards::after,
+  .concierge-photo::after,
+  .boarding-photo::after {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background: linear-gradient(180deg, transparent 42%, rgba(7, 20, 17, 0.46));
+    content: "";
+  }
+
+  .mood-deck-board {
+    display: grid;
+    grid-template-columns: minmax(250px, 0.28fr) minmax(320px, 0.44fr) minmax(250px, 0.28fr);
+    gap: 18px;
+    padding: clamp(14px, 1.6vw, 18px);
+    align-items: stretch;
+  }
+
+  .mood-deck-board > div:first-child {
+    display: grid;
+    align-content: center;
+    padding: clamp(22px, 3vw, 38px);
+  }
+
+  .mood-deck-board > div:first-child p:not(.variant-kicker) {
+    color: rgba(7, 20, 17, 0.62);
+    font-weight: 800;
+  }
+
+  .mood-cards {
+    min-height: 500px;
+    transform: rotate(-1deg);
+  }
+
+  .mood-controls {
+    display: grid;
+    align-content: center;
+    gap: 10px;
+  }
+
+  .mood-pill > button,
+  .mood-deck-planner .mood-pill > button {
+    display: grid;
+    gap: 4px;
+    width: 100%;
+    min-height: 76px;
+    padding: 12px 14px;
+    border: 1px solid rgba(7, 20, 17, 0.12);
+    border-radius: 18px;
+    background: #fffdf8;
+    box-shadow: none;
+    text-align: left;
+  }
+
+  .mood-footer {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 18px 0;
+  }
+
+  .mood-footer strong {
+    color: var(--ink);
+    font-size: 1.25rem;
+  }
+
+  .mood-footer button {
+    min-height: 54px;
+    padding-inline: 24px;
+  }
+
+  @media (max-width: 980px) {
+    .boarding-ticket,
+    .concierge-board,
+    .route-map-board,
+    .mood-deck-board {
+      grid-template-columns: 1fr;
+    }
+
+    .boarding-main::after {
+      display: none;
+    }
+
+    .boarding-photo,
+    .concierge-photo,
+    .route-map-photo,
+    .mood-cards {
+      min-height: 340px;
+    }
+
+    .boarding-stub {
+      text-align: left;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .planner-variant {
+      border-radius: 22px;
+    }
+
+    .boarding-ticket,
+    .concierge-board,
+    .route-map-board,
+    .mood-deck-board {
+      gap: 10px;
+      padding: 10px;
+    }
+
+    .boarding-fields,
+    .passport-stamps,
+    .concierge-signals,
+    .mood-controls {
+      display: flex;
+      gap: 9px;
+      overflow-x: auto;
+      scroll-snap-type: x proximity;
+    }
+
+    .boarding-field,
+    .clue-chip,
+    .mood-pill {
+      flex: 0 0 min(210px, 72vw);
+      scroll-snap-align: start;
+    }
+
+    .boarding-field.wide {
+      grid-column: auto;
+    }
+
+    .route-line {
+      overflow-x: auto;
+      grid-auto-flow: column;
+      grid-auto-columns: min(210px, 72vw);
+      align-content: initial;
+      padding: 2px 0 8px;
+    }
+
+    .route-line::before,
+    .route-stop::before {
+      display: none;
+    }
+
+    .route-stop {
+      padding-left: 0;
+    }
+
+    .mood-footer {
+      display: grid;
+      padding-inline: 0;
+    }
+
+    .mood-footer button {
+      width: 100%;
+    }
+  }
+
+  /* Fresh planner concepts: visually distinct interaction models, not dropdown rearrangements. */
+  .fresh-planner-lab {
+    display: grid;
+    gap: clamp(24px, 4vw, 46px);
+    margin-top: clamp(32px, 5vw, 56px);
+  }
+
+  .fresh-concept {
+    overflow: hidden;
+    border: 1px solid rgba(7, 20, 17, 0.12);
+    border-radius: 28px;
+    background: #fffdf8;
+  }
+
+  .fresh-concept h3 {
+    margin: 0;
+    color: var(--ink);
+    font-size: clamp(2.25rem, 5vw, 5.2rem);
+    line-height: 0.9;
+  }
+
+  .fresh-concept p {
+    color: rgba(7, 20, 17, 0.64);
+    font-weight: 800;
+  }
+
+  .concept-duel {
+    display: grid;
+    grid-template-columns: minmax(280px, 0.46fr) minmax(0, 0.54fr);
+    min-height: 540px;
+  }
+
+  .duel-status {
+    display: grid;
+    align-content: center;
+    padding: clamp(28px, 4vw, 56px);
+    background:
+      linear-gradient(180deg, rgba(7, 20, 17, 0.64), rgba(7, 20, 17, 0.96)),
+      url("https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1100&q=82");
+    background-position: center;
+    background-size: cover;
+    color: #fff;
+  }
+
+  .duel-status h3,
+  .duel-status p,
+  .duel-status strong {
+    color: #fff;
+  }
+
+  .duel-status strong {
+    margin-top: 20px;
+    font-size: 1.1rem;
+  }
+
+  .duel-meter {
+    display: block;
+    height: 14px;
+    margin-top: 8px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.74);
+  }
+
+  .duel-meter i {
+    display: block;
+    width: 62%;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--accent);
+  }
+
+  .duel-stage {
+    display: grid;
+    align-content: center;
+    gap: 20px;
+    padding: clamp(28px, 4vw, 56px);
+  }
+
+  .duel-stage h3 {
+    max-width: 11em;
+    font-size: clamp(2rem, 3.7vw, 3.7rem);
+  }
+
+  .duel-choices {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .duel-choices button {
+    min-height: 170px;
+    padding: 22px;
+    border: 0;
+    border-radius: 20px;
+    background-position: center;
+    background-size: cover;
+    color: #fff;
+    font-size: clamp(1.4rem, 2.3vw, 2.1rem);
+    font-weight: 950;
+    text-align: left;
+    cursor: pointer;
+    box-shadow: inset 0 -100px 86px rgba(7, 20, 17, 0.58);
+    transition:
+      transform 0.24s ease,
+      box-shadow 0.24s ease,
+      filter 0.24s ease;
+  }
+
+  .duel-choices button:hover {
+    transform: translateY(-3px) rotate(-1deg);
+  }
+
+  .duel-choices button.is-selected {
+    box-shadow:
+      inset 0 -100px 86px rgba(7, 20, 17, 0.32),
+      0 0 0 5px rgba(255, 190, 47, 0.78);
+    filter: saturate(1.08);
+    transform: translateY(-6px) rotate(-1deg);
+  }
+
+  .choice-mountain {
+    background-image:
+      linear-gradient(180deg, transparent, rgba(7, 20, 17, 0.2)),
+      url("https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&w=900&q=82");
+  }
+
+  .choice-sea {
+    background-image:
+      linear-gradient(180deg, transparent, rgba(7, 20, 17, 0.2)),
+      url("https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&w=900&q=82");
+  }
+
+  .duel-actions,
+  .swipe-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .duel-actions button,
+  .duel-actions a,
+  .swipe-actions button {
+    display: inline-flex;
+    align-items: center;
+    min-height: 50px;
+    padding: 0 18px;
+    border: 0;
+    border-radius: 999px;
+    font-weight: 950;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .duel-actions button,
+  .swipe-actions button:first-child {
+    background: var(--ink);
+    color: #fff;
+  }
+
+  .duel-actions a,
+  .swipe-actions button:last-child {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  .concept-cover {
+    display: grid;
+    grid-template-columns: minmax(340px, 0.58fr) minmax(300px, 0.42fr);
+    min-height: 640px;
+    background: var(--ink);
+  }
+
+  .cover-photo {
+    min-height: 640px;
+    background-position: center;
+    background-size: cover;
+  }
+
+  .cover-copy {
+    display: grid;
+    align-content: space-between;
+    padding: clamp(30px, 4vw, 58px);
+    background: var(--ink);
+    color: #fff;
+  }
+
+  .cover-copy h3 {
+    color: #fff;
+    font-size: clamp(3.6rem, 7vw, 7.4rem);
+  }
+
+  .cover-copy p {
+    color: rgba(255, 255, 255, 0.76);
+  }
+
+  .cover-copy strong {
+    color: var(--sun);
+    font-size: clamp(1.4rem, 2.2vw, 2rem);
+  }
+
+  .cover-tags,
+  .map-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 14px;
+  }
+
+  .cover-tags button,
+  .map-filters button {
+    min-height: 44px;
+    padding: 0 16px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    font-weight: 950;
+    cursor: pointer;
+    transition:
+      background 0.2s ease,
+      border-color 0.2s ease,
+      color 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .cover-tags button:hover,
+  .cover-tags button.is-selected,
+  .map-filters button:hover,
+  .map-filters button.is-selected {
+    border-color: transparent;
+    background: var(--accent);
+    color: #fff;
+    transform: translateY(-2px);
+  }
+
+  .concept-swipe {
+    display: grid;
+    grid-template-columns: minmax(260px, 0.34fr) minmax(0, 0.66fr);
+    gap: 24px;
+    min-height: 610px;
+    padding: clamp(26px, 3vw, 42px);
+    background:
+      radial-gradient(circle at 84% 18%, rgba(255, 190, 47, 0.24), transparent 21rem),
+      #eef8f4;
+  }
+
+  .swipe-copy {
+    display: grid;
+    align-content: center;
+  }
+
+  .swipe-cards {
+    position: relative;
+    min-height: 520px;
+  }
+
+  .swipe-cards article {
+    position: absolute;
+    bottom: 18px;
+    width: min(350px, 42%);
+    height: 470px;
+    display: grid;
+    align-content: end;
+    padding: 24px;
+    overflow: hidden;
+    border-radius: 24px;
+    background-position: center;
+    background-size: cover;
+    color: #fff;
+    box-shadow: 0 28px 70px rgba(7, 20, 17, 0.18);
+    opacity: 0.72;
+    filter: saturate(0.78);
+    transition:
+      transform 0.32s ease,
+      opacity 0.32s ease,
+      filter 0.32s ease;
+  }
+
+  .swipe-cards article.is-active {
+    z-index: 6;
+    opacity: 1;
+    filter: none;
+    transform: translateY(-14px) rotate(-1deg);
+  }
+
+  .swipe-cards article::before {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 38%, rgba(7, 20, 17, 0.72));
+    content: "";
+  }
+
+  .swipe-cards article > * {
+    position: relative;
+    z-index: 2;
+  }
+
+  .swipe-cards article:nth-child(1) {
+    left: 0;
+    z-index: 4;
+    background-image: url("https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&w=900&q=82");
+  }
+
+  .swipe-cards article:nth-child(2) {
+    left: 28%;
+    z-index: 3;
+    transform: rotate(4deg);
+    background-image: url("https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&w=900&q=82");
+  }
+
+  .swipe-cards article:nth-child(3) {
+    right: 0;
+    z-index: 2;
+    transform: rotate(-3deg);
+    background-image: url("https://images.unsplash.com/photo-1599661046289-e31897846e41?auto=format&fit=crop&w=900&q=82");
+  }
+
+  .swipe-cards span {
+    color: var(--accent);
+    font-size: 0.75rem;
+    font-weight: 950;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .swipe-cards h4 {
+    margin: 8px 0 0;
+    color: #fff;
+    font-size: clamp(2rem, 3vw, 3rem);
+    line-height: 0.94;
+  }
+
+  .concept-map {
+    display: grid;
+    grid-template-columns: minmax(300px, 0.42fr) minmax(0, 0.58fr);
+    min-height: 620px;
+  }
+
+  .map-copy {
+    display: grid;
+    align-content: center;
+    padding: clamp(30px, 4vw, 58px);
+  }
+
+  .map-copy strong {
+    color: var(--ink);
+    font-size: 1.2rem;
+  }
+
+  .map-filters button {
+    border-color: rgba(7, 20, 17, 0.14);
+    background: #fff;
+    color: var(--ink);
+  }
+
+  .map-filters button:first-child {
+    background: var(--ink);
+    color: #fff;
+  }
+
+  .map-canvas {
+    position: relative;
+    min-height: 620px;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 42% 52%, rgba(255, 190, 47, 0.28), transparent 17rem),
+      radial-gradient(circle at 80% 30%, rgba(239, 111, 47, 0.12), transparent 17rem),
+      #eef8f4;
+  }
+
+  .map-line {
+    position: absolute;
+    left: 16%;
+    right: 12%;
+    top: 55%;
+    height: 3px;
+    background: var(--accent);
+    transform: rotate(-8deg);
+  }
+
+  .map-pin {
+    position: absolute;
+    width: clamp(112px, 11vw, 150px);
+    height: clamp(112px, 11vw, 150px);
+    display: grid;
+    place-items: end center;
+    padding: 16px;
+    border: 8px solid #fffdf8;
+    border-radius: 999px;
+    background-position: center;
+    background-size: cover;
+    color: #fff;
+    font-weight: 950;
+    box-shadow: 0 18px 50px rgba(7, 20, 17, 0.16);
+    cursor: pointer;
+    transition:
+      transform 0.28s ease,
+      border-color 0.28s ease,
+      filter 0.28s ease;
+  }
+
+  .map-pin:hover,
+  .map-pin.is-selected {
+    border-color: var(--sun);
+    filter: saturate(1.08);
+    transform: translateY(-8px) scale(1.05);
+  }
+
+  .map-pin::before {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(180deg, transparent 26%, rgba(7, 20, 17, 0.62));
+    content: "";
+  }
+
+  .map-pin {
+    isolation: isolate;
+  }
+
+  .pin-sikkim {
+    left: 14%;
+    top: 20%;
+    background-image: url("https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&w=500&q=82");
+  }
+
+  .pin-goa {
+    left: 43%;
+    top: 48%;
+    background-image: url("https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&w=500&q=82");
+  }
+
+  .pin-kerala {
+    right: 15%;
+    top: 28%;
+    background-image: url("https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&w=500&q=82");
+  }
+
+  @media (max-width: 900px) {
+    .concept-duel,
+    .concept-cover,
+    .concept-swipe,
+    .concept-map {
+      grid-template-columns: 1fr;
+    }
+
+    .duel-status,
+    .duel-stage,
+    .cover-copy,
+    .swipe-copy,
+    .map-copy {
+      padding: 26px;
+    }
+
+    .cover-photo,
+    .map-canvas {
+      min-height: 390px;
+    }
+
+    .concept-cover .cover-photo {
+      order: -1;
+    }
+
+    .swipe-cards {
+      min-height: 430px;
+      overflow-x: auto;
+    }
+
+    .swipe-cards article {
+      width: 260px;
+      height: 360px;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .fresh-concept {
+      border-radius: 22px;
+    }
+
+    .duel-choices {
+      grid-template-columns: 1fr;
+    }
+
+    .duel-choices button {
+      min-height: 140px;
+    }
+
+    .cover-copy h3 {
+      font-size: clamp(3rem, 16vw, 5rem);
+    }
+
+    .concept-swipe {
+      padding: 20px;
+    }
+
+    .swipe-cards {
+      margin-inline: -20px;
+      padding-inline: 20px;
+      scroll-snap-type: x proximity;
+    }
+
+    .swipe-cards article {
+      position: relative;
+      display: inline-grid;
+      left: auto !important;
+      right: auto !important;
+      bottom: auto;
+      margin-right: 12px;
+      transform: none !important;
+      scroll-snap-align: start;
+    }
+
+    .map-pin {
+      width: 112px;
+      height: 112px;
+      border-width: 6px;
+    }
+  }
+
+  /* Live planner reset: keep one understandable interactive planner on the page. */
+  .route-passport-planner,
+  .planner-variant,
+  .fresh-planner-lab {
+    display: none;
+  }
+
+  .planner-band {
+    padding-block: clamp(56px, 8vw, 104px);
+  }
+
+  .interactive-planner {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(18px, 3vw, 34px);
+    padding: clamp(18px, 2.5vw, 30px);
+    border: 1px solid rgba(7, 20, 17, 0.1);
+    border-radius: 28px;
+    background:
+      radial-gradient(circle at 85% 20%, rgba(255, 190, 47, 0.2), transparent 18rem),
+      linear-gradient(135deg, #fffdf8, #eef8f4);
+    box-shadow: none;
+  }
+
+  .interactive-planner .planner-copy {
+    grid-column: 1 / -1;
+    max-width: 720px;
+    padding: 0;
+  }
+
+  .interactive-planner .planner-copy h2 {
+    max-width: 660px;
+    margin: 0;
+    font-size: clamp(2.1rem, 4vw, 4.2rem);
+    line-height: 0.95;
+  }
+
+  .interactive-planner .planner-fields {
+    grid-column: 1 / -1;
+    min-width: 0;
+  }
+
+  .interactive-planner .planner-copy p:not(.eyebrow) {
+    max-width: 620px;
+    margin-top: 14px;
+    color: rgba(7, 20, 17, 0.66);
+    font-size: clamp(1rem, 1.4vw, 1.18rem);
+    font-weight: 750;
+    line-height: 1.55;
+  }
+
+  .sentence-planner {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 0.6fr) minmax(300px, 0.4fr);
+    gap: clamp(18px, 3vw, 34px);
+    align-items: stretch;
+    padding: clamp(16px, 2vw, 22px);
+    overflow: visible;
+    border: 1px solid rgba(7, 20, 17, 0.1);
+    border-radius: 24px;
+    background: rgba(255, 253, 248, 0.78);
+  }
+
+  .sentence-planner__copy {
+    display: grid;
+    align-content: center;
+    gap: 18px;
+    min-width: 0;
+    padding: clamp(12px, 2vw, 28px);
+  }
+
+  .sentence-planner__kicker {
+    margin: 0;
+    color: var(--accent);
+    font-size: 0.78rem;
+    font-weight: 950;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .travel-sentence {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 9px 11px;
+    max-width: 760px;
+    color: var(--ink);
+    font-size: clamp(1.35rem, 2.25vw, 2.28rem);
+    font-weight: 920;
+    line-height: 1.2;
+  }
+
+  .travel-sentence > span:not(.signal) {
+    color: rgba(7, 20, 17, 0.76);
+  }
+
+  .interactive-planner .signal {
+    position: relative;
+    display: inline-flex;
+    z-index: 10;
+  }
+
+  .interactive-planner .signal.is-open {
+    z-index: 1000;
+  }
+
+  .interactive-planner .signal > button {
+    position: relative;
+    max-width: min(78vw, 240px);
+    min-height: 0;
+    padding: 7px 34px 8px 13px;
+    border: 1px solid rgba(7, 20, 17, 0.12);
+    border-radius: 999px;
+    background:
+      linear-gradient(180deg, rgba(255, 190, 47, 0.55) 0 58%, transparent 58% 100%),
+      #fffdf8;
+    color: var(--ink);
+    font: inherit;
+    font-size: 0.78em;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: none;
+  }
+
+  .interactive-planner .signal > button::after {
+    position: absolute;
+    right: 13px;
+    top: 50%;
+    width: 8px;
+    height: 8px;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    content: "";
+    transform: translateY(-65%) rotate(45deg);
+  }
+
+  .interactive-planner .signal.has-value > button,
+  .interactive-planner .signal.is-open > button {
+    background: var(--ink);
+    color: #fff;
+  }
+
+  .interactive-planner .signal-options {
+    position: absolute;
+    left: 0;
+    top: calc(100% + 10px);
+    z-index: 1001;
+    display: none;
+    width: min(340px, calc(100vw - 42px));
+    max-height: 260px;
+    overflow: auto;
+    padding: 9px;
+    border: 1px solid rgba(7, 20, 17, 0.09);
+    border-radius: 16px;
+    background: #fffdf8;
+    box-shadow: 0 18px 54px rgba(7, 20, 17, 0.12);
+    animation: none;
+    scrollbar-color: rgba(7, 20, 17, 0.28) transparent;
+  }
+
+  .interactive-planner .signal.is-open .signal-options {
+    display: grid;
+    gap: 6px;
+  }
+
+  .interactive-planner .signal-options button {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 42px;
+    padding: 0 10px 0 12px;
+    border: 0;
+    border-radius: 11px;
+    background: transparent;
+    color: var(--ink);
+    font-size: 0.94rem;
+    font-weight: 760;
+    text-align: left;
+    cursor: pointer;
+    transition:
+      background 0.16s ease,
+      color 0.16s ease,
+      transform 0.16s ease;
+  }
+
+  .interactive-planner .signal-options button::after {
+    content: attr(data-count);
+    min-width: 52px;
+    margin-left: 14px;
+    padding: 4px 9px;
+    border-radius: 999px;
+    background: rgba(239, 111, 47, 0.1);
+    color: rgba(7, 20, 17, 0.72);
+    font-size: 0.72rem;
+    font-weight: 850;
+    text-align: center;
+  }
+
+  .interactive-planner .signal-options button:hover {
+    background: rgba(239, 111, 47, 0.08);
+    color: var(--ink);
+    transform: translateX(2px);
+  }
+
+  .interactive-planner .signal-options button.is-selected {
+    background: rgba(7, 20, 17, 0.08);
+    color: var(--ink);
+  }
+
+  .interactive-planner .signal-options button.is-selected::after {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  .interactive-planner .signal-options button.is-selected::before {
+    width: 7px;
+    height: 7px;
+    margin-right: 8px;
+    border-radius: 999px;
+    background: var(--accent);
+    content: "";
+  }
+
+  .planner-sentence-submit {
+    width: fit-content;
+    min-height: 54px;
+    padding: 0 24px;
+    border: 0;
+    border-radius: 999px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 950;
+    cursor: pointer;
+    box-shadow: none;
+  }
+
+  .planner-sentence-submit:hover {
+    background: #d9551f;
+    transform: translateY(-2px);
+  }
+
+  .planner-next-step {
+    display: grid;
+    gap: 5px;
+    max-width: 540px;
+    padding: 16px;
+    border: 1px solid rgba(7, 20, 17, 0.1);
+    border-radius: 16px;
+    background: rgba(255, 253, 248, 0.82);
+  }
+
+  .planner-next-step span {
+    color: rgba(7, 20, 17, 0.54);
+    font-size: 0.72rem;
+    font-weight: 950;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .planner-next-step strong {
+    color: var(--ink);
+    font-size: 1.05rem;
+    line-height: 1.35;
+  }
+
+  .planner-next-step small {
+    color: rgba(7, 20, 17, 0.58);
+    font-size: 0.9rem;
+    font-weight: 750;
+    line-height: 1.45;
+  }
+
+  .planner-visual {
+    position: relative;
+    min-height: clamp(340px, 38vw, 500px);
+    overflow: hidden;
+    border-radius: 20px;
+    background: #071411;
+  }
+
+  .planner-visual img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transform: scale(1.08);
+    transition:
+      opacity 0.28s ease,
+      transform 0.7s cubic-bezier(0.2, 0.75, 0.25, 1);
+  }
+
+  .planner-visual img.is-active {
+    opacity: 1;
+    transform: scale(1.01);
+  }
+
+  .planner-visual::after {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 40%, rgba(7, 20, 17, 0.72));
+    content: "";
+  }
+
+  .planner-visual__content {
+    position: absolute;
+    z-index: 3;
+    left: 18px;
+    right: 18px;
+    bottom: 18px;
+    display: grid;
+    gap: 9px;
+  }
+
+  .planner-visual__content p {
+    width: fit-content;
+    margin: 0;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: var(--sun);
+    color: var(--ink);
+    font-size: 0.88rem;
+    font-weight: 950;
+  }
+
+  .planner-visual__content span {
+    position: static;
+    max-width: 26ch;
+    color: #fff;
+    font-size: clamp(1.18rem, 1.7vw, 1.55rem);
+    font-weight: 950;
+    line-height: 1.08;
+  }
+
+  .interactive-planner .planner-live-results {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .planner-preview-card {
+    display: grid;
+    grid-template-columns: 84px minmax(0, 1fr);
+    gap: 12px;
+    align-items: center;
+    min-height: 94px;
+    padding: 10px;
+    border: 1px solid rgba(7, 20, 17, 0.1);
+    border-radius: 16px;
+    background: #fffdf8;
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .planner-preview-card img {
+    width: 84px;
+    height: 74px;
+    border-radius: 12px;
+    object-fit: cover;
+    background: #eef8f4;
+  }
+
+  .planner-preview-card b,
+  .planner-preview-card small {
+    display: block;
+  }
+
+  .planner-preview-card b {
+    overflow: hidden;
+    font-size: 0.98rem;
+    font-weight: 950;
+    line-height: 1.15;
+    text-overflow: ellipsis;
+  }
+
+  .planner-preview-card small {
+    margin-top: 4px;
+    color: rgba(7, 20, 17, 0.58);
+    font-size: 0.82rem;
+    font-weight: 850;
+  }
+
+  @media (max-width: 980px) {
+    .sentence-planner {
+      grid-template-columns: 1fr;
+    }
+
+    .planner-visual {
+      order: -1;
+      min-height: 320px;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .interactive-planner {
+      padding: 14px;
+      border-radius: 22px;
+    }
+
+    .interactive-planner .planner-copy h2 {
+      font-size: clamp(2.1rem, 12vw, 3.8rem);
+    }
+
+    .sentence-planner {
+      padding: 12px;
+      border-radius: 18px;
+    }
+
+    .sentence-planner__copy {
+      padding: 8px;
+    }
+
+    .travel-sentence {
+      gap: 7px;
+      font-size: clamp(1.18rem, 6.6vw, 1.9rem);
+      line-height: 1.28;
+    }
+
+    .interactive-planner .signal > button {
+      max-width: calc(100vw - 52px);
+      padding: 8px 32px 9px 12px;
+      font-size: 0.88em;
+    }
+
+    .interactive-planner .signal-options {
+      width: min(310px, calc(100vw - 34px));
+      max-height: 230px;
+    }
+
+    .planner-sentence-submit {
+      width: 100%;
+    }
+
+    .planner-visual {
+      min-height: 270px;
+      border-radius: 16px;
+    }
+
+    .interactive-planner .planner-live-results {
+      grid-template-columns: 1fr;
+    }
+  }
 </style>

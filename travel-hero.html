@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Travel Hero Scroll Gallery</title>
+    <style>
+      :root {
+        --ink: #171713;
+        --paper: #f7f5ef;
+        --yellow: #f3b500;
+        --white: #fffdf7;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        overflow-x: hidden;
+      }
+
+      img {
+        display: block;
+        width: 100%;
+      }
+
+      .travel-hero {
+        --progress: 0;
+        --mask-progress: 0;
+        --ui-opacity: 1;
+        --gap: clamp(14px, 1.15vw, 22px);
+        --radius: 18px;
+        --gallery-width: min(82vw, 1280px);
+        --center-width: min(22vw, 340px);
+        --center-left: calc((100vw - var(--center-width)) / 2);
+        --center-right: calc((100vw - var(--center-width)) / 2);
+        position: relative;
+        min-height: 285svh;
+        background: var(--paper);
+      }
+
+      .travel-hero__sticky {
+        position: sticky;
+        top: 0;
+        height: 100svh;
+        overflow: hidden;
+        background: var(--paper);
+      }
+
+      .travel-hero__mask {
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+        overflow: hidden;
+        border-radius: calc(var(--mask-progress) * var(--radius));
+        clip-path: inset(
+          calc(18px + var(--mask-progress) * 0px)
+          calc(var(--mask-progress) * var(--center-right))
+          calc(18px + var(--mask-progress) * 0px)
+          calc(var(--mask-progress) * var(--center-left))
+          round calc(var(--mask-progress) * var(--radius))
+        );
+      }
+
+      .travel-hero__mask img {
+        height: 100%;
+        object-fit: cover;
+        object-position: calc(50% - var(--mask-progress) * 24%) center;
+        transform: translateX(calc(var(--mask-progress) * 16%)) scale(calc(1.035 - var(--mask-progress) * 0.02));
+        filter: saturate(1.04) contrast(1.02);
+      }
+
+      .travel-hero__nav {
+        position: absolute;
+        z-index: 6;
+        top: clamp(34px, 5vw, 58px);
+        left: 50%;
+        width: min(82vw, 1280px);
+        height: 64px;
+        transform: translateX(-50%);
+        display: grid;
+        grid-template-columns: 1fr auto auto auto auto 1fr;
+        align-items: center;
+        gap: clamp(24px, 4vw, 66px);
+        padding: 0 clamp(18px, 3vw, 34px);
+        border-radius: 13px;
+        background: rgba(255, 255, 255, 0.22);
+        color: var(--white);
+        backdrop-filter: blur(20px);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      }
+
+      .travel-hero__nav a,
+      .travel-hero__nav strong {
+        color: inherit;
+        text-decoration: none;
+        font-size: 15px;
+        font-weight: 700;
+      }
+
+      .travel-hero__nav strong {
+        justify-self: start;
+      }
+
+      .travel-hero__headline {
+        position: absolute;
+        z-index: 5;
+        left: 51%;
+        top: 36%;
+        width: min(43vw, 660px);
+        margin: 0;
+        color: var(--white);
+        font-size: clamp(52px, 6.2vw, 94px);
+        line-height: 0.92;
+        letter-spacing: 0;
+        font-weight: 900;
+        opacity: var(--ui-opacity);
+        transform: translateY(calc((1 - var(--ui-opacity)) * -28px));
+      }
+
+      .travel-hero__gallery {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+      }
+
+      .travel-card {
+        --image-progress: 0;
+        --from-x: 0px;
+        --from-y: 0px;
+        position: absolute;
+        overflow: hidden;
+        border-radius: 13px;
+        opacity: var(--image-progress);
+        transform: translate3d(
+            calc(var(--from-x) * (1 - var(--image-progress))),
+            calc(var(--from-y) * (1 - var(--image-progress))),
+            0
+          )
+          scale(calc(0.985 + var(--image-progress) * 0.015));
+      }
+
+      .travel-card img {
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .card-mountain {
+        left: calc(var(--center-left) - 25vw - var(--gap));
+        top: 15.5svh;
+        width: 25vw;
+        height: 15.5svh;
+        --from-x: -30vw;
+        --from-y: -16svh;
+      }
+
+      .card-temple {
+        left: calc(var(--center-left) - 33vw - var(--gap));
+        top: 48.5svh;
+        width: 15.5vw;
+        height: 17svh;
+        --from-x: -22vw;
+        --from-y: 18svh;
+      }
+
+      .card-nature {
+        left: calc(var(--center-left) - 18vw - var(--gap));
+        top: 66.5svh;
+        width: 16vw;
+        height: 19svh;
+        --from-x: -18vw;
+        --from-y: 24svh;
+      }
+
+      .card-backwater {
+        left: calc(var(--center-left) + var(--center-width) + var(--gap));
+        top: 16svh;
+        width: 16vw;
+        height: 16svh;
+        --from-x: 24vw;
+        --from-y: -18svh;
+      }
+
+      .card-sea {
+        left: calc(var(--center-left) + var(--center-width) + 18vw + var(--gap) * 2);
+        top: 42svh;
+        width: 16vw;
+        height: 27svh;
+        --from-x: 26vw;
+        --from-y: 10svh;
+      }
+
+      .card-peak {
+        left: calc(var(--center-left) + var(--center-width) + var(--gap));
+        top: 68.5svh;
+        width: 16vw;
+        height: 22svh;
+        --from-x: 18vw;
+        --from-y: 22svh;
+      }
+
+      .travel-hero__caption {
+        position: absolute;
+        z-index: 4;
+        left: calc(var(--center-left) - 12vw);
+        top: 57svh;
+        color: var(--yellow);
+        font-size: clamp(42px, 5.2vw, 76px);
+        line-height: 0.95;
+        font-weight: 900;
+        white-space: nowrap;
+        opacity: var(--image-progress, 0);
+        transform: translateY(calc((1 - var(--image-progress, 0)) * 34px));
+      }
+
+      .travel-hero__address {
+        position: absolute;
+        z-index: 4;
+        left: calc(var(--center-left) + var(--center-width) + 10vw);
+        top: 78svh;
+        font-size: 18px;
+        line-height: 1.15;
+        font-weight: 800;
+        opacity: var(--image-progress, 0);
+        transform: translateY(calc((1 - var(--image-progress, 0)) * 28px));
+      }
+
+      .travel-hero__address span {
+        display: block;
+        color: rgba(23, 23, 19, 0.35);
+        font-weight: 700;
+      }
+
+      .after {
+        min-height: 80svh;
+        display: grid;
+        place-items: center;
+        padding: 72px 24px;
+        text-align: center;
+      }
+
+      .after h2 {
+        max-width: 760px;
+        margin: 0;
+        font-size: clamp(42px, 7vw, 96px);
+        line-height: 0.95;
+      }
+
+      @media (max-width: 900px) {
+        .travel-hero {
+          --center-width: 66vw;
+          min-height: 230svh;
+        }
+
+        .travel-hero__nav {
+          width: calc(100vw - 28px);
+          grid-template-columns: 1fr auto auto;
+          gap: 18px;
+        }
+
+        .travel-hero__nav a:nth-of-type(n + 3) {
+          display: none;
+        }
+
+        .travel-hero__headline {
+          left: 24px;
+          right: 24px;
+          top: 42%;
+          width: auto;
+        }
+
+        .travel-card {
+          display: none;
+        }
+
+        .card-mountain,
+        .card-backwater {
+          display: block;
+          width: 38vw;
+          height: 18svh;
+        }
+
+        .card-mountain {
+          left: 5vw;
+          top: 68svh;
+        }
+
+        .card-backwater {
+          left: 57vw;
+          top: 68svh;
+        }
+
+        .travel-hero__caption,
+        .travel-hero__address {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <section class="travel-hero" data-travel-hero>
+      <div class="travel-hero__sticky">
+        <div class="travel-hero__gallery" aria-hidden="true">
+          <div class="travel-card card-mountain" data-travel-image>
+            <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=900&q=85" alt="" />
+          </div>
+          <div class="travel-card card-temple" data-travel-image>
+            <img src="https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=700&q=85" alt="" />
+          </div>
+          <div class="travel-card card-nature" data-travel-image>
+            <img src="https://images.unsplash.com/photo-1444703686981-a3abbc4d4fe3?auto=format&fit=crop&w=700&q=85" alt="" />
+          </div>
+          <div class="travel-card card-backwater" data-travel-image>
+            <img src="https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&w=700&q=85" alt="" />
+          </div>
+          <div class="travel-card card-sea" data-travel-image>
+            <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=700&q=85" alt="" />
+          </div>
+          <div class="travel-card card-peak" data-travel-image>
+            <img src="https://images.unsplash.com/photo-1483728642387-6c3bdd6c93e5?auto=format&fit=crop&w=700&q=85" alt="" />
+          </div>
+        </div>
+
+        <div class="travel-hero__mask">
+          <img src="hero.jpg" alt="Traveler taking a photo from a train window" />
+        </div>
+
+        <nav class="travel-hero__nav" aria-label="Primary navigation">
+          <strong>logo</strong>
+          <a href="#">Tours</a>
+          <a href="#">Hotels</a>
+          <a href="#">About</a>
+          <a href="#">Contact</a>
+          <span></span>
+        </nav>
+
+        <h1 class="travel-hero__headline">The joy of travel starts here</h1>
+        <div class="travel-hero__caption" data-travel-copy>Tours of months</div>
+        <p class="travel-hero__address" data-travel-copy>
+          Address goes here
+          <span>Any direction</span>
+        </p>
+      </div>
+    </section>
+
+    <section class="after">
+      <h2>Build the rest of the page below the hero.</h2>
+    </section>
+
+    <script>
+      const hero = document.querySelector("[data-travel-hero]");
+      const images = [...document.querySelectorAll("[data-travel-image]")];
+      const copy = [...document.querySelectorAll("[data-travel-copy]")];
+
+      function clamp(value, min = 0, max = 1) {
+        return Math.min(Math.max(value, min), max);
+      }
+
+      function cubicBezier(x1, y1, x2, y2) {
+        return (value) => {
+          const x = clamp(value);
+          let t = x;
+
+          for (let index = 0; index < 5; index++) {
+            const inv = 1 - t;
+            const estimate = 3 * inv * inv * t * x1 + 3 * inv * t * t * x2 + t * t * t;
+            const derivative = 3 * inv * inv * x1 + 6 * inv * t * (x2 - x1) + 3 * t * t * (1 - x2);
+            if (derivative === 0) break;
+            t = clamp(t - (estimate - x) / derivative);
+          }
+
+          const inv = 1 - t;
+          return 3 * inv * inv * t * y1 + 3 * inv * t * t * y2 + t * t * t;
+        };
+      }
+
+      const ease = cubicBezier(0.15, 0.61, 0, 1);
+
+      function sectionProgress(element) {
+        const rect = element.getBoundingClientRect();
+        const distance = Math.max(rect.height - window.innerHeight, 1);
+        return clamp(-rect.top / distance);
+      }
+
+      function updateHero() {
+        if (!hero) return;
+
+        const progress = sectionProgress(hero);
+        const itemCount = images.length + 2;
+        const stagger = 0.08;
+        const total = 1 + stagger * (itemCount - 1);
+        const maskProgress = ease(clamp((progress * total) / 1));
+        const uiOpacity = 1 - clamp(progress / 0.18);
+
+        hero.style.setProperty("--progress", progress.toFixed(4));
+        hero.style.setProperty("--mask-progress", maskProgress.toFixed(4));
+        hero.style.setProperty("--ui-opacity", uiOpacity.toFixed(4));
+
+        images.forEach((image, index) => {
+          const itemProgress = clamp((progress * total - stagger * (index + 1)) / 1);
+          image.style.setProperty("--image-progress", ease(itemProgress).toFixed(4));
+        });
+
+        copy.forEach((item, index) => {
+          const itemProgress = clamp((progress * total - stagger * (images.length + index + 1)) / 1);
+          item.style.setProperty("--image-progress", ease(itemProgress).toFixed(4));
+        });
+      }
+
+      window.addEventListener("scroll", updateHero, { passive: true });
+      window.addEventListener("resize", updateHero);
+      updateHero();
+    </script>
+  </body>
+</html>

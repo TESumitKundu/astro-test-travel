@@ -39,7 +39,11 @@ const bestMonths = asList(tour.data.bestMonths);
 
     <h3><a href={withBase(`/tours/${tour.slug}/`)}>{tour.data.title}</a></h3>
     <div class="style-row" aria-label="Travel styles">
-      {(travelStyles.length ? travelStyles : ["Leisure"]).slice(0, 3).map((style) => <span>{style}</span>)}
+      {
+        (travelStyles.length ? travelStyles : ["Leisure"])
+          .slice(0, 3)
+          .map((style) => <span>{style}</span>)
+      }
     </div>
     {
       !compact && (
@@ -134,7 +138,7 @@ const bestMonths = asList(tour.data.bestMonths);
   .place-heading {
     margin: 0;
     color: var(--accent-dark);
-    font-family: Fraunces, Georgia, serif;
+    font-family: var(--ff-head);
     font-size: 1.05rem;
     font-weight: 800;
     line-height: 1;

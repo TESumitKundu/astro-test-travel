@@ -22,24 +22,24 @@ const description =
   `${formatDuration(tour.data.duration)} ${tour.data.place} tour from ${formatInr(tour.data.costInr)}.`;
 ---
 
-<BaseLayout
-  title={title}
-  description={description}
-  image={image}
->
+<BaseLayout title={title} description={description} image={image}>
   <article>
     <header class="tour-hero" style={`--tour-image: url('${withBase(image)}')`}>
       <div class="container">
         <a class="back-link" href={withBase("/tours/")}>Back to tours</a>
       </div>
-       <div class="container">
+      <div class="container">
         <div class="tour-hero-content">
           <p class="eyebrow">{tour.data.place}</p>
           <h1>{tour.data.title}</h1>
           <div class="hero-tags" aria-label="Tour highlights">
             <span>{formatDuration(tour.data.duration)}</span>
             <span>{seasons.join(", ") || "All season"}</span>
-            <span>{(travelStyles.length ? travelStyles : ['Leisure']).join(", ")}</span>
+            <span
+              >{
+                (travelStyles.length ? travelStyles : ["Leisure"]).join(", ")
+              }</span
+            >
           </div>
         </div>
       </div>
@@ -72,7 +72,13 @@ const description =
               </div>
               <div>
                 <dt>Travel style</dt>
-                <dd>{(travelStyles.length ? travelStyles : ['Leisure']).join(", ")}</dd>
+                <dd>
+                  {
+                    (travelStyles.length ? travelStyles : ["Leisure"]).join(
+                      ", ",
+                    )
+                  }
+                </dd>
               </div>
               <div>
                 <dt>Group size</dt>
@@ -81,36 +87,49 @@ const description =
             </dl>
           </section>
 
-          {placesToCover.length > 0 && (
-            <section class="places-cover" aria-labelledby="places-cover-title">
-              <div class="section-title">
-                <p class="eyebrow">Route nights</p>
-                <h2 id="places-cover-title">Places to cover</h2>
-              </div>
-              <div class="places-list">
-                {placesToCover.map((place) => (
-                  <article>
-                    <div>
-                      <strong>{place.name}</strong>
-                      <span>{place.nights} {place.nights === 1 ? 'Night' : 'Nights'}</span>
-                    </div>
-                  </article>
-                ))}
-              </div>
-            </section>
-          )}
+          {
+            placesToCover.length > 0 && (
+              <section
+                class="places-cover"
+                aria-labelledby="places-cover-title"
+              >
+                <div class="section-title">
+                  <p class="eyebrow">Route nights</p>
+                  <h2 id="places-cover-title">Places to cover</h2>
+                </div>
+                <div class="places-list">
+                  {placesToCover.map((place) => (
+                    <article>
+                      <div>
+                        <strong>{place.name}</strong>
+                        <span>
+                          {place.nights}{" "}
+                          {place.nights === 1 ? "Night" : "Nights"}
+                        </span>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </section>
+            )
+          }
 
-          {hasItinerary && (
-            <section class="itinerary-panel" aria-labelledby="itinerary-title">
-              <div class="section-title">
-                <p class="eyebrow">Day-wise plan</p>
-                <h2 id="itinerary-title">Itinerary</h2>
-              </div>
-              <div class="prose itinerary">
-                <Content />
-              </div>
-            </section>
-          )}
+          {
+            hasItinerary && (
+              <section
+                class="itinerary-panel"
+                aria-labelledby="itinerary-title"
+              >
+                <div class="section-title">
+                  <p class="eyebrow">Day-wise plan</p>
+                  <h2 id="itinerary-title">Itinerary</h2>
+                </div>
+                <div class="prose itinerary">
+                  <Content />
+                </div>
+              </section>
+            )
+          }
         </main>
 
         <aside class="booking-card">
@@ -131,9 +150,14 @@ const description =
     min-height: 86svh;
     padding: 38px 0 64px;
     background:
-    linear-gradient(90deg, rgba(8, 24, 20, 0.64), rgba(8, 24, 20, 0.12) 58%, rgba(8, 24, 20, 0.42)),
-    linear-gradient(180deg, rgba(10, 28, 24, 0.08), rgba(10, 28, 24, 0.58)),
-    var(--tour-image);
+      linear-gradient(
+        90deg,
+        rgba(8, 24, 20, 0.64),
+        rgba(8, 24, 20, 0.12) 58%,
+        rgba(8, 24, 20, 0.42)
+      ),
+      linear-gradient(180deg, rgba(10, 28, 24, 0.08), rgba(10, 28, 24, 0.58)),
+      var(--tour-image);
     background-position: center;
     background-size: cover;
     border-radius: 0 0 34px 34px;
@@ -143,7 +167,6 @@ const description =
     justify-content: space-between;
     gap: 2rem;
   }
-  
 
   .back-link {
     display: inline-flex;
@@ -157,7 +180,6 @@ const description =
     text-decoration: none;
     backdrop-filter: blur(12px);
   }
-
 
   .tour-hero-content {
     width: min(100%, 760px);
@@ -254,7 +276,11 @@ const description =
     border: 1px solid rgba(15, 118, 110, 0.1);
     border-radius: 24px;
     background:
-      radial-gradient(circle at 100% 0%, rgba(243, 178, 58, 0.12), transparent 8rem),
+      radial-gradient(
+        circle at 100% 0%,
+        rgba(243, 178, 58, 0.12),
+        transparent 8rem
+      ),
       linear-gradient(135deg, #fffaf0, #eef8f4);
   }
 
@@ -311,8 +337,16 @@ const description =
     border: 1px solid rgba(15, 118, 110, 0.1);
     border-radius: 24px;
     background:
-      radial-gradient(circle at 100% 0%, rgba(243, 178, 58, 0.16), transparent 8rem),
-      linear-gradient(135deg, rgba(238, 248, 244, 0.96), rgba(255, 244, 234, 0.76));
+      radial-gradient(
+        circle at 100% 0%,
+        rgba(243, 178, 58, 0.16),
+        transparent 8rem
+      ),
+      linear-gradient(
+        135deg,
+        rgba(238, 248, 244, 0.96),
+        rgba(255, 244, 234, 0.76)
+      );
     box-shadow: 0 18px 48px rgba(23, 33, 27, 0.08);
   }
 
@@ -326,7 +360,7 @@ const description =
 
   .places-list strong {
     color: var(--ink);
-    font-family: Fraunces, Georgia, serif;
+    font-family: var(--ff-head);
     font-size: 1.35rem;
     line-height: 1;
   }
@@ -337,7 +371,6 @@ const description =
       padding: 24px 0 38px;
       border-radius: 0 0 30px 30px;
     }
-
 
     .package-grid {
       grid-template-columns: 1fr;

@@ -1,0 +1,85 @@
+https://www.youtube.com/watch?v=f3lp4lITGNg
+https://uiuxshowcase.com/resources/nvg8-io-web3-powered-decentralized-intelligence-platform/
+
+
+
+revert x
+revert form 1
+
+
+
+
+Create a polished desktop and mobile UI mockup for a joyful travel-tour search experience.
+
+This must not look like a conventional form with ordinary native input fields.
+
+Core idea:
+“Tell us just one thing. We’ll take care of the rest.”
+
+Users should be able to search after providing only one preference. Every field is optional. Adding more details should improve and personalise the results, but the interface must never make the user feel that the form is incomplete.
+
+Include these optional preference categories:
+
+• Place or destination
+• Travel style: mountains, forest, pilgrimage, beach, heritage and adventure
+• Month of travel
+• Duration
+• Number of travellers
+
+Recommended interaction:
+
+1. Begin with an expressive prompt:
+   “What are you dreaming about?”
+
+2. Include a natural-language entry area with examples such as:
+   “Mountains in October”
+   “A quiet forest escape”
+   “A spiritual trip for four days”
+
+3. Under it, show interactive visual chips or cards:
+   Place, Travel style, Month, Duration and Travellers.
+
+4. When a category is selected, expand it inside the same container using visual cards rather than conventional dropdowns.
+
+5. Build a travel sentence from the user’s choices:
+   “I want to explore [Mountains] during [October] for [5–7 days].”
+
+6. The search button must always remain active and change contextually:
+   “Surprise me”
+   “Show mountain escapes”
+   “Explore Manali in October”
+   “Find my best matches”
+
+7. Clearly display:
+   “One answer is enough. More details make your matches even better.”
+
+8. Use positive recommendation-quality feedback instead of a completion percentage:
+   “Great start”
+   “More personalised”
+   “Highly tailored”
+
+Visual direction:
+
+• Premium and emotionally engaging travel aesthetic
+• Spacious modern layout
+• Soft organic shapes
+• Rich travel imagery or illustrations
+• Warm, optimistic typography
+• Subtle depth, gradients and glass effects where suitable
+• Accessible contrast and visible selected states
+• Avoid looking like a banking, airline-booking or administrative form
+
+Micro-interactions to communicate visually:
+
+• Cards gently lift on hover
+• Mountain cards have drifting clouds
+• Forest cards have subtle moving leaves
+• Beach cards have a gentle wave effect
+• Pilgrimage cards have a soft ambient glow
+• Selected preferences smoothly join the travel sentence
+• Respect reduced-motion accessibility settings
+
+Create the initial state and one populated state where the user has selected:
+Mountains, October and 5–7 days.
+
+Generate this as a high-fidelity travel website search-section mockup.

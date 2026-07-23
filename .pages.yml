@@ -166,15 +166,11 @@ content:
     label: Hotels
     type: collection
     path: src/content/hotels
-    filename: "{fields.hotelSlug}.md"
+    filename: "{fields.name}.md"
     format: yaml-frontmatter
     fields:
       - name: name
         label: Hotel Name
-        type: string
-        required: true
-      - name: hotelSlug
-        label: Hotel Slug
         type: string
         required: true
       - name: place
@@ -247,3 +243,40 @@ content:
           - name: linkedin
             label: LinkedIn
             type: string
+      - name: heroMoodTiles
+        label: Hero Mood Tiles
+        type: object
+        list: true
+        fields:
+          - name: label
+            label: Label
+            type: string
+            required: true
+          - name: image
+            label: Image URL
+            type: string
+            required: true
+          - name: style
+            label: Travel Style Filter
+            type: select
+            required: true
+            options:
+              values:
+                - Mountain
+                - Forest
+                - Pilgrimage
+                - Beach
+                - Heritage
+                - Backwater
+                - Wildlife
+                - Adventure
+                - Culture
+                - Leisure
+          - name: href
+            label: Link
+            type: string
+            required: true
+          - name: meta
+            label: Short Meta Text
+            type: string
+            required: false

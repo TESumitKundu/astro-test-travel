@@ -73,7 +73,6 @@ const hotels = defineCollection({
   type: 'content',
   schema: z.object({
     name: z.string(),
-    hotelSlug: z.string().optional(),
     place: z.string(),
     startingRoomPriceInr: z.number().int().positive(),
     images: z.array(z.string()).min(1),
